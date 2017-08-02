@@ -58,7 +58,7 @@ module.exports = {
         }, {});
     },
 
-    utils.debounce = (func, wait, immediate) => {
+    debounce: (func, wait, immediate) => {
 
     let timeout;
     return (...args) => {
