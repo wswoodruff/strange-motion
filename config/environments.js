@@ -16,7 +16,7 @@ module.exports = {
     // Overrides when NODE_ENV === 'production'
     // ======================================================
     production: (config) => ({
-        compiler_public_path: 'https://wswoodruff.github.io/strange-motion',
+        compiler_public_path: 'https://wswoodruff.github.io/strange-motion/dist/',
         compiler_fail_on_warning: false,
         compiler_hash_type: 'chunkhash',
         compiler_devtool: false,
