@@ -2,7 +2,7 @@
   "name": "strange-motion",
   "version": "0.0.1",
   "description": "Cool util wrapper around `react-motion`!",
-  "main": "lib/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"No test specified\" && exit 1"
   },
