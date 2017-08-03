@@ -1,5 +1,4 @@
 const React = require('react');
-const { default: Toolbar } = require('material-ui/Toolbar');
 const { default: IconButton } = require('material-ui/IconButton');
 const Drawer = require('components/Drawer');
 // Styles
@@ -9,7 +8,8 @@ const lStyles = require('./styles');
 const {
     AppBar,
     Typography,
-    MenuIcon } = lStyles;
+    MenuIcon,
+    Toolbar } = lStyles;
 
 // Component
 

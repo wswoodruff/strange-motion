@@ -94,16 +94,13 @@ module.exports = class IconToggle extends React.PureComponent {
                     <ToggleIcon
                         key='on'
                         className={`${iconClass} ${onIconClass}`}
-                    >
-                        {onIcon}
-                    </ToggleIcon>
+                        name={onIcon}
+                    />
                     <ToggleIcon
                         key='off'
                         className={`${iconClass} ${offIconClass}`}
-                    >
-                        {offIcon}
-                    </ToggleIcon>
-
+                        name={offIcon}
+                    />
                 </ToggleMotion>
             </IconButton>
         );

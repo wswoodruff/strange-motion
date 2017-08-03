@@ -2,7 +2,7 @@ const React = require('react');
 const T = require('prop-types');
 const StrangeMotion = require('./index');
 const { TransitionMotion } = require('react-motion');
-const AccordianListItem = require('./AccordianListItem');
+const AccordianListItem = require('./components/AccordianListItem');
 
 // Component
 

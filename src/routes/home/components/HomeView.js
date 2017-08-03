@@ -1,12 +1,14 @@
 const React = require('react');
+const ToggleDemo = require('components/ToggleDemo');
 
 // Styles
 
 const lStyles = require('./styles');
 
 const {
-    MainContainer,
-    AlarmButton } = lStyles;
+    HomeContainer,
+    ToggleButton,
+    DemosContainer } = lStyles;
 
 // Component
 
@@ -20,29 +22,50 @@ module.exports = class HomePage extends React.PureComponent {
             alarmOn: false
         };
 
-        this.onAlarmClick = this._onAlarmClick.bind(this);
-    }
+        this.onToggleClick = this._onToggleClick.bind(this);
+    };
 
-    _onAlarmClick() {
+    _onToggleClick() {
 
-        this.setState({ alarmOn: !this.state.alarmOn });
-    }
+        this.setState({ toggleOn: !this.state.toggleOn });
+    };
 
     render() {
 
-        const { alarmOn } = this.state;
+        const { toggleOn } = this.state;
 
-        return <MainContainer>
+        return (
+            <HomeContainer> {/* MainContainer is in src/layouts/CoreLayout */}
+                <DemosContainer>
 
-            <AlarmButton
-                trigger={alarmOn}
-                onIcon='alarm_on'
-                offIcon='alarm_off'
-                onClick={this.onAlarmClick}
-                iconClass='alarm-icon'
-                onIconClass='alarm-icon-on'
-                offIconClass='alarm-icon-off'
-            />
-        </MainContainer>;
-    }
+                    {/*
+                        Note to self:
+                        use the shelf space on the left / right
+                        of these demos to have the code icon, and
+                        also a FAB that shoots out child FABS like you
+                        see in Material design. These are different versions
+                        or demos (with code) of what you can do with any
+                        particular strange-motion component
+                    */}
+
+                    {/*
+                        Make @media queries work in ascss, which
+                        re-apply the animConfig when that media query matches!
+                        This way you can animate responsive stuff with spring
+                        anims, like shrinking the size of these cards at mobile
+                        width and turning them more into app tiles like LawHub
+                    */}
+
+                    {/*
+                        Or have a wrapper component use CSS width: 100%
+                        on every render get the client width, and set the
+                        width of an animated component to whatever that is
+
+                        That way you can spring anim as the page resizes.
+                    */}
+                    <ToggleDemo />
+                </DemosContainer>
+            </HomeContainer>
+        );
+    };
 };

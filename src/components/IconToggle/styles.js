@@ -1,10 +1,10 @@
 
-const { styledWrap: styled } = require('styles');
-const { default: Icon } = require('material-ui/Icon');
+const { default: styled } = require('styled-components');
+const { default: MaterialIcon } = require('components/MaterialIcon');
 
 module.exports = {
 
-    ToggleIcon: styled(Icon)`
+    ToggleIcon: styled(MaterialIcon)`
         position: absolute;
         left: 50%;
         top: 50%;
