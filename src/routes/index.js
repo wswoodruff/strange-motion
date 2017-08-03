@@ -11,8 +11,6 @@ else {
     rootPath = '/strange-motion';
 }
 
-alert(rootPath);
-
 // Create routes
 module.exports = (store) => ({
     path: rootPath,
