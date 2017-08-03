@@ -25,4 +25,4 @@ exports.default = class MaterialIcon extends React.PureComponent {
             </Icon>
         );
     }
-}
+};

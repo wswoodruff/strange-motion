@@ -6,9 +6,7 @@ const DemoView = require('components/DemoView');
 const lStyles = require('./styles');
 
 const {
-    HomeContainer,
-    ToggleButton,
-    DemosContainer } = lStyles;
+    ToggleButton } = lStyles;
 
 // Component
 

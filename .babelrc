@@ -21,6 +21,7 @@
         { "src": "./src/wiring", "expose": "wiring" },
         { "src": "./src/utils", "expose": "utils" },
         { "src": "./src/styles", "expose": "styles" },
+        { "src": ".", "expose": "strange-motion" },
 
         { "src":"npm:constants-browserify", "expose":"constants" },
         { "src":"npm:react-native-crypto", "expose":"crypto" },

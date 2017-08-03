@@ -1,4 +1,5 @@
 const React = require('react');
+const T = require('prop-types');
 
 // Styles
 
@@ -10,6 +11,10 @@ const {
 // Component
 
 module.exports = class CoreLayout extends React.PureComponent {
+
+    static propTypes = {
+        children: T.any
+    }
 
     constructor() {
 

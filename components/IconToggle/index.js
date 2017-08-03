@@ -1,7 +1,7 @@
 const React = require('react');
 const T = require('prop-types');
 const { default: IconButton } = require('material-ui/IconButton');
-const ToggleMotion = require('../../../toggle');
+const ToggleMotion = require('../../toggle');
 
 // Styles
 

@@ -1,5 +1,5 @@
 const { default: styled } = require('styled-components');
-const IconToggle = require('components/IconToggle');
+const IconToggle = require('../../../components/IconToggle');
 const { red } = require('material-ui/colors');
 
 module.exports = {

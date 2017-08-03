@@ -7,7 +7,6 @@ const lStyles = require('./styles');
 
 const {
     HomeContainer,
-    ToggleButton,
     DemosContainer } = lStyles;
 
 // Component
@@ -32,11 +31,13 @@ module.exports = class HomePage extends React.PureComponent {
 
     render() {
 
-        const { toggleOn } = this.state;
+        // const { toggleOn } = this.state;
 
         return (
             <HomeContainer> {/* MainContainer is in src/layouts/CoreLayout */}
                 <DemosContainer>
+
+                    <ToggleDemo />
 
                     {/*
                         Note to self:
@@ -63,7 +64,6 @@ module.exports = class HomePage extends React.PureComponent {
 
                         That way you can spring anim as the page resizes.
                     */}
-                    <ToggleDemo />
                 </DemosContainer>
             </HomeContainer>
         );
