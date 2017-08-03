@@ -8,8 +8,10 @@ if (__DEV__) {
     rootPath = '/';
 }
 else {
-    rootPath = '/strange-motion/';
+    rootPath = '/strange-motion';
 }
+
+alert(rootPath);
 
 // Create routes
 module.exports = (store) => ({
