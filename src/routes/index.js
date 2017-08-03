@@ -1,16 +1,21 @@
 // Just the modules necessary for initial render!
 const CoreLayout = require('../layouts/CoreLayout');
 const Home = require('./home');
-// const CounterRoute = require('./counter');
+
+let rootPath;
+
+if (__DEV__) {
+    rootPath = '/';
+}
+else {
+    rootPath = '/strange-motion/';
+}
 
 // Create routes
 module.exports = (store) => ({
-    path: '/',
+    path: rootPath,
     component: CoreLayout,
-    indexRoute: Home,
-    childRoutes: [
-        // CounterRoute(store)
-    ]
+    indexRoute: Home
 });
 
 /*  Note: Instead of using JSX, we recommend using react-router
