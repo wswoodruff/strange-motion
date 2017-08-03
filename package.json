@@ -19,7 +19,6 @@
     "deploy": "better-npm-run deploy",
     "deploy:dev": "better-npm-run deploy:dev",
     "deploy:prod": "better-npm-run deploy:prod",
-    "push-live": "git subtree push --prefix dist/ origin gh-pages",
     "codecov": "cat coverage/*/lcov.info | codecov"
   },
   "betterScripts": {
