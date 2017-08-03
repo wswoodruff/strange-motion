@@ -1,5 +1,7 @@
 const React = require('react');
 const ToggleDemo = require('components/ToggleDemo');
+const ToggleIconDemo = require('components/ToggleIconDemo');
+const { default: Typography } = require('material-ui/Typography');
 
 // Styles
 
@@ -7,7 +9,8 @@ const lStyles = require('./styles');
 
 const {
     HomeContainer,
-    DemosContainer } = lStyles;
+    DemosContainer,
+    SectionTitle } = lStyles;
 
 // Component
 
@@ -35,9 +38,20 @@ module.exports = class HomePage extends React.PureComponent {
 
         return (
             <HomeContainer> {/* MainContainer is in src/layouts/CoreLayout */}
-                <DemosContainer>
 
-                    <ToggleDemo />
+                <SectionTitle type='headline' component='h1'>
+                    Motions
+                </SectionTitle>
+
+                <DemosContainer>
+                    <ToggleIconDemo />
+                </DemosContainer>
+
+                <SectionTitle type='headline' component='h1'>
+                    Components
+                </SectionTitle>
+                <DemosContainer>
+                    <ToggleIconDemo />
 
                     {/*
                         Note to self:

@@ -1,4 +1,5 @@
 const { default: styled } = require('styled-components');
+const { default: Typography } = require('material-ui/Typography');
 
 module.exports = {
 
@@ -16,5 +17,10 @@ module.exports = {
             padding-left: 24px;
             padding-right: 24px;
         }
+    `,
+    Title: styled(Typography)`
+        margin-bottom: 16px;
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.54);
     `
 };

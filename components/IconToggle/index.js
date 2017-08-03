@@ -9,6 +9,12 @@ const lStyles = require('./styles');
 
 const { ToggleIcon } = lStyles;
 
+
+// Anims
+
+const lAnims = require('./anims');
+const { ToggleAnim } = lAnims;
+
 // Component
 
 module.exports = class IconToggle extends React.PureComponent {
@@ -29,33 +35,9 @@ module.exports = class IconToggle extends React.PureComponent {
         className: ''
     }
 
-    _getAnimConfig() {
-
-        return {
-            enterAnim: {
-                opacity: {
-                    val: 1,
-                    stiffness: 210,
-                    damping: 25
-                },
-                fontSize: {
-                    val: 100,
-                    stiffness: 210,
-                    damping: 25
-                }
-            },
-            leaveAnim: {
-                opacity: 0,
-                fontSize: 60
-            }
-        };
-    }
-
     constructor(props) {
 
         super();
-
-        this.animConfig = this._getAnimConfig();
 
         this.state = {
             trigger: props.trigger === true ? true : false
@@ -89,7 +71,7 @@ module.exports = class IconToggle extends React.PureComponent {
             >
                 <ToggleMotion
                     trigger={trigger}
-                    animConfig={this.animConfig}
+                    animConfig={ToggleAnim}
                 >
                     <ToggleIcon
                         key='on'
