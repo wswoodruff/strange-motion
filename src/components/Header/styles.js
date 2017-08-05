@@ -1,4 +1,4 @@
-const { styledWrap: styled } = require('styles');
+const { styledImportant: styled } = require('styles');
 const { default: AppBar } = require('material-ui/AppBar');
 const { default: Toolbar } = require('material-ui/Toolbar');
 const { default: Typography } = require('material-ui/Typography');

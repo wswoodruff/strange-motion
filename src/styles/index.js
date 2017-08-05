@@ -1,7 +1,7 @@
 const { default: styled } = require('styled-components');
 const { important } = require('utils/styles');
 
-const styledWrap = (component) => {
+const styledImportant = (component) => {
 
     return (tag) => {
 
@@ -9,5 +9,4 @@ const styledWrap = (component) => {
     };
 };
 
-
-exports.styledWrap = styledWrap;
+exports.styledImportant = styledImportant;

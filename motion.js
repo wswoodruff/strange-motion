@@ -11,33 +11,21 @@ module.exports = class Motion extends StrangeMotion {
     static propTypes = {
         springEasing: T.object,
         noWrapper: T.bool,
-        trigger: T.func
-        // animOnMount: T.bool
+        animConfig: T.shape({
+            startStyle: T.object,
+            enterAnim: T.object
+        })
     }
 
     constructor(props) {
 
         super(props);
 
-        const self = this;
-
-        if (props.trigger) {
-            props.trigger = (newEntryAnim) => {
-
-                this.setState({
-                    animConfig: assignAnimConfig(
-                        self.state.animConfig,
-                        newEntryAnim
-                    )
-                });
-            };
-        }
-
         // We don't want springEasing in state because updating it
         // in componentWillReceiveProps will cause a rerender
         // which we don't want
 
-        this.springEasing = props.springEasing || internals.defaultSpring;
+        this.springEasing = props.springEasing || this.defaultSpring;
     }
 
     static defaultProps = {
@@ -46,23 +34,36 @@ module.exports = class Motion extends StrangeMotion {
 
     componentWillReceiveProps(nextProps) {
 
-        const springEasing = nextProps.springEasing;
+        const { springEasing, animConfig } = nextProps;
 
         if (springEasing) {
             this.springEasing = springEasing;
+        }
+
+        const self = this;
+        if (animConfig) {
+            this.setState({
+                animConfig: assignAnimConfig(
+                    self.state.animConfig,
+                    animConfig
+                )
+            });
         }
     }
 
     render() {
 
+        const { children } = this.props;
+
         return (
             <ReactMotion
-                style={this.getStyles()}
+                defaultStyle={this.getDefaultStyles()[0].style}
+                style={this.getStyles()[0].style}
             >
-                {(interpolatedStyles) =>
+                {(interpolatedStyles) => {
 
-                    this.getChildren(interpolatedStyles)
-                }
+                    return this.applyInterpolatedStyles(interpolatedStyles, children);
+                }}
             </ReactMotion>
         );
     }

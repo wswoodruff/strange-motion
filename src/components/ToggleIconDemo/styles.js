@@ -1,10 +1,10 @@
 const { default: styled } = require('styled-components');
-const IconToggle = require('../../../components/IconToggle');
+const ToggleIcon = require('../../../components/ToggleIcon');
 const { red } = require('material-ui/colors');
 
 module.exports = {
 
-    ToggleButton: styled(IconToggle)`
+    ToggleIcon: styled(ToggleIcon)`
 
         width: 150px !important;
         height: 150px !important;

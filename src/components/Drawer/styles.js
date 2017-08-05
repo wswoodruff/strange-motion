@@ -1,4 +1,4 @@
-const { styledWrap: styled } = require('styles');
+const { styledImportant: styled } = require('styles');
 const { default: List, ListItem } = require('material-ui/List');
 const { default: Typography } = require('material-ui/Typography');
 

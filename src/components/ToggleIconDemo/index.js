@@ -5,8 +5,7 @@ const DemoView = require('components/DemoView');
 
 const lStyles = require('./styles');
 
-const {
-    ToggleButton } = lStyles;
+const { ToggleIcon } = lStyles;
 
 // Component
 
@@ -34,7 +33,7 @@ module.exports = class HomePage extends React.PureComponent {
 
         return (
             <DemoView title='Toggle Icon'>
-                <ToggleButton
+                <ToggleIcon
                     trigger={toggleOn}
                     onIcon='alarm_on'
                     offIcon='alarm_off'

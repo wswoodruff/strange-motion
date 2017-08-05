@@ -1,6 +1,6 @@
 const React = require('react');
 const T = require('prop-types');
-const { default: Card, CardActions, CardContent } = require('material-ui/Card');
+const { CardActions } = require('material-ui/Card');
 
 // Styles
 
@@ -8,7 +8,10 @@ const lStyles = require('./styles');
 
 const {
     Bg,
-    Title } = lStyles;
+    Title,
+    StyledCard,
+    StyledCardContent,
+    DemoContent } = lStyles;
 
 // Component
 
@@ -32,17 +35,19 @@ module.exports = class CoreLayout extends React.PureComponent {
 
         return (
             <Bg>
-                <Card>
-                    <CardContent>
+                <StyledCard>
+                    <StyledCardContent>
                         <Title type='headline' component='h2'>
                             {title}
                         </Title>
-                        {[].concat(children).map((child) => {
+                        <DemoContent>
+                            {[].concat(children).map((child) => {
 
-                            return child;
-                        })}
-                    </CardContent>
-                </Card>
+                                return child;
+                            })}
+                        </DemoContent>
+                    </StyledCardContent>
+                </StyledCard>
             </Bg>
         );
     }

@@ -13,11 +13,12 @@ const { ToggleIcon } = lStyles;
 // Anims
 
 const lAnims = require('./anims');
+
 const { ToggleAnim } = lAnims;
 
 // Component
 
-module.exports = class IconToggle extends React.PureComponent {
+module.exports = class ToggleIconClass extends React.PureComponent {
 
     static propTypes = {
         onIcon: T.string.isRequired,

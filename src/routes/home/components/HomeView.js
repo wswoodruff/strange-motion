@@ -1,7 +1,7 @@
 const React = require('react');
-const ToggleDemo = require('components/ToggleDemo');
+const ToggleMotionDemo = require('components/ToggleMotionDemo');
+const MotionDemo = require('components/MotionDemo');
 const ToggleIconDemo = require('components/ToggleIconDemo');
-const { default: Typography } = require('material-ui/Typography');
 
 // Styles
 
@@ -19,22 +19,9 @@ module.exports = class HomePage extends React.PureComponent {
     constructor() {
 
         super();
-
-        this.state = {
-            alarmOn: false
-        };
-
-        this.onToggleClick = this._onToggleClick.bind(this);
-    };
-
-    _onToggleClick() {
-
-        this.setState({ toggleOn: !this.state.toggleOn });
     };
 
     render() {
-
-        // const { toggleOn } = this.state;
 
         return (
             <HomeContainer> {/* MainContainer is in src/layouts/CoreLayout */}
@@ -44,12 +31,14 @@ module.exports = class HomePage extends React.PureComponent {
                 </SectionTitle>
 
                 <DemosContainer>
-                    <ToggleIconDemo />
+                    <MotionDemo />
+                    <ToggleMotionDemo />
                 </DemosContainer>
 
                 <SectionTitle type='headline' component='h1'>
                     Components
                 </SectionTitle>
+
                 <DemosContainer>
                     <ToggleIconDemo />
 

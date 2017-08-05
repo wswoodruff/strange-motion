@@ -1,4 +1,4 @@
-const { styledWrap: styled } = require('styles');
+const { styledImportant: styled } = require('styles');
 const { default: List } = require('material-ui/List');
 
 module.exports = {
