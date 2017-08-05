@@ -9,8 +9,14 @@ module.exports = {
             top: 0
         },
         enterAnim: {
-            left: 200,
-            top: 200
+            left: {
+                val: 200,
+                preset: 'wobbly'
+            },
+            top: {
+                val: 200,
+                preset: 'wobbly'
+            }
         }
     }
 }
