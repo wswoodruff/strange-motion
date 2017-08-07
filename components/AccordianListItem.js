@@ -9,7 +9,7 @@ module.exports = class AccordianListItem extends React.PureComponent {
         motionKey: T.string,
         setElementHeight: T.func,
         children: T.any
-    }
+    };
 
     constructor(props) {
 
@@ -17,7 +17,7 @@ module.exports = class AccordianListItem extends React.PureComponent {
         this.setContentRef = this._setContentRef.bind(this);
         this.debounceSetAutoAfterAnim = debounce(this._debounceSetAutoAfterAnim.bind(this), 50);
         this.setRef = this._setRef.bind(this);
-    }
+    };
 
     _setContentRef(el) {
 
@@ -28,14 +28,14 @@ module.exports = class AccordianListItem extends React.PureComponent {
 
             setElementHeight(motionKey, this.content.clientHeight);
         }
-    }
+    };
 
     _debounceSetAutoAfterAnim() {
 
         if (this.container) {
             this.container.style.height = 'auto';
         }
-    }
+    };
 
     _setRef(refName) {
 
@@ -44,7 +44,7 @@ module.exports = class AccordianListItem extends React.PureComponent {
 
             self[refName] = ref;
         }
-    }
+    };
 
     render() {
 
@@ -70,5 +70,5 @@ module.exports = class AccordianListItem extends React.PureComponent {
                 </div>
             </div>
         );
-    }
+    };
 };

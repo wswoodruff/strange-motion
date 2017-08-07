@@ -8,14 +8,17 @@ const DemoView = require('components/DemoView');
 const lStyles = require('./styles');
 
 const {
-    BlueBall,
-    Wrapper } = lStyles;
+    Wrapper,
+    RedRow,
+    GreenRow,
+    BlueRow,
+    XButton } = lStyles;
 
 // Anims
 
 const lAnims = require('./anims');
 
-const { SlideDownAnim } = lAnims;
+const { RowAnim } = lAnims;
 
 // Component
 
@@ -25,66 +28,39 @@ module.exports = class AnimatedListDemo extends React.PureComponent {
 
         super();
 
+        let listItemData = [];
+        for(let i = 1; i < 101; ++i) {
+            listItemData.push({
+                num: i
+            });
+        }
+
         this.state = {
-            animConfig: SlideDownAnim,
-            listItemData: [1, 2, 3, 4, 5]
+            animConfig: RowAnim,
+            listItemData
         };
 
-        this.setRef = this._setRef.bind(this);
+        this.removeListItem = this._removeListItem.bind(this);
     }
 
-    componentDidMount() {
+    _removeListItem(itemNumber) {
 
-        // Have the ball follow the mouse with anim
+        return () => {
 
-        this.setState({
-            listItemData: [1, 2, 3, 4, 5]
-        })
+            const { listItemData } = this.state;
+            const newListItemData = listItemData.slice(0, listItemData.indexOf(itemNumber))
+            .concat(listItemData.slice(listItemData.indexOf(itemNumber) + 1));
 
-        this.mouseWatcher.addEventListener('mousemove', (ev) => {
+            console.log(listItemData.length);
+            console.log(newListItemData.length);
+            if (newListItemData.length !== (listItemData.length - 1)) {
+                throw new Error('its happening in this stupid func');
+            }
 
-            // const bounds = this.mouseWatcher.getBoundingClientRect();
-            //
-            // this.setState({
-            //     animConfig: {
-            //         enterAnim: {
-            //             left: ev.clientX - bounds.left,
-            //             top: ev.clientY - bounds.top
-            //         }
-            //     }
-            // });
-        });
-
-        this.mouseWatcher.addEventListener('mouseover', (ev) => {
-
-            // this.mouseOver = true;
-        });
-
-        this.mouseWatcher.addEventListener('mouseout', (ev) => {
-
-            // this.mouseOver = false;
-        });
-
-
-        // Have ball animate to random spots until the mouse takes over
-
-        setInterval(() => {
-
-            // if (this.mouseOver) {
-            //     return;
-            // }
-            //
-            // const bounds = this.mouseWatcher.getBoundingClientRect();
-            //
-            // this.setState({
-            //     animConfig: {
-            //         enterAnim: {
-            //             left: Math.random() * bounds.width,
-            //             top: Math.random() * bounds.height
-            //         }
-            //     }
-            // });
-        }, 2000);
+            this.setState({
+                listItemData: newListItemData
+            });
+        }
     }
 
     _setRef(refName) {
@@ -103,23 +79,49 @@ module.exports = class AnimatedListDemo extends React.PureComponent {
             listItemData } = this.state;
 
         return (
-            <Wrapper
-                innerRef={this.setRef('mouseWatcher')}
-            >
+            <Wrapper>
                 <MotionList
                     animConfig={animConfig}
-                    collapse
                     model={listItemData}
                 >
                     {(style, data, key) => {
 
-                        return (
-                            <div
-                                style={style}
-                            >
-                                Hi loL
-                            </div>
-                        );
+                        if (data.num % 3 === 1) {
+                            return (
+                                <RedRow
+                                    style={style}
+                                >
+                                    {data.num}
+                                    <XButton
+                                        onClick={this.removeListItem(data)}
+                                    />
+                                </RedRow>
+                            );
+                        }
+                        else if (data.num % 3 === 2) {
+                            return (
+                                <GreenRow
+                                    style={style}
+                                >
+                                    {data.num}
+                                    <XButton
+                                        onClick={this.removeListItem(data)}
+                                    />
+                                </GreenRow>
+                            );
+                        }
+                        else if (data.num % 3 === 0) {
+                            return (
+                                <BlueRow
+                                    style={style}
+                                >
+                                    {data.num}
+                                    <XButton
+                                        onClick={this.removeListItem(data)}
+                                    />
+                                </BlueRow>
+                            );
+                        }
                     }}
                 </MotionList>
             </Wrapper>

@@ -1,21 +1,49 @@
 const { default: styled } = require('styled-components');
-const { blue } = require('material-ui/colors');
+const { red, green, blue } = require('material-ui/colors');
+const { default: MaterialIcon } = require('components/MaterialIcon');
+
+const Row = styled.div`
+    height: 40px;
+    width: 100%;
+    color: white;
+    background-color: green;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    font-weight: bold;
+    transition: background 1s;
+`;
 
 module.exports = {
-    BlueBall: styled.div`
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        transform: translate(-50%, -50%);
-        background-color:${blue[500]};
-        border: 1px solid ${blue[200]};
-    `,
     Wrapper: styled.div`
         position: absolute;
         width: 100%;
         height: 100%;
+        overflow-y: scroll;
+    `,
+    RedRow: Row.extend`
+        border-top: 2px solid ${red[600]};
+        border-bottom: 2px solid ${red[600]};
+        background-color: ${red[300]};
+    `,
+    GreenRow: Row.extend`
+        border-top: 2px solid ${green[600]};
+        border-bottom: 2px solid ${green[600]};
+        background-color: ${green[300]};
+    `,
+    BlueRow: Row.extend`
+        border-top: 2px solid ${blue[600]};
+        border-bottom: 2px solid ${blue[600]};
+        background-color: ${blue[300]};
+    `,
+    XButton: styled(MaterialIcon)
+    .attrs({
+        name: 'close'
+    })`
+        background: rgba(255, 255, 255, 0.4);
+        color: ${red[500]};
+        padding: 4px;
+        cursor: pointer;
     `
 };

@@ -1,7 +1,7 @@
 
 module.exports = {
 
-    SlideDownAnim: {
+    RowAnim: {
         startStyle: {
             height: 0
         },

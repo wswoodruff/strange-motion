@@ -18,6 +18,10 @@ module.exports = {
             &:nth-child(even) {
                 margin-left: 10px;
             }
+
+            @media (max-width: 900px) {
+                width: 100%;
+            }
         }
     `,
     HomeContainer: styled.div`

@@ -8,9 +8,7 @@ const AccordianListItem = require('./components/AccordianListItem');
 
 module.exports = class MotionList extends StrangeMotion {
 
-    static propTypes = {
-        collapse: T.bool
-    }
+    static propTypes = {};
 
     constructor(props) {
 
@@ -34,26 +32,20 @@ module.exports = class MotionList extends StrangeMotion {
 
     mutateEnterAnimHook(enterAnim, key) {
 
-        const { collapse } = this.props;
         const { heightObject } = this.state;
 
-        if (collapse) {
+        if (heightObject[key]) {
 
-            if (heightObject[key]) {
-
-                enterAnim.height = spring(heightObject[key], {
-                    stiffness: 210,
-                    damping: 25
-                });
-            }
+            enterAnim.height = spring(heightObject[key], {
+                stiffness: 210,
+                damping: 25
+            });
         }
 
         return enterAnim;
     }
 
     render() {
-
-        const { children, collapse } = this.props;
 
         return (
             <TransitionMotion
@@ -64,28 +56,25 @@ module.exports = class MotionList extends StrangeMotion {
             >
                 {(interpolatedStyles) => {
 
-                    if (collapse) {
+                    console.log('interpolatedStyles', interpolatedStyles);
 
-                        return <div>
-                            {interpolatedStyles.map(({ data, key, style }) => {
+                    return <div>
+                        {interpolatedStyles.map(({ data, key, style }) => {
 
-                                return (
-                                    <AccordianListItem
-                                        key={key}
-                                        motionKey={key}
-                                        motionStyles={style}
-                                        heightObject={this.state.heightObject}
-                                        setElementHeight={this.setElementHeight}
-                                    >
+                            return (
+                                <AccordianListItem
+                                    key={key}
+                                    motionKey={key}
+                                    motionStyles={style}
+                                    heightObject={this.state.heightObject}
+                                    setElementHeight={this.setElementHeight}
+                                >
 
-                                        {this.applyInterpolatedStyles(style, data, key)}
-                                    </AccordianListItem>
-                                );
-                            })}
-                        </div>;
-                    }
-
-                    return this.getChildren(interpolatedStyles);
+                                    {this.applyInterpolatedStyles(style, data, key)}
+                                </AccordianListItem>
+                            );
+                        })}
+                    </div>
                 }}
             </TransitionMotion>
         );

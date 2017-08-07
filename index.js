@@ -178,13 +178,17 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
     componentWillReceiveProps(nextProps) {
 
-        const children = nextProps.children;
+        const { children, model } = nextProps;
 
         if (children && typeof children !== 'function') {
 
             this.setState({
                 model: this.getElementsFromChildren(children)
             });
+        }
+
+        if (model) {
+            this.setState({ model });
         }
     }
 
@@ -266,9 +270,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
     _getStyles() {
 
-        const {
-            model,
-            animConfig } = this.state;
+        const { model, animConfig } = this.state;
 
         let filteredModel;
         if (this.props.model) {
