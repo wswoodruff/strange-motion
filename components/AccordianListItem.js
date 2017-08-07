@@ -1,11 +1,10 @@
 const React = require('react');
 const T = require('prop-types');
-const { debounce } = require('./utils');
+const { debounce } = require('../utils');
 
-class AccordianListItem extends React.PureComponent {
+module.exports = class AccordianListItem extends React.PureComponent {
 
     static propTypes = {
-
         motionStyles: T.object,
         motionKey: T.string,
         setElementHeight: T.func,
@@ -15,14 +14,9 @@ class AccordianListItem extends React.PureComponent {
     constructor(props) {
 
         super(props);
-        this.setContainerRef = this._setContainerRef.bind(this);
         this.setContentRef = this._setContentRef.bind(this);
         this.debounceSetAutoAfterAnim = debounce(this._debounceSetAutoAfterAnim.bind(this), 50);
-    }
-
-    _setContainerRef(el) {
-
-        this.container = el;
+        this.setRef = this._setRef.bind(this);
     }
 
     _setContentRef(el) {
@@ -43,6 +37,15 @@ class AccordianListItem extends React.PureComponent {
         }
     }
 
+    _setRef(refName) {
+
+        const self = this;
+        return (ref) => {
+
+            self[refName] = ref;
+        }
+    }
+
     render() {
 
         const { motionStyles, children } = this.props;
@@ -52,7 +55,12 @@ class AccordianListItem extends React.PureComponent {
         return (
             <div
                 className='accordion-container'
-                style={{ ...motionStyles, overflow: 'hidden', width: '100%' }} ref={this.setContainerRef}
+                style={{
+                    ...motionStyles,
+                    overflow: 'hidden',
+                    width: '100%'
+                }}
+                ref={this.setRef('container')}
             >
                 <div
                     className='accordion-content'
@@ -63,6 +71,4 @@ class AccordianListItem extends React.PureComponent {
             </div>
         );
     }
-}
-
-module.exports = AccordianListItem;
+};

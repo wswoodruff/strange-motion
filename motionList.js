@@ -1,7 +1,7 @@
 const React = require('react');
 const T = require('prop-types');
 const StrangeMotion = require('./index');
-const { TransitionMotion } = require('react-motion');
+const { TransitionMotion, spring } = require('react-motion');
 const AccordianListItem = require('./components/AccordianListItem');
 
 // Component
@@ -9,8 +9,7 @@ const AccordianListItem = require('./components/AccordianListItem');
 module.exports = class MotionList extends StrangeMotion {
 
     static propTypes = {
-        collapse: T.bool,
-        noWrapper: T.bool
+        collapse: T.bool
     }
 
     constructor(props) {
@@ -54,7 +53,7 @@ module.exports = class MotionList extends StrangeMotion {
 
     render() {
 
-        const { children } = this.props;
+        const { children, collapse } = this.props;
 
         return (
             <TransitionMotion
@@ -65,23 +64,25 @@ module.exports = class MotionList extends StrangeMotion {
             >
                 {(interpolatedStyles) => {
 
-                    if (this.props.collapse) {
+                    if (collapse) {
 
-                        interpolatedStyles.map(({ data, key, style }) => {
+                        return <div>
+                            {interpolatedStyles.map(({ data, key, style }) => {
 
-                            return (
-                                <AccordianListItem
-                                    key={key}
-                                    motionKey={key}
-                                    motionStyles={style}
-                                    heightObject={this.state.heightObject}
-                                    setElementHeight={this.setElementHeight}
-                                >
+                                return (
+                                    <AccordianListItem
+                                        key={key}
+                                        motionKey={key}
+                                        motionStyles={style}
+                                        heightObject={this.state.heightObject}
+                                        setElementHeight={this.setElementHeight}
+                                    >
 
-                                    {children(data)}
-                                </AccordianListItem>
-                            );
-                        });
+                                        {this.applyInterpolatedStyles(style, data, key)}
+                                    </AccordianListItem>
+                                );
+                            })}
+                        </div>;
                     }
 
                     return this.getChildren(interpolatedStyles);

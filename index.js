@@ -37,9 +37,15 @@ module.exports = class StrangeMotion extends React.PureComponent {
         }
 
         let model;
+        let childIsFunc;
+
+        if (props.model) {
+            model = props.model;
+        }
 
         if (typeof props.children === 'function') {
 
+            childIsFunc = true;
             if (!props.model) {
                 throw new Error('Must pass in model if children is a function');
             }
@@ -47,12 +53,14 @@ module.exports = class StrangeMotion extends React.PureComponent {
             model = props.model;
         }
         else {
-            model = this._getElementsFromChildren(props.children);
+            childIsFunc = false;
+            model = props.model || this._getElementsFromChildren(props.children);
         }
 
         this.state = {
             animConfig,
-            model
+            model,
+            childIsFunc
         };
 
         this.willEnter = this._willEnter.bind(this);
@@ -64,14 +72,14 @@ module.exports = class StrangeMotion extends React.PureComponent {
         this.genId = this._genId.bind(this);
     }
 
-    getChildren = (interpolatedStyles) => {
+    getChildren(interpolatedStyles) {
 
         const { wrapperComponent, wrapperProps } = this.props;
         const interpolatedChildren = [];
 
         [].concat(interpolatedStyles).forEach(({ data, key, style }) => {
 
-            interpolatedChildren.push(this._applyInterpolatedStyles(style, data, key));
+            interpolatedChildren.push(this.applyInterpolatedStyles(style, data, key));
         });
 
         return React.createElement(
@@ -80,11 +88,17 @@ module.exports = class StrangeMotion extends React.PureComponent {
             interpolatedChildren
         );
     };
-
     _applyInterpolatedStyles(style, child, key) {
+
+        const { childIsFunc } = this.state;
 
         if (!key) {
             key = this.genId();
+        }
+
+        if (childIsFunc) {
+            const { children } = this.props;
+            return children(style, child, key);
         }
 
         const childStyle = child.props.style;
@@ -185,10 +199,14 @@ module.exports = class StrangeMotion extends React.PureComponent {
             children = [].concat(children);
         }
 
-        return children.filter((child) => {
+        return children.reduce((collector, child) => {
 
-            return React.isValidElement(child);
-        });
+            if (React.isValidElement(child)) {
+                collector.push(child);
+            }
+
+            return collector;
+        }, []);
     }
 
     _genId() {
@@ -212,18 +230,24 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const { model, animConfig } = this.state;
 
-        const filteredModel = this.filterChildrenForType(model);
+        let filteredModel;
+        if (this.props.model) {
+            filteredModel = model;
+        }
+        else {
+            filteredModel = this.filterChildrenForType(model);
+        }
 
         return filteredModel.map((item, i) => {
 
-            const key = item.key;
+            let key = item.key;
 
-            if (this.childIsFunc && !key) {
+            if (!key) {
                 if (item.id) {
-                    item.key = item.id;
+                    key = item.id;
                 }
                 else {
-                    item.key = this._genId();
+                    key = this._genId();
                 }
             }
 
@@ -246,18 +270,24 @@ module.exports = class StrangeMotion extends React.PureComponent {
             model,
             animConfig } = this.state;
 
-        const filteredModel = this.filterChildrenForType(model);
+        let filteredModel;
+        if (this.props.model) {
+            filteredModel = model;
+        }
+        else {
+            filteredModel = this.filterChildrenForType(model);
+        }
 
         return filteredModel.map((item, i) => {
 
             let key = item.key;
 
-            if (this.childIsFunc && !key) {
+            if (!key) {
                 if (item.id) {
-                    key = item.key = item.id;
+                    key = item.id;
                 }
                 else {
-                    key = item.key = this._genId();
+                    key = this._genId();
                 }
             }
 

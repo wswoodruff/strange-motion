@@ -5,7 +5,7 @@ const ToggleIconDemo = require('./demos/ToggleIconDemo');
 
 // Component
 
-module.exports = class ToggleMotionDemo extends React.PureComponent {
+module.exports = class MotionToggleDemo extends React.PureComponent {
 
     constructor(props) {
 
@@ -15,7 +15,7 @@ module.exports = class ToggleMotionDemo extends React.PureComponent {
     render() {
 
         return (
-            <DemoView title='Toggle Motion'>
+            <DemoView title='Motion Toggle'>
                 <ToggleIconDemo />
             </DemoView>
         );

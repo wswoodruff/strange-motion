@@ -4,6 +4,20 @@ const { default: Card, CardActions, CardContent } = require('material-ui/Card');
 
 module.exports = {
 
+    Bg: styled.div`
+
+        display: flex;
+        justify-content: center;
+        padding: 20px 35px;
+        background-color: #eeeeee;
+
+        margin-bottom: 20px;
+
+        @media (min-width: 600px) {
+            padding-left: 60px;
+            padding-right: 60px;
+        }
+    `,
     StyledCard: styled(Card)`
         width: 100%;
         height: 300px;
@@ -21,18 +35,6 @@ module.exports = {
         flex-flow: row nowrap;
         align-items: center;
         justify-content: center;
-    `,
-    Bg: styled.div`
-
-        display: flex;
-        justify-content: center;
-        padding: 20px 35px;
-        background-color: #eeeeee;
-
-        @media (min-width: 600px) {
-            padding-left: 60px;
-            padding-right: 60px;
-        }
     `,
     Title: styled(Typography)`
         margin-bottom: 16px;
