@@ -57,6 +57,7 @@ module.exports = class Motion extends StrangeMotion {
 
         return (
             <ReactMotion
+                // Only built for a single child
                 defaultStyle={this.getDefaultStyles()[0].style}
                 style={this.getStyles()[0].style}
             >

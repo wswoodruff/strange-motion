@@ -29,7 +29,7 @@ module.exports = class AnimatedListDemo extends React.PureComponent {
         super();
 
         let listItemData = [];
-        for(let i = 1; i < 101; ++i) {
+        for(let i = 1; i < 41; ++i) {
             listItemData.push({
                 num: i
             });
@@ -48,14 +48,9 @@ module.exports = class AnimatedListDemo extends React.PureComponent {
         return () => {
 
             const { listItemData } = this.state;
+
             const newListItemData = listItemData.slice(0, listItemData.indexOf(itemNumber))
             .concat(listItemData.slice(listItemData.indexOf(itemNumber) + 1));
-
-            console.log(listItemData.length);
-            console.log(newListItemData.length);
-            if (newListItemData.length !== (listItemData.length - 1)) {
-                throw new Error('its happening in this stupid func');
-            }
 
             this.setState({
                 listItemData: newListItemData
@@ -82,47 +77,89 @@ module.exports = class AnimatedListDemo extends React.PureComponent {
             <Wrapper>
                 <MotionList
                     animConfig={animConfig}
-                    model={listItemData}
+                    // model={listItemData}
                 >
-                    {(style, data, key) => {
+                    {listItemData.map((item) => {
 
-                        if (data.num % 3 === 1) {
+                        if (item.num % 3 === 1) {
                             return (
                                 <RedRow
-                                    style={style}
+                                    key={item.num}
                                 >
-                                    {data.num}
+                                    {item.num}
                                     <XButton
-                                        onClick={this.removeListItem(data)}
+                                        onClick={this.removeListItem(item)}
                                     />
                                 </RedRow>
                             );
                         }
-                        else if (data.num % 3 === 2) {
+                        else if (item.num % 3 === 2) {
                             return (
                                 <GreenRow
-                                    style={style}
+                                    key={item.num}
                                 >
-                                    {data.num}
+                                    {item.num}
                                     <XButton
-                                        onClick={this.removeListItem(data)}
+                                        onClick={this.removeListItem(item)}
                                     />
                                 </GreenRow>
                             );
                         }
-                        else if (data.num % 3 === 0) {
+                        else if (item.num % 3 === 0) {
                             return (
                                 <BlueRow
-                                    style={style}
+                                    key={item.num}
                                 >
-                                    {data.num}
+                                    {item.num}
                                     <XButton
-                                        onClick={this.removeListItem(data)}
+                                        onClick={this.removeListItem(item)}
                                     />
                                 </BlueRow>
                             );
                         }
-                    }}
+                    })}
+                    {/* {({ child, key, style }) => {
+
+                        if (child.num % 3 === 1) {
+                            return (
+                        <RedRow
+                        key={child.num}
+                        style={style}
+                        >
+                        {child.num}
+                        <XButton
+                        onClick={this.removeListItem(child)}
+                        />
+                        </RedRow>
+                            );
+                        }
+                        else if (child.num % 3 === 2) {
+                            return (
+                        <GreenRow
+                        key={child.num}
+                        style={style}
+                        >
+                        {child.num}
+                        <XButton
+                        onClick={this.removeListItem(child)}
+                        />
+                        </GreenRow>
+                            );
+                        }
+                        else if (child.num % 3 === 0) {
+                            return (
+                        <BlueRow
+                        key={child.num}
+                        style={style}
+                        >
+                        {child.num}
+                        <XButton
+                        onClick={this.removeListItem(child)}
+                        />
+                        </BlueRow>
+                            );
+                        }
+                    }} */}
                 </MotionList>
             </Wrapper>
         );

@@ -3,17 +3,16 @@ module.exports = {
 
     RowAnim: {
         startStyle: {
-            height: 0
+            height: 40,
+            opacity: 1
         },
         enterAnim: {
-            height: {
-                val: 40
-            }
+            height: 40,
+            opacity: 1
         },
         leaveAnim: {
-            height: {
-                val: 0
-            }
+            height: 0,
+            opacity: 0
         }
     }
 }

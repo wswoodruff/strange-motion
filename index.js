@@ -49,7 +49,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
             if (!props.model) {
                 throw new Error('Must pass in model if children is a function');
             }
-            this.getChildren = props.children;
             model = props.model;
         }
         else {
@@ -77,9 +76,9 @@ module.exports = class StrangeMotion extends React.PureComponent {
         const { wrapperComponent, wrapperProps } = this.props;
         const interpolatedChildren = [];
 
-        [].concat(interpolatedStyles).forEach(({ data, key, style }) => {
+        [].concat(interpolatedStyles).forEach(({ style, data, key,  }) => {
 
-            interpolatedChildren.push(this.applyInterpolatedStyles(style, data, key));
+            interpolatedChildren.push(this.applyInterpolatedStyles({ style, child: data, key }));
         });
 
         return React.createElement(
@@ -88,7 +87,8 @@ module.exports = class StrangeMotion extends React.PureComponent {
             interpolatedChildren
         );
     };
-    _applyInterpolatedStyles(style, child, key) {
+
+    _applyInterpolatedStyles({ style, child, key }) {
 
         const { childIsFunc } = this.state;
 
@@ -98,7 +98,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         if (childIsFunc) {
             const { children } = this.props;
-            return children(style, child, key);
+            return children({ style, child, key });
         }
 
         const childStyle = child.props.style;
@@ -293,7 +293,8 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 }
             }
 
-            let enterAnim = JSON.parse(JSON.stringify(animConfig.enterAnim));
+            // let enterAnim = JSON.parse(JSON.stringify(animConfig.enterAnim));
+            let enterAnim = animConfig.enterAnim;
 
             enterAnim = this.mutateEnterAnimHook(enterAnim, key);
 

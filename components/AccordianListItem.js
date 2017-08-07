@@ -7,33 +7,20 @@ module.exports = class AccordianListItem extends React.PureComponent {
     static propTypes = {
         motionStyles: T.object,
         motionKey: T.string,
-        setElementHeight: T.func,
         children: T.any
     };
 
     constructor(props) {
 
         super(props);
-        this.setContentRef = this._setContentRef.bind(this);
         this.debounceSetAutoAfterAnim = debounce(this._debounceSetAutoAfterAnim.bind(this), 50);
         this.setRef = this._setRef.bind(this);
-    };
-
-    _setContentRef(el) {
-
-        const { motionKey, setElementHeight } = this.props;
-
-        this.content = el;
-        if (el && el.clientHeight) {
-
-            setElementHeight(motionKey, this.content.clientHeight);
-        }
     };
 
     _debounceSetAutoAfterAnim() {
 
         if (this.container) {
-            this.container.style.height = 'auto';
+            // this.container.style.height = 'auto';
         }
     };
 
@@ -64,7 +51,6 @@ module.exports = class AccordianListItem extends React.PureComponent {
             >
                 <div
                     className='accordion-content'
-                    ref={this.setContentRef}
                 >
                     {children}
                 </div>

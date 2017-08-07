@@ -23,18 +23,18 @@ module.exports = {
         overflow-y: scroll;
     `,
     RedRow: Row.extend`
-        border-top: 2px solid ${red[600]};
-        border-bottom: 2px solid ${red[600]};
+        border-top: 1px solid ${red[600]};
+        border-bottom: 1px solid ${red[600]};
         background-color: ${red[300]};
     `,
     GreenRow: Row.extend`
-        border-top: 2px solid ${green[600]};
-        border-bottom: 2px solid ${green[600]};
+        border-top: 1px solid ${green[600]};
+        border-bottom: 1px solid ${green[600]};
         background-color: ${green[300]};
     `,
     BlueRow: Row.extend`
-        border-top: 2px solid ${blue[600]};
-        border-bottom: 2px solid ${blue[600]};
+        border-top: 1px solid ${blue[600]};
+        border-bottom: 1px solid ${blue[600]};
         background-color: ${blue[300]};
     `,
     XButton: styled(MaterialIcon)
