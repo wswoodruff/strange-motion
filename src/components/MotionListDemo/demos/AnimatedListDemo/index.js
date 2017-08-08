@@ -29,7 +29,7 @@ module.exports = class AnimatedListDemo extends React.PureComponent {
         super();
 
         let listItemData = [];
-        for(let i = 1; i < 41; ++i) {
+        for(let i = 1; i < 11; ++i) {
             listItemData.push({
                 num: i
             });

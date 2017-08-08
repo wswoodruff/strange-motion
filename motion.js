@@ -63,7 +63,10 @@ module.exports = class Motion extends StrangeMotion {
             >
                 {(interpolatedStyles) => {
 
-                    return this.applyInterpolatedStyles(interpolatedStyles, children);
+                    return this.applyInterpolatedStyles({
+                        style: interpolatedStyles,
+                        child: children
+                    });
                 }}
             </ReactMotion>
         );

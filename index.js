@@ -263,11 +263,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
         });
     }
 
-    mutateEnterAnimHook(enterAnim, key) {
-
-        return enterAnim;
-    }
-
     _getStyles() {
 
         const { model, animConfig } = this.state;
@@ -293,10 +288,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 }
             }
 
-            // let enterAnim = JSON.parse(JSON.stringify(animConfig.enterAnim));
-            let enterAnim = animConfig.enterAnim;
-
-            enterAnim = this.mutateEnterAnimHook(enterAnim, key);
+            const enterAnim = animConfig.enterAnim;
 
             return {
                 data: item,

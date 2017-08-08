@@ -30,21 +30,6 @@ module.exports = class MotionList extends StrangeMotion {
         });
     }
 
-    mutateEnterAnimHook(enterAnim, key) {
-
-        const { heightObject } = this.state;
-
-        if (heightObject[key]) {
-
-            enterAnim.height = spring(heightObject[key], {
-                stiffness: 210,
-                damping: 25
-            });
-        }
-
-        return enterAnim;
-    }
-
     render() {
 
         return (
