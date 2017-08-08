@@ -42,7 +42,7 @@ module.exports = class MotionList extends StrangeMotion {
                 {(interpolatedStyles) => {
 
                     return <div>
-                        {interpolatedStyles.map(({ data, key, style }) => {
+                        {interpolatedStyles.map(({ style, data, key }) => {
 
                             return (
                                 <AccordianListItem
@@ -52,8 +52,11 @@ module.exports = class MotionList extends StrangeMotion {
                                     heightObject={this.state.heightObject}
                                     setElementHeight={this.setElementHeight}
                                 >
-
-                                    {this.applyInterpolatedStyles({ style, child: data, key })}
+                                    {this.applyInterpolatedStyles({
+                                        style,
+                                        child: data,
+                                        key
+                                    })}
                                 </AccordianListItem>
                             );
                         })}

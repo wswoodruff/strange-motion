@@ -101,7 +101,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
             return children({ style, child, key });
         }
 
-        const childStyle = child.props.style;
+        const childStyle = child.props && child.props.style;
 
         if (childStyle) {
             style = { ...childStyle, ...styles };
