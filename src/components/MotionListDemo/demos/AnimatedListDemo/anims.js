@@ -11,7 +11,7 @@ module.exports = {
             // opacity: 1
         },
         leaveAnim: {
-            height: 0,
+            height: 0
             // opacity: 0.3
         }
     }

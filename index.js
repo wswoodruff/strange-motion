@@ -47,13 +47,16 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
             childIsFunc = true;
             if (!props.model) {
-                throw new Error('Must pass in model if children is a function');
+                throw new Error('StrangeMotion: Must pass in model if children is a function');
             }
             model = props.model;
         }
         else {
             childIsFunc = false;
-            model = props.model || this._getElementsFromChildren(props.children);
+            if (props.model) {
+                throw new Error('StrangeMotion: Must pass function as child if model is provided in props');
+            }
+            model = this._getElementsFromChildren(props.children);
         }
 
         this.state = {
