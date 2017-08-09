@@ -49,6 +49,8 @@ module.exports = class Motion extends StrangeMotion {
                 )
             });
         }
+
+        // assignAnimConfig observable here, use this.setState like above
     }
 
     render() {

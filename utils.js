@@ -1,14 +1,46 @@
 
 const { presets } = require('react-motion');
+const { default: Rx } = require('rxjs');
+
+const internals = {
+    observables = {}
+}
 
 module.exports = {
 
-    observeAnimConfigAssigns: () => {
+    getConfigAssignObservable: function() {
 
-        // returns observable
+        // Code grabbed from https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/observer.md#rxobservercreateonnext-onerror-oncompleted
+
+        var source = Rx.Observable.create(function (observer) {
+
+            observer.onNext(42);
+
+            // Note that this is optional, you do not have to return this if you require no cleanup
+            return function () {
+                console.log('disposed');
+            };
+        });
+
+        var source = Rx.Observable.return(42);
+        var observer = Rx.Observer.create();
+        return source.subscribe(observer);
     },
 
-    assignAnimConfig: (beginAnimConfig, incomingAnimConfig, assignOverride) => {
+    pushToObserver: function(observerId, value) {
+
+        if (internals.observables[observerId]) {
+            return internals.observables[observerId].onNext(value);
+        }
+
+        throw new Error(`observerId ${observerId} doesn't exist`);
+    },
+
+    assignAnimConfig: function({
+        beginAnimConfig,
+        incomingAnimConfig,
+        assignOverride
+    }) {
 
         if (!beginAnimConfig) {
             beginAnimConfig = incomingAnimConfig;
@@ -34,17 +66,18 @@ module.exports = {
                     if (typeof cssProp === 'object') {
 
                         let additional = {};
-                        let delaySet;
 
                         if (typeof cssProp.preset === 'string') {
                             additional = presets[cssProp.preset];
                         }
 
                         if (typeof cssProp.delay === 'number') {
-                            delaySet = cssProp.delay;
+                            // internals.observables
                         }
 
                         /// TODO work with observeAnimConfigAssigns here
+                        // Make it so a setTimeout happens for the delay
+                        // and then push to the observable
 
                         collector[cssPropName] = Object.assign({},
                             assignOverride || beginAnimConfig[animStyleName][cssPropName],
@@ -70,7 +103,7 @@ module.exports = {
         }, {});
     },
 
-    debounce: (func, wait, immediate) => {
+    debounce: function(func, wait, immediate) {
 
         let timeout;
         return (...args) => {
