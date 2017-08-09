@@ -1,55 +1,23 @@
 
 const { presets } = require('react-motion');
-const { default: Rx } = require('rxjs');
-
-const internals = {
-    observables = {}
-}
 
 module.exports = {
 
-    getConfigAssignObservable: function() {
-
-        // Code grabbed from https://github.com/Reactive-Extensions/RxJS/blob/master/doc/api/core/observer.md#rxobservercreateonnext-onerror-oncompleted
-
-        var source = Rx.Observable.create(function (observer) {
-
-            observer.onNext(42);
-
-            // Note that this is optional, you do not have to return this if you require no cleanup
-            return function () {
-                console.log('disposed');
-            };
-        });
-
-        var source = Rx.Observable.return(42);
-        var observer = Rx.Observer.create();
-        return source.subscribe(observer);
-    },
-
-    pushToObserver: function(observerId, value) {
-
-        if (internals.observables[observerId]) {
-            return internals.observables[observerId].onNext(value);
-        }
-
-        throw new Error(`observerId ${observerId} doesn't exist`);
-    },
-
     assignAnimConfig: function({
         beginAnimConfig,
-        incomingAnimConfig,
-        assignOverride
+        newAnimConfig,
+        assignOverride,
+        delayCallback
     }) {
 
         if (!beginAnimConfig) {
-            beginAnimConfig = incomingAnimConfig;
+            beginAnimConfig = newAnimConfig;
         }
 
         return Object.keys(beginAnimConfig)
         .reduce((newAnimConfig, animStyleName) => {
 
-            const animStyle = incomingAnimConfig[animStyleName];
+            const animStyle = newAnimConfig[animStyleName];
 
             if (animStyleName === 'beforeEnterStyle' ||
                 animStyleName === 'startStyle') {
@@ -72,12 +40,24 @@ module.exports = {
                         }
 
                         if (typeof cssProp.delay === 'number') {
-                            // internals.observables
-                        }
 
-                        /// TODO work with observeAnimConfigAssigns here
-                        // Make it so a setTimeout happens for the delay
-                        // and then push to the observable
+                            // Use something similar for the repeat prop
+
+                            const cssPropWithoutDelay = cssProp;
+                            delete cssPropWithoutDelay.delay;
+
+                            const delay = cssProp.delay;
+                            const delayedCssProp = {};
+                            delayedCssProp[animStyle] = {};
+                            delayedCssProp[animStyle][cssPropName] = cssPropWithoutDelay;
+
+                            setTimeout(() => {
+
+                                delayCallback(delayedCssProp);
+                            }, delay);
+
+                            return collector;
+                        }
 
                         collector[cssPropName] = Object.assign({},
                             assignOverride || beginAnimConfig[animStyleName][cssPropName],
@@ -86,7 +66,7 @@ module.exports = {
                         );
 
                         // Faster than `delete collector[cssPropName].preset;`
-                        collector[cssPropName].preset = undefined;
+                        delete collector[cssPropName].preset;
                     }
                     else {
                         collector[cssPropName] = Object.assign({},

@@ -176,7 +176,10 @@ module.exports = class StrangeMotion extends React.PureComponent {
             }
         }
 
-        return assignAnimConfig(null, animConfig, this.defaultSpring);
+        return assignAnimConfig({
+            newAnimConfig: animConfig,
+            assignOverride: this.defaultSpring
+        });
     }
 
     componentWillReceiveProps(nextProps) {

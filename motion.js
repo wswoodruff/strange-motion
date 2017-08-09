@@ -43,10 +43,10 @@ module.exports = class Motion extends StrangeMotion {
         const self = this;
         if (animConfig) {
             this.setState({
-                animConfig: assignAnimConfig(
-                    self.state.animConfig,
-                    animConfig
-                )
+                animConfig: assignAnimConfig({
+                    beginAnimConfig: self.state.animConfig,
+                    newAnimConfig: animConfig
+                })
             });
         }
 
