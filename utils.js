@@ -14,20 +14,22 @@ module.exports = {
             beginAnimConfig = newAnimConfig;
         }
 
-        return Object.keys(beginAnimConfig)
-        .reduce((newAnimConfig, animStyleName) => {
+        let delays = {};
 
-            const animStyle = newAnimConfig[animStyleName];
+        const assignedAnimConfig = Object.keys(beginAnimConfig)
+        .reduce((collector, animStyleName) => {
+
+            const animStyle = collector[animStyleName];
 
             if (animStyleName === 'beforeEnterStyle' ||
                 animStyleName === 'startStyle') {
 
-                newAnimConfig[animStyleName] = animStyle;
+                collector[animStyleName] = animStyle;
             }
             else {
 
-                newAnimConfig[animStyleName] = Object.keys(animStyle)
-                .reduce((collector, cssPropName) => {
+                collector[animStyleName] = Object.keys(animStyle)
+                .reduce((newCSSProps, cssPropName) => {
 
                     const cssProp = animStyle[cssPropName];
 
@@ -35,52 +37,66 @@ module.exports = {
 
                         let additional = {};
 
+                        // Special config settings
+
                         if (typeof cssProp.preset === 'string') {
                             additional = presets[cssProp.preset];
                         }
 
-                        if (typeof cssProp.delay === 'number') {
+                        if (typeof cssProp.spring !== 'undefined') {
+                            additional = presets[cssProp.preset];
+                        }
 
+                        if (typeof cssProp.delay !== 'undefined') {
+
+                            if (typeof cssProp.delay !== 'number') {
+                                console.warn(`When assigning this config: ${collector}`)
+                                throw new Error('delay must be a number');
+                            }
                             // Use something similar for the repeat prop
 
                             const cssPropWithoutDelay = cssProp;
                             delete cssPropWithoutDelay.delay;
 
-                            const delay = cssProp.delay;
                             const delayedCssProp = {};
                             delayedCssProp[animStyle] = {};
                             delayedCssProp[animStyle][cssPropName] = cssPropWithoutDelay;
 
-                            setTimeout(() => {
+                            const delayObj = {};
+                            delayObj[cssProp.delay] = delayedCssProp;
 
-                                delayCallback(delayedCssProp);
-                            }, delay);
+                            // top scope
+                            delays = Object.assign({}, delays, delayObj);
 
-                            return collector;
+                            return newCSSProps;
                         }
 
-                        collector[cssPropName] = Object.assign({},
+                        newCSSProps[cssPropName] = Object.assign({},
                             assignOverride || beginAnimConfig[animStyleName][cssPropName],
                             additional,
                             cssProp
                         );
 
-                        // Faster than `delete collector[cssPropName].preset;`
-                        delete collector[cssPropName].preset;
+                        delete newCSSProps[cssPropName].preset;
                     }
                     else {
-                        collector[cssPropName] = Object.assign({},
+                        newCSSProps[cssPropName] = Object.assign({},
                             assignOverride || beginAnimConfig[animStyleName][cssPropName],
                             { val: cssProp }
                         );
                     }
 
-                    return collector;
+                    return newCSSProps;
                 }, {});
             }
 
-            return newAnimConfig;
+            return collector;
         }, {});
+
+        return {
+            assignedAnimConfig,
+            delays
+        }
     },
 
     debounce: function(func, wait, immediate) {
