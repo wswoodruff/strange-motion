@@ -44,7 +44,7 @@ module.exports = class HomePage extends React.PureComponent {
                 <SectionTitle type='headline' component='h1'>
                     Components
                 </SectionTitle>
-
+                
                 <DemosContainer>
                     <ToggleIconDemo />
 

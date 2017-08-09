@@ -3,6 +3,11 @@ const { presets } = require('react-motion');
 
 module.exports = {
 
+    observeAnimConfigAssigns: () => {
+
+        // returns observable
+    },
+
     assignAnimConfig: (beginAnimConfig, incomingAnimConfig, assignOverride) => {
 
         if (!beginAnimConfig) {
@@ -29,10 +34,17 @@ module.exports = {
                     if (typeof cssProp === 'object') {
 
                         let additional = {};
+                        let delaySet;
 
                         if (typeof cssProp.preset === 'string') {
                             additional = presets[cssProp.preset];
                         }
+
+                        if (typeof cssProp.delay === 'number') {
+                            delaySet = cssProp.delay;
+                        }
+
+                        /// TODO work with observeAnimConfigAssigns here
 
                         collector[cssPropName] = Object.assign({},
                             assignOverride || beginAnimConfig[animStyleName][cssPropName],

@@ -20,12 +20,17 @@ module.exports = {
     `,
     StyledCard: styled(Card)`
         width: 100%;
-        height: 300px;
-    `,
-    StyledCardContent: styled(CardContent)`
-        height: 100%;
+        height: 350px;
         display: flex;
         flex-flow: column nowrap;
+    `,
+    StyledCardContent: styled(CardContent)`
+        flex-grow: 1;
+        display: flex;
+        flex-flow: column nowrap;
+    `,
+    StyledActionsInnerContainer: styled.div`
+        display: flex;
     `,
     DemoContent: styled.div`
         flex-grow: 1;

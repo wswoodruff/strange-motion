@@ -23,8 +23,7 @@ module.exports = {
         overflow-y: scroll;
     `,
     RedRow: Row.extend`
-        border-top: 1px solid ${red[600]};
-        border-bottom: 1px solid ${red[600]};
+        border: 1px solid ${red[600]};
         background-color: ${red[300]};
     `,
     GreenRow: Row.extend`

@@ -1,5 +1,6 @@
 const React = require('react');
 const Header = require('components/Header');
+const { default: MuiThemeProvider } = require('material-ui/styles');
 
 // Styles
 require('styles/core.scss');

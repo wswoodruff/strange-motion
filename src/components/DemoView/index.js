@@ -1,6 +1,7 @@
 const React = require('react');
 const T = require('prop-types');
 const { CardActions } = require('material-ui/Card');
+const { default: Button } = require('material-ui/Button');
 
 // Styles
 
@@ -11,7 +12,8 @@ const {
     Title,
     StyledCard,
     StyledCardContent,
-    DemoContent } = lStyles;
+    DemoContent,
+    StyledActionsInnerContainer } = lStyles;
 
 // Component
 
@@ -19,7 +21,9 @@ module.exports = class CoreLayout extends React.PureComponent {
 
     static propTypes = {
         children: T.any,
-        title: T.string
+        title: T.string,
+        cardActions: T.any,
+        CardActionsInnerContainer: T.any
     }
 
     constructor() {
@@ -31,7 +35,14 @@ module.exports = class CoreLayout extends React.PureComponent {
 
     render() {
 
-        const { children, title } = this.props;
+        const {
+            children,
+            title,
+            cardActions,
+            CardActionsInnerContainer } = this.props;
+
+            const ActionsInnerContainer = CardActionsInnerContainer ||
+                StyledActionsInnerContainer;
 
         return (
             <Bg>
@@ -47,6 +58,22 @@ module.exports = class CoreLayout extends React.PureComponent {
                             })}
                         </DemoContent>
                     </StyledCardContent>
+                    <CardActions>
+                        {cardActions ? (
+                            <ActionsInnerContainer>
+                                {cardActions}
+                            </ActionsInnerContainer>
+                        ) : (
+                            <ActionsInnerContainer>
+                                <Button dense color="primary">
+                                    Share
+                                </Button>
+                                <Button dense color="primary">
+                                    See Codepen
+                                </Button>
+                            </ActionsInnerContainer>
+                        )}
+                    </CardActions>
                 </StyledCard>
             </Bg>
         );
