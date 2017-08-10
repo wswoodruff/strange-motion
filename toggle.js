@@ -19,8 +19,8 @@ module.exports = class ToggleMotion extends StrangeMotion {
 
     processAnimConfig(animConfig) {
 
-        if (!animConfig.leaveAnim) {
-            throw new Error('Must provide leaveAnim to animConfig for toggle type');
+        if (!animConfig.leave) {
+            throw new Error('Must provide "leave" to animConfig for toggle type');
         }
 
         return super.processAnimConfig(animConfig);

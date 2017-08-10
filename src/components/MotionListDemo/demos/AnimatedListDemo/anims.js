@@ -2,15 +2,15 @@
 module.exports = {
 
     RowAnim: {
-        startStyle: {
+        start: {
             height: 40,
             // opacity: 1
         },
-        enterAnim: {
+        enter: {
             height: 40,
             // opacity: 1
         },
-        leaveAnim: {
+        leave: {
             height: 0
             // opacity: 0.3
         }

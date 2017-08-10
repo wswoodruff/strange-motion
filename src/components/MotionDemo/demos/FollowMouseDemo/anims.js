@@ -4,11 +4,11 @@ const { spring } = require('react-motion');
 module.exports = {
 
     BlueBallAnim: {
-        startStyle: {
+        start: {
             left: 0,
             top: 0
         },
-        enterAnim: {
+        enter: {
             left: {
                 val: 200,
                 preset: 'wobbly'

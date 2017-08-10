@@ -1,13 +1,17 @@
 
 const { presets } = require('react-motion');
 
+const defaultSpring = {
+    stiffness: 170,
+    damping: 26,
+    precision: 0.01
+}
+
 module.exports = {
 
     assignAnimConfig: function({
         beginAnimConfig,
-        newAnimConfig,
-        assignOverride,
-        delayCallback
+        newAnimConfig
     }) {
 
         if (!beginAnimConfig) {
@@ -19,10 +23,14 @@ module.exports = {
         const assignedAnimConfig = Object.keys(beginAnimConfig)
         .reduce((collector, animStyleName) => {
 
-            const animStyle = collector[animStyleName];
+            const animStyle = newAnimConfig[animStyleName];
 
-            if (animStyleName === 'beforeEnterStyle' ||
-                animStyleName === 'startStyle') {
+            if (typeof animStyle === 'undefined') {
+                return collector;
+            }
+
+            if (animStyleName === 'beforeEnter' ||
+                animStyleName === 'start') {
 
                 collector[animStyleName] = animStyle;
             }
@@ -41,47 +49,68 @@ module.exports = {
 
                         if (typeof cssProp.preset === 'string') {
                             additional = presets[cssProp.preset];
+                            delete cssProp.preset;
                         }
 
+                        // spring is an alias for val
                         if (typeof cssProp.spring !== 'undefined') {
-                            additional = presets[cssProp.preset];
+                            cssProp.val = cssProp.spring;
+                            delete cssProp.spring;
                         }
 
                         if (typeof cssProp.delay !== 'undefined') {
 
-                            if (typeof cssProp.delay !== 'number') {
-                                console.warn(`When assigning this config: ${collector}`)
-                                throw new Error('delay must be a number');
-                            }
                             // Use something similar for the repeat prop
 
-                            const cssPropWithoutDelay = cssProp;
-                            delete cssPropWithoutDelay.delay;
+                            const { delay, ...cssPropWithoutDelay } = cssProp;
 
-                            const delayedCssProp = {};
-                            delayedCssProp[animStyle] = {};
-                            delayedCssProp[animStyle][cssPropName] = cssPropWithoutDelay;
+                            console.log(beginAnimConfig[animStyleName]);
+                            console.log(cssPropWithoutDelay);
+
+                            // TODO BUG: This assigns the original value
+                            // to the delayed one. There's some weird deep
+                            // merging issue happening here.
+
+                            const updatedAnimStyle = {};
+                            updatedAnimStyle[animStyleName] = {};
+                            updatedAnimStyle[animStyleName][cssPropName] = cssPropWithoutDelay;
+
+                            const delayedAnimStyle = {};
+                            delayedAnimStyle[animStyleName] = Object.assign({},
+                                // beginAnimConfig[animStyleName],
+                                beginAnimConfig[animStyleName],
+                                updatedAnimStyle[animStyleName]
+                            );
+
+                            console.log(delayedAnimStyle);
 
                             const delayObj = {};
-                            delayObj[cssProp.delay] = delayedCssProp;
+                            delayObj[delay] = Object.assign({},
+                                delayedAnimStyle
+                            );
 
+                            console.log('delayObj', delayObj);
+
+                            // const stylesNotDelayed = sharedAnimStyles
                             // top scope
-                            delays = Object.assign({}, delays, delayObj);
+                            delays = Object.assign({},
+                                delays,
+                                delayObj
+                            );
 
-                            return newCSSProps;
+                            console.log('delays', delays);
                         }
 
                         newCSSProps[cssPropName] = Object.assign({},
-                            assignOverride || beginAnimConfig[animStyleName][cssPropName],
+                            beginAnimConfig[animStyleName][cssPropName] ||
+                            defaultSpring,
                             additional,
                             cssProp
                         );
-
-                        delete newCSSProps[cssPropName].preset;
                     }
                     else {
                         newCSSProps[cssPropName] = Object.assign({},
-                            assignOverride || beginAnimConfig[animStyleName][cssPropName],
+                            beginAnimConfig[animStyleName][cssPropName] || defaultSpring,
                             { val: cssProp }
                         );
                     }
@@ -92,6 +121,10 @@ module.exports = {
 
             return collector;
         }, {});
+
+        if (Object.keys(delays).length === 0) {
+            delays = undefined;
+        }
 
         return {
             assignedAnimConfig,

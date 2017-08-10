@@ -9,7 +9,6 @@ const { assignAnimConfig } = require('./utils');
 module.exports = class Motion extends StrangeMotion {
 
     static propTypes = {
-        springEasing: T.object,
         noWrapper: T.bool,
         animConfig: T.shape({
             startStyle: T.object,
@@ -20,37 +19,6 @@ module.exports = class Motion extends StrangeMotion {
     constructor(props) {
 
         super(props);
-
-        // We don't want springEasing in state because updating it
-        // in componentWillReceiveProps will cause a rerender
-        // which we don't want
-
-        this.springEasing = props.springEasing || this.defaultSpring;
-    }
-
-    static defaultProps = {
-        animOnMount: false
-    }
-
-    componentWillReceiveProps(nextProps) {
-
-        const { springEasing, animConfig } = nextProps;
-
-        if (springEasing) {
-            this.springEasing = springEasing;
-        }
-
-        const self = this;
-        if (animConfig) {
-            this.setState({
-                animConfig: assignAnimConfig({
-                    beginAnimConfig: self.state.animConfig,
-                    newAnimConfig: animConfig
-                })
-            });
-        }
-
-        // assignAnimConfig observable here, use this.setState like above
     }
 
     render() {

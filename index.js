@@ -1,17 +1,17 @@
 const React = require('react');
 const T = require('prop-types');
 const { spring } = require('react-motion');
-const { assignAnimConfig } = require('./utils');
+const Utils = require('./utils');
 
 module.exports = class StrangeMotion extends React.PureComponent {
 
     static propTypes = {
         model: T.array,
         animConfig: T.shape({
-            startStyle: T.object,
-            beforeEnterStyle: T.object,
-            enterAnim: T.object.isRequired,
-            leaveAnim: T.object
+            start: T.object,
+            beforeEnter: T.object,
+            enter: T.object.isRequired,
+            leave: T.object
         }),
         children: T.any.isRequired,
         wrapperComponent: T.any,
@@ -123,15 +123,15 @@ module.exports = class StrangeMotion extends React.PureComponent {
     _getDefaultAnimConfig() {
 
         return {
-            startStyle: {
+            start: {
                 opacity: 0,
                 fontSize: 10
             },
-            beforeEnterStyle: {
+            beforeEnter: {
                 opacity: 0,
                 fontSize: 10
             },
-            enterAnim: {
+            enter: {
                 opacity: spring(1, {
                     stiffness: 210,
                     damping: 25
@@ -141,7 +141,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                     damping: 16
                 })
             },
-            leaveAnim: {
+            leave: {
                 opacity: spring(0),
                 fontSize: spring(60)
             }
@@ -150,12 +150,12 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
     processAnimConfig(animConfig) {
 
-        if (animConfig.leaveAnim) {
+        if (animConfig.leave) {
 
-            const leaveAnimVals = Object.keys(animConfig.leaveAnim)
+            const leaveAnimVals = Object.keys(animConfig.leave)
             .reduce((collector, key) => {
 
-                const item = animConfig.leaveAnim[key];
+                const item = animConfig.leave[key];
 
                 if (typeof item === 'object') {
                     collector[key] = item.val;
@@ -167,8 +167,8 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 return collector;
             }, {});
 
-            if (!animConfig.startStyle) {
-                animConfig.startStyle = leaveAnimVals;
+            if (!animConfig.start) {
+                animConfig.start = leaveAnimVals;
             }
 
             if (!animConfig.beforeEnterStyle) {
@@ -176,15 +176,64 @@ module.exports = class StrangeMotion extends React.PureComponent {
             }
         }
 
-        return assignAnimConfig({
-            newAnimConfig: animConfig,
-            assignOverride: this.defaultSpring
+        const { assignedAnimConfig, delays } = Utils.assignAnimConfig({
+            newAnimConfig: animConfig
         });
+
+        if (delays) {
+            this.waitingDelays = delays;
+        }
+
+        return assignedAnimConfig;
+    }
+
+    assignAnimConfig({ newAnimConfig }) {
+
+        const self = this;
+        const { assignedAnimConfig, delays } = Utils.assignAnimConfig({
+            beginAnimConfig: self.state && self.state.animConfig,
+            newAnimConfig
+        });
+
+        this.setState({
+            animConfig: assignedAnimConfig
+        },
+        () => {
+
+            if (delays) {
+
+                Object.keys(delays).forEach((delay) => {
+
+                    setTimeout(() => {
+
+                        this.assignAnimConfig({
+                            newAnimConfig: delays[delay]
+                        });
+                    }, delay);
+                });
+            }
+        });
+    }
+
+    componentDidMount() {
+
+        const { waitingDelays } = this;
+
+        if (waitingDelays) {
+
+            Object.keys(waitingDelays).forEach((delay) => {
+
+                setTimeout(() => {
+
+                    this.assignAnimConfig({ newAnimConfig: waitingDelays[delay] });
+                }, delay);
+            });
+        }
     }
 
     componentWillReceiveProps(nextProps) {
 
-        const { children, model } = nextProps;
+        const { children, model, animConfig } = nextProps;
 
         if (children && typeof children !== 'function') {
 
@@ -195,6 +244,10 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         if (model) {
             this.setState({ model });
+        }
+
+        if (animConfig) {
+            this.assignAnimConfig({ newAnimConfig: animConfig });
         }
     }
 
@@ -227,13 +280,13 @@ module.exports = class StrangeMotion extends React.PureComponent {
     _willEnter() {
 
         const { animConfig } = this.state;
-        return animConfig.beforeEnterStyle;
+        return animConfig.beforeEnter;
     }
 
     _willLeave() {
 
         const { animConfig } = this.state;
-        return animConfig.leaveAnim;
+        return animConfig.leave;
     }
 
     _getDefaultStyles() {
@@ -263,7 +316,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
             return {
                 data: item,
-                style: animConfig.startStyle || {},
+                style: animConfig.start || {},
                 key: String(key)
             };
         });
@@ -294,11 +347,9 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 }
             }
 
-            const enterAnim = animConfig.enterAnim;
-
             return {
                 data: item,
-                style: enterAnim,
+                style: animConfig.enter,
                 key: String(key)
             };
         });

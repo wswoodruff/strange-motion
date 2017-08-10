@@ -2,7 +2,7 @@
 module.exports = {
 
     ToggleAnim: {
-        enterAnim: {
+        enter: {
             opacity: {
                 val: 1,
                 stiffness: 210,
@@ -14,7 +14,7 @@ module.exports = {
                 damping: 25
             }
         },
-        leaveAnim: {
+        leave: {
             opacity: 0,
             fontSize: 60
         }
