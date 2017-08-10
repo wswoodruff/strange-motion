@@ -73,16 +73,17 @@ module.exports = {
 
                             const updatedAnimStyle = {};
                             updatedAnimStyle[animStyleName] = {};
-                            updatedAnimStyle[animStyleName][cssPropName] = cssPropWithoutDelay;
+                            updatedAnimStyle[animStyleName][cssPropName] = Object.assign({},
+                                cssPropWithoutDelay
+                            );
 
                             const delayedAnimStyle = {};
                             delayedAnimStyle[animStyleName] = Object.assign({},
-                                // beginAnimConfig[animStyleName],
                                 beginAnimConfig[animStyleName],
                                 updatedAnimStyle[animStyleName]
                             );
 
-                            console.log(delayedAnimStyle);
+                            console.log('delayedAnimStyle', delayedAnimStyle);
 
                             const delayObj = {};
                             delayObj[delay] = Object.assign({},
