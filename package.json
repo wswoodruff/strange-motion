@@ -109,6 +109,7 @@
     "inert": "^4.0.0",
     "keymirror": "^0.1.1",
     "labbable": "^2.1.1",
+    "lodash": "^4.17.4",
     "material-ui": "^1.0.0-beta.3",
     "material-ui-icons": "^1.0.0-alpha.19",
     "node-libs-browser": "^2.0.0",

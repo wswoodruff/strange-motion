@@ -1,5 +1,6 @@
 
 const { presets } = require('react-motion');
+const _merge = require('lodash/merge');
 
 const defaultSpring = {
     stiffness: 170,
@@ -39,7 +40,9 @@ module.exports = {
                 collector[animStyleName] = Object.keys(animStyle)
                 .reduce((newCSSProps, cssPropName) => {
 
-                    const cssProp = animStyle[cssPropName];
+                    let cssProp = animStyle[cssPropName];
+
+                    // console.log('cssPropName', cssPropName);
 
                     if (typeof cssProp === 'object') {
 
@@ -64,45 +67,51 @@ module.exports = {
 
                             const { delay, ...cssPropWithoutDelay } = cssProp;
 
-                            console.log(beginAnimConfig[animStyleName]);
-                            console.log(cssPropWithoutDelay);
+                            delete cssProp.delay;
 
-                            // TODO BUG: This assigns the original value
-                            // to the delayed one. There's some weird deep
-                            // merging issue happening here.
+                            // console.log(beginAnimConfig[animStyleName]);
+                            // console.log(cssPropWithoutDelay);
 
-                            const updatedAnimStyle = {};
-                            updatedAnimStyle[animStyleName] = {};
-                            updatedAnimStyle[animStyleName][cssPropName] = Object.assign({},
-                                cssPropWithoutDelay
-                            );
+                            const delayedAnimConfig = {};
+                            delayedAnimConfig[animStyleName] = {};
+                            delayedAnimConfig[animStyleName][cssPropName] = cssPropWithoutDelay;
 
-                            const delayedAnimStyle = {};
-                            delayedAnimStyle[animStyleName] = Object.assign({},
-                                beginAnimConfig[animStyleName],
-                                updatedAnimStyle[animStyleName]
-                            );
+                            // console.log('delayedAnimConfig', delayedAnimConfig);
+                            //
+                            // console.log(Object.keys(beginAnimConfig.enter));
+                            // console.log(Object.keys(delayedAnimConfig.enter));
 
-                            console.log('delayedAnimStyle', delayedAnimStyle);
+                            const animKeyDiff = Object.keys(beginAnimConfig[animStyleName]).filter(function(item) {
+
+                                return Object.keys(delayedAnimConfig[animStyleName]).indexOf(item) < 0;
+                            })
+                            .reduce((collector, diffKey) => {
+
+                                collector.enter[diffKey] = 'getLatestInterpolated';
+                                return collector;
+                            }, { enter: {} });
+
+                            // console.log('animKeyDiff', animKeyDiff);
 
                             const delayObj = {};
-                            delayObj[delay] = Object.assign({},
-                                delayedAnimStyle
+                            delayObj[delay] = _merge({},
+                                animKeyDiff,
+                                delayedAnimConfig
                             );
 
-                            console.log('delayObj', delayObj);
+                            // console.log('delayObj', delayObj);
 
                             // const stylesNotDelayed = sharedAnimStyles
                             // top scope
-                            delays = Object.assign({},
+                            delays = _merge({},
                                 delays,
                                 delayObj
                             );
 
-                            console.log('delays', delays);
+                            // console.log('delays', delays);
                         }
 
-                        newCSSProps[cssPropName] = Object.assign({},
+                        newCSSProps[cssPropName] = _merge({},
                             beginAnimConfig[animStyleName][cssPropName] ||
                             defaultSpring,
                             additional,
@@ -110,7 +119,7 @@ module.exports = {
                         );
                     }
                     else {
-                        newCSSProps[cssPropName] = Object.assign({},
+                        newCSSProps[cssPropName] = _merge({},
                             beginAnimConfig[animStyleName][cssPropName] || defaultSpring,
                             { val: cssProp }
                         );
@@ -119,6 +128,8 @@ module.exports = {
                     return newCSSProps;
                 }, {});
             }
+
+            console.warn('OOGABOOGA', collector);
 
             return collector;
         }, {});
