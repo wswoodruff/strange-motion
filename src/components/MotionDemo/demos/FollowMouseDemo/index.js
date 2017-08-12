@@ -75,20 +75,16 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
 
             const bounds = this.mouseWatcher.getBoundingClientRect();
 
-            // TODO PROBLEM: I think React is batching these delayed things
-            // since it's using the setState api.. But we wait til after the setState
-            // callback so this is weird
-
             this.setState({
                 animConfig: {
                     enter: {
                         left: {
                             val: Math.random() * bounds.width,
-                            delay: 1000
+                            delay: 300
                         },
                         top: {
                             val: Math.random() * bounds.height,
-                            // delay: 200
+                            delay: 200
                         }
                     }
                 }

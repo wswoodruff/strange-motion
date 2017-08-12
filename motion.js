@@ -19,6 +19,15 @@ module.exports = class Motion extends StrangeMotion {
     constructor(props) {
 
         super(props);
+
+        this.getRef = this._getRef.bind(this);
+    }
+
+    _getRef(refName) {
+
+        return (ref) => {
+            this[refName] = ref;
+        }
     }
 
     render() {
@@ -30,6 +39,7 @@ module.exports = class Motion extends StrangeMotion {
                 // Only built for a single child
                 defaultStyle={this.getDefaultStyles()[0].style}
                 style={this.getStyles()[0].style}
+                ref={this.getRef('reactMotion')}
             >
                 {(interpolatedStyles) => {
 

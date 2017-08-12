@@ -16,6 +16,7 @@ module.exports = class MotionList extends StrangeMotion {
 
         this.state.heightObject = {};
         this.setElementHeight = this._setElementHeight.bind(this);
+        this.getRef = this._getRef.bind(this);
     }
 
     _setElementHeight(key, height) {
@@ -30,6 +31,13 @@ module.exports = class MotionList extends StrangeMotion {
         });
     }
 
+    _getRef(refName) {
+
+        return (ref) => {
+            this[refName] = ref;
+        }
+    }
+
     render() {
 
         return (
@@ -38,6 +46,7 @@ module.exports = class MotionList extends StrangeMotion {
                 styles={this.getStyles()}
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
+                ref={this.getRef('reactTransitionMotion')}
             >
                 {(interpolatedStyles) => {
 

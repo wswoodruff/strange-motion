@@ -12,7 +12,8 @@ module.exports = {
 
     assignAnimConfig: function({
         beginAnimConfig,
-        newAnimConfig
+        newAnimConfig,
+        reactMotion
     }) {
 
         if (!beginAnimConfig) {
@@ -42,8 +43,6 @@ module.exports = {
 
                     let cssProp = animStyle[cssPropName];
 
-                    // console.log('cssPropName', cssPropName);
-
                     if (typeof cssProp === 'object') {
 
                         let additional = {};
@@ -51,7 +50,20 @@ module.exports = {
                         // Special config settings
 
                         if (typeof cssProp.preset === 'string') {
-                            additional = presets[cssProp.preset];
+
+                            const reactPreset = presets[cssProp.preset];
+
+                            if (reactPreset) {
+                                additional = presets[cssProp.preset];
+                            }
+
+                            // Gotta find a way to pass in options now
+                            // const userPreset = internals.userPresets[cssProp.preset];
+
+                            // if (reactPreset) {
+                            //     additional = internals.userPresets[cssProp.preset];
+                            // }
+
                             delete cssProp.preset;
                         }
 
@@ -67,19 +79,12 @@ module.exports = {
 
                             const { delay, ...cssPropWithoutDelay } = cssProp;
 
-                            delete cssProp.delay;
-
-                            // console.log(beginAnimConfig[animStyleName]);
-                            // console.log(cssPropWithoutDelay);
+                            // Set cssProp to the latest of reactMotion here
+                            cssProp = reactMotion.state.lastIdealStyle[cssPropName];
 
                             const delayedAnimConfig = {};
                             delayedAnimConfig[animStyleName] = {};
                             delayedAnimConfig[animStyleName][cssPropName] = cssPropWithoutDelay;
-
-                            // console.log('delayedAnimConfig', delayedAnimConfig);
-                            //
-                            // console.log(Object.keys(beginAnimConfig.enter));
-                            // console.log(Object.keys(delayedAnimConfig.enter));
 
                             const animKeyDiff = Object.keys(beginAnimConfig[animStyleName]).filter(function(item) {
 
@@ -87,11 +92,9 @@ module.exports = {
                             })
                             .reduce((collector, diffKey) => {
 
-                                collector.enter[diffKey] = 'getLatestInterpolated';
+                                collector.enter[diffKey] = 'getLastIdealStyle';
                                 return collector;
                             }, { enter: {} });
-
-                            // console.log('animKeyDiff', animKeyDiff);
 
                             const delayObj = {};
                             delayObj[delay] = _merge({},
@@ -99,16 +102,12 @@ module.exports = {
                                 delayedAnimConfig
                             );
 
-                            // console.log('delayObj', delayObj);
-
                             // const stylesNotDelayed = sharedAnimStyles
                             // top scope
                             delays = _merge({},
                                 delays,
                                 delayObj
                             );
-
-                            // console.log('delays', delays);
                         }
 
                         newCSSProps[cssPropName] = _merge({},
@@ -128,8 +127,6 @@ module.exports = {
                     return newCSSProps;
                 }, {});
             }
-
-            console.warn('OOGABOOGA', collector);
 
             return collector;
         }, {});

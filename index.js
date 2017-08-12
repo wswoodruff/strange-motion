@@ -94,8 +94,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
     _applyInterpolatedStyles({ style, child, key }) {
 
-        this.latestInterpolatedEnterStyle = style;
-
         const { childIsFunc } = this.state;
 
         if (!key) {
@@ -190,78 +188,50 @@ module.exports = class StrangeMotion extends React.PureComponent {
         return assignedAnimConfig;
     }
 
-    /* TODO
-        Left off with fighting the delayed animConfig being exactly the same as whatever
-        the current animConfig is.
-    */
-
-
-    /* NOTE
-        Since a delay prop gets deleted from the passed in config,
-        I need to grab the currentInterpolated style or current
-        waypoint for that prop, like I do with getLatestInterpolated cssProps
-    */
-
     assignAnimConfig({ newAnimConfig: passedInAnimConfig }) {
 
-        console.log('passedInAnimConfig', passedInAnimConfig);
+        let reactMotion;
+
+        if (this.reactMotion) {
+            reactMotion = this.reactMotion;
+        }
+
+        if (this.reactTransitionMotion) {
+            reactMotion = this.reactTransitionMotion;
+        }
 
         const self = this;
-
-        console.log('Object.keys(passedInAnimConfig)', Object.keys(passedInAnimConfig));
 
         const newAnimConfig = Object.keys(passedInAnimConfig)
         .reduce((collector, animType) => {
 
             const currentAnimType = passedInAnimConfig[animType];
 
-            console.log('currentAnimType', currentAnimType);
-            console.log('Object.keys(currentAnimType)', Object.keys(currentAnimType));
-
             const newAnimType = Object.keys(currentAnimType)
             .reduce((collector, cssProp) => {
 
-                console.log('cssProp', cssProp);
                 const cssPropVal = currentAnimType[cssProp];
 
-                console.log('cssPropVal', cssPropVal);
-
-                if (cssPropVal === 'getLatestInterpolated') {
-
-                    console.log('self.latestInterpolatedEnterStyle', self.latestInterpolatedEnterStyle);
-
-                    console.log('self.latestInterpolatedEnterStyle[cssProp]', self.latestInterpolatedEnterStyle[cssProp]);
-
-                    collector[cssProp] = { val: self.latestInterpolatedEnterStyle[cssProp] };
+                if (cssPropVal === 'getLastIdealStyle') {
+                    collector[cssProp] = { val: reactMotion.state.lastIdealStyle[cssProp] };
                 }
                 else {
                     collector[cssProp] = cssPropVal;
                 }
 
-                console.log('collector', collector);
-
                 return collector;
             }, {});
 
-            console.log('animType', animType);
-            console.log('newAnimType', newAnimType);
-
-
             collector[animType] = newAnimType;
-
-            console.warn('FINAL COLLECTOR', collector);
 
             return collector;
         }, {});
 
-        console.log('newAnimConfig', newAnimConfig);
-
         const { assignedAnimConfig, delays } = Utils.assignAnimConfig({
             beginAnimConfig: self.state && self.state.animConfig,
-            newAnimConfig
+            newAnimConfig,
+            reactMotion
         });
-
-        console.log('assignedAnimConfig', assignedAnimConfig);
 
         this.setState({
             animConfig: assignedAnimConfig
@@ -273,9 +243,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 Object.keys(delays).forEach((delay) => {
 
                     setTimeout(() => {
-
-                        console.warn('SET_TIMEOUT callback');
-                        console.log('current animConfig: this.state.animConfig', this.state.animConfig);
 
                         this.assignAnimConfig({
                             newAnimConfig: delays[delay]
