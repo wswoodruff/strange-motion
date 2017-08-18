@@ -110,16 +110,26 @@ module.exports = {
                             );
                         }
 
+                        const beginStyleMerge = typeof beginAnimConfig[animStyleName][cssPropName] !== 'undefined' ?
+                            beginAnimConfig[animStyleName][cssPropName] :
+                            {};
+
                         newCSSProps[cssPropName] = _merge({},
-                            beginAnimConfig[animStyleName][cssPropName] ||
                             defaultSpring,
+                            beginStyleMerge,
                             additional,
                             cssProp
                         );
                     }
                     else {
+
+                        const beginStyleMerge = typeof beginAnimConfig[animStyleName][cssPropName] !== 'undefined' ?
+                            beginAnimConfig[animStyleName][cssPropName] :
+                            {};
+
                         newCSSProps[cssPropName] = _merge({},
-                            beginAnimConfig[animStyleName][cssPropName] || defaultSpring,
+                            defaultSpring,
+                            beginStyleMerge,
                             { val: cssProp }
                         );
                     }
