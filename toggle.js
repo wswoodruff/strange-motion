@@ -15,8 +15,6 @@ module.exports = class ToggleMotion extends StrangeMotion {
     constructor(props) {
 
         super(props);
-
-        this.getRef = this._getRef.bind(this);
     }
 
     processAnimConfig(animConfig) {
@@ -45,14 +43,7 @@ module.exports = class ToggleMotion extends StrangeMotion {
             });
         }
 
-        throw new Error('Why is children not a boolean?');
-    }
-
-    _getRef(refName) {
-
-        return (ref) => {
-            this[refName] = ref;
-        }
+        throw new Error('ToggleMotion: Bad value for trigger: ' + trigger);
     }
 
     render() {
@@ -63,7 +54,6 @@ module.exports = class ToggleMotion extends StrangeMotion {
                 styles={this.getStyles()}
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
-                ref={this.getRef('reactTransitionMotion')}
             >
                 {(interpolatedStyles) =>
 

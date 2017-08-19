@@ -78,12 +78,14 @@ module.exports = class StrangeMotion extends React.PureComponent {
     getChildren(interpolatedStyles) {
 
         const { wrapperComponent, wrapperProps } = this.props;
-        const interpolatedChildren = [];
 
-        [].concat(interpolatedStyles).forEach(({ style, data, key,  }) => {
-
-            interpolatedChildren.push(this.applyInterpolatedStyles({ style, child: data, key }));
+        const interpolatedChildren = [].concat(interpolatedStyles)
+        .map(({ style, data, key,  }) => {
+            return this.applyInterpolatedStyles({ style, child: data, key });
         });
+
+        // TODO actually take advantage of passing in a
+        // wrapperComponent, and wrapperProps
 
         return React.createElement(
             wrapperComponent || 'div',
@@ -172,8 +174,8 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 animConfig.start = leaveAnimVals;
             }
 
-            if (!animConfig.beforeEnterStyle) {
-                animConfig.beforeEnterStyle = leaveAnimVals;
+            if (!animConfig.beforeEnter) {
+                animConfig.beforeEnter = leaveAnimVals;
             }
         }
 
