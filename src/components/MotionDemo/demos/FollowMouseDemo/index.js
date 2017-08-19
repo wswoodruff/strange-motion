@@ -44,7 +44,8 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                 animConfig: {
                     enter: {
                         left: {
-                            val: ev.clientX - bounds.left
+                            val: ev.clientX - bounds.left,
+                            delay: 400
                         },
                         top: {
                             val: ev.clientY - bounds.top
@@ -67,7 +68,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
 
         // Have ball animate to random spots until the mouse takes over
 
-        setTimeout(() => {
+        setInterval(() => {
 
             if (this.mouseOver) {
                 return;
@@ -79,12 +80,11 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                 animConfig: {
                     enter: {
                         left: {
-                            val: Math.random() * bounds.width,
-                            delay: 300
+                            val: Math.random() * bounds.width
                         },
                         top: {
                             val: Math.random() * bounds.height,
-                            delay: 200
+                            delay: 400
                         }
                     }
                 }
