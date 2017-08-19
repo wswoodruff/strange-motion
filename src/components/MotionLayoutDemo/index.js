@@ -1,11 +1,11 @@
 const React = require('react');
 const T = require('prop-types');
 const DemoView = require('components/DemoView');
-const AnimatedListDemo = require('./demos/AnimatedListDemo');
+const PageLayoutDemo = require('./demos/PageLayoutDemo');
 
 // Component
 
-module.exports = class MotionListDemo extends React.PureComponent {
+module.exports = class ToggleMotionDemo extends React.PureComponent {
 
     constructor(props) {
 
@@ -15,8 +15,8 @@ module.exports = class MotionListDemo extends React.PureComponent {
     render() {
 
         return (
-            <DemoView title='Motion List'>
-                <AnimatedListDemo />
+            <DemoView title='Layout Demo'>
+                <PageLayoutDemo />
             </DemoView>
         );
     }

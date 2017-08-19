@@ -58,7 +58,7 @@ module.exports = class CoreLayout extends React.PureComponent {
                             })}
                         </DemoContent>
                     </StyledCardContent>
-                    <CardActions>
+                    {/* <CardActions>
                         {cardActions ? (
                             <ActionsInnerContainer>
                                 {cardActions}
@@ -73,7 +73,7 @@ module.exports = class CoreLayout extends React.PureComponent {
                                 </Button>
                             </ActionsInnerContainer>
                         )}
-                    </CardActions>
+                    </CardActions> */}
                 </StyledCard>
             </Bg>
         );
