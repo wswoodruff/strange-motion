@@ -26,7 +26,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
         super();
 
         this.state = {
-            animConfig: BlueBallAnim
+            ballAnim: BlueBallAnim
         };
 
         this.setRef = this._setRef.bind(this);
@@ -41,7 +41,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
             const bounds = this.mouseWatcher.getBoundingClientRect();
 
             this.setState({
-                animConfig: {
+                ballAnim: {
                     enter: {
                         left: {
                             val: ev.clientX - bounds.left,
@@ -77,7 +77,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
             const bounds = this.mouseWatcher.getBoundingClientRect();
 
             this.setState({
-                animConfig: {
+                ballAnim: {
                     enter: {
                         left: {
                             val: Math.random() * bounds.width
@@ -103,14 +103,14 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
 
     render() {
 
-        const { animConfig } = this.state;
+        const { ballAnim } = this.state;
 
         return (
             <Wrapper
                 innerRef={this.setRef('mouseWatcher')}
             >
                 <Motion
-                    animConfig={animConfig}
+                    animConfig={ballAnim}
                 >
                     <BlueBall />
                 </Motion>
