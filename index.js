@@ -126,28 +126,10 @@ module.exports = class StrangeMotion extends React.PureComponent {
     _getDefaultAnimConfig() {
 
         return {
-            start: {
-                opacity: 0,
-                fontSize: 10
-            },
-            beforeEnter: {
-                opacity: 0,
-                fontSize: 10
-            },
-            enter: {
-                opacity: spring(1, {
-                    stiffness: 210,
-                    damping: 25
-                }),
-                fontSize: spring(100, {
-                    stiffness: 180,
-                    damping: 16
-                })
-            },
-            leave: {
-                opacity: spring(0),
-                fontSize: spring(60)
-            }
+            start: {},
+            beforeEnter: {},
+            enter: {},
+            leave: {}
         };
     }
 

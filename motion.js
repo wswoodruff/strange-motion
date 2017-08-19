@@ -9,7 +9,6 @@ const { assignAnimConfig } = require('./utils');
 module.exports = class Motion extends StrangeMotion {
 
     static propTypes = {
-        noWrapper: T.bool,
         animConfig: T.shape({
             startStyle: T.object,
             enterAnim: T.object

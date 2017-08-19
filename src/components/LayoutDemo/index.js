@@ -5,7 +5,7 @@ const PageLayoutDemo = require('./demos/PageLayoutDemo');
 
 // Component
 
-module.exports = class ToggleMotionDemo extends React.PureComponent {
+module.exports = class LayoutDemo extends React.PureComponent {
 
     constructor(props) {
 

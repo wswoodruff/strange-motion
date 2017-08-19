@@ -4,7 +4,7 @@ const React = require('react');
 const MotionDemo = require('components/MotionDemo');
 const MotionToggleDemo = require('components/MotionToggleDemo');
 const MotionListDemo = require('components/MotionListDemo');
-const MotionLayoutDemo = require('components/MotionLayoutDemo');
+const LayoutDemo = require('components/LayoutDemo');
 
 // Component demos
 const ToggleIconDemo = require('components/ToggleIconDemo');
@@ -40,7 +40,7 @@ module.exports = class HomePage extends React.PureComponent {
                     <MotionDemo />
                     <MotionListDemo />
                     <MotionToggleDemo />
-                    {/* <MotionLayoutDemo /> */}
+                    <LayoutDemo />
                 </DemosContainer>
 
                 <SectionTitle type='headline' component='h1'>

@@ -8,8 +8,12 @@ const { TransitionMotion } = require('react-motion');
 module.exports = class ToggleMotion extends StrangeMotion {
 
     static propTypes = {
-        noWrapper: T.bool,
-        trigger: T.bool
+        trigger: T.bool,
+        animConfig: T.shape({
+            start: T.object,
+            enter: T.object,
+            leave: T.object.isRequired
+        })
     }
 
     constructor(props) {

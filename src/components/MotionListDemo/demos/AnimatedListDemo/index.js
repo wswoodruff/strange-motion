@@ -1,6 +1,6 @@
 const React = require('react');
 const T = require('prop-types');
-const MotionList = require('../../../../../motionList');
+const MotionList = require('../../../../../list');
 const DemoView = require('components/DemoView');
 
 // Styles

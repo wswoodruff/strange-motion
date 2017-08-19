@@ -5,6 +5,8 @@ const FollowMouseDemo = require('./demos/FollowMouseDemo');
 
 // Component
 
+// TODO Add a mount demo
+
 module.exports = class MotionDemo extends React.PureComponent {
 
     constructor(props) {
