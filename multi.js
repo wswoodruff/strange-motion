@@ -1,12 +1,12 @@
 const React = require('react');
 const T = require('prop-types');
 const StrangeMotion = require('./index');
-const { StaggeredMotion } = require('react-motion');
+const { TransitionMotion } = require('react-motion');
 const Motion = require('./motion');
 
 // Component
 
-module.exports = class MultiMotion extends React.PureComponent {
+module.exports = class MultiMotion extends StrangeMotion {
 
     static propTypes = {
         animConfigs: T.object.isRequired,
@@ -17,36 +17,88 @@ module.exports = class MultiMotion extends React.PureComponent {
 
         // TODO Check to make sure each keyed child has an animConfig
 
-        // TODO left off testing this stuff out
+        super(props);
 
-        const delays = props.animConfigs.filter((animConfig) => !!animConfig.delay);
-        const currentAnims = props.animConfigs.filter((animConfig) => !animConfig.delay);
-        const animConfigsWithoutDelay = props.animConfigs.map((animConfig) => {
+        const children = this._getElementsFromChildren(props.children);
+        const configKeys = Object.keys(props.animConfigs);
+        const childrenByKeys = this._getModelByKeys(props.children);
 
-            delete animConfig.delay;
-            return animConfig;
-        }
+        const {
+            delayedAnimConfigs,
+            delayedChildren,
+            immediateAnimConfigs,
+            immediateChildren
+        } = Object.keys(props.animConfigs)
+        .reduce((collector, animKey) => {
 
-        this.state = {
-            children: currentAnims,
-            animConfigs: animConfigsWithoutDelay
-        }
+            const anim = props.animConfigs[animKey];
+            const child = childrenByKeys[animKey];
 
-        delays.forEach((delayedAnimConfig) => {
+            if (!!anim.delay) {
+                collector.delayedAnimConfigs[animKey] = anim;
+                collector.delayedChildren.push(child);
+            }
+            else {
+                collector.immediateAnimConfigs[animKey] = anim;
+                collector.immediateChildren.push(child);
+            }
+
+            return collector;
+        }, {
+            delayedAnimConfigs: {},
+            delayedChildren: [],
+            immediateAnimConfigs: {},
+            immediateChildren: []
+        });
+
+        const self = this;
+        this.state = Object.assign(
+            {},
+            this.state,
+            {
+                model: immediateChildren,
+                animConfigs: immediateAnimConfigs,
+                childWrapperComponent: Motion,
+                childWrapperProps: this.getChildWrapperProps.bind(self)
+            }
+        );
+
+        Object.keys(delayedAnimConfigs).forEach((delayedAnimKey) => {
+
+            const delayedAnim = delayedAnimConfigs[delayedAnimKey];
 
             setTimeout(() => {
 
-                const currentAnimConfigs = this.state.children;
+                const currentAnimConfigs = this.state.animConfigs;
+                const currentModel = this.state.model;
+                delete delayedAnim.delay;
+
+                const delayElem = model.find((child) => {
+
+                    return child.key === delayedAnimKey;
+                });
 
                 this.setState({
-                    children: [...currentAnimConfigs, delayedAnimConfig]
+                    model: [...currentModel, delayElem],
+                    animConfigs: {
+                        ...currentAnimConfigs,
+                        [delayedAnimKey]: delayedAnim
+                    }
                 })
-            }, delayedAnimConfig.delay);
+            }, delayedAnim.delay);
         });
 
         this.getRef = this._getRef.bind(this);
-        this.getDefaultStyles = this._getDefaultStyles.bind(this);
-        this.getStyles = this._getStyles.bind(this);
+        this.getModelByKeys = this._getModelByKeys.bind(this);
+    }
+
+    _getModelByKeys(model) {
+
+        return model.reduce((collector, child) => {
+
+            collector[child.key] = child;
+            return collector;
+        }, {});
     }
 
     _getRef(refName) {
@@ -56,52 +108,36 @@ module.exports = class MultiMotion extends React.PureComponent {
         }
     }
 
-    _getDefaultStyles() {
+    getChildWrapperProps({ child, key }) {
 
-        const { animConfigs } = this.props;
-        const { children } = this.state;
+        const { animConfigs } = this.state;
 
-        return () => {
+        console.warn('animConfigs', animConfigs);
+        console.log('key', key);
+        console.warn('animConfigs[key]', animConfigs[key]);
 
-            return children.map((child) => {
-
-                return animConfigs[child.key] || {};
-            });
-        };
-    }
-
-    _getStyles() {
-
-        const { animConfigs } = this.props;
-        const { children } = this.state;
-
-        return (prevStyles) => {
-
-            return children.map((child) => {
-
-                return animConfigs[child.key] || {};
-            });
+        return {
+            animConfig: animConfigs[key]
         }
     }
 
     render() {
 
-        const { animConfigs } = this.props;
-        const { children } = this.state;
+        const { model, animConfigs } = this.state;
 
         return (
-            <StaggeredMotion
+            <TransitionMotion
                 defaultStyles={this.getDefaultStyles()}
                 styles={this.getStyles()}
+                willEnter={this.willEnter}
+                willLeave={this.willLeave}
             >
-                {children.map((child) => (
-                    return <Motion
-                        animConfig={animConfigs[child.key]}
-                    >
-                        {child}
-                    </Motion>
-                ))}
-            </StaggeredMotion>
+                {(interpolatedStyles) => {
+
+                    console.log('interpolatedStyles', interpolatedStyles);
+                    return this.getChildren(interpolatedStyles);
+                }}
+            </TransitionMotion>
         );
     }
 };

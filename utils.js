@@ -10,6 +10,15 @@ const defaultSpring = {
 
 module.exports = {
 
+
+    /*
+        Returns:
+        {
+            assignedAnimConfig,
+            delays
+        }
+    */
+
     assignAnimConfig: function({
         beginAnimConfig,
         newAnimConfig,
@@ -37,6 +46,10 @@ module.exports = {
                 collector[animStyleName] = animStyle;
             }
             else {
+
+                // TODO Assert that animStyleName === 'enter'
+
+                console.log(animStyle);
 
                 collector[animStyleName] = Object.keys(animStyle)
                 .reduce((newCSSProps, cssPropName) => {
@@ -75,7 +88,7 @@ module.exports = {
 
                         if (typeof cssProp.delay !== 'undefined') {
 
-                            // Use something similar for the repeat prop
+                            // TODO Use something similar for the repeat prop
 
                             const { delay, ...cssPropWithoutDelay } = cssProp;
 
@@ -114,7 +127,16 @@ module.exports = {
                             beginAnimConfig[animStyleName][cssPropName] :
                             {};
 
-                        newCSSProps[cssPropName] = _merge({},
+                        console.log(_merge(
+                            {},
+                            defaultSpring,
+                            beginStyleMerge,
+                            additional,
+                            cssProp
+                        ));
+
+                        newCSSProps[cssPropName] = _merge(
+                            {},
                             defaultSpring,
                             beginStyleMerge,
                             additional,
@@ -122,6 +144,8 @@ module.exports = {
                         );
                     }
                     else {
+
+                        console.log(beginAnimConfig[animStyleName][cssPropName]);
 
                         const beginStyleMerge = typeof beginAnimConfig[animStyleName][cssPropName] !== 'undefined' ?
                             beginAnimConfig[animStyleName][cssPropName] :
@@ -140,6 +164,8 @@ module.exports = {
 
             return collector;
         }, {});
+
+        console.log('why man');
 
         if (Object.keys(delays).length === 0) {
             delays = undefined;

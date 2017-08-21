@@ -1,6 +1,6 @@
 const React = require('react');
 const T = require('prop-types');
-const Motion = require('../../../../../motion');
+const MultiMotion = require('../../../../../multi');
 const DemoView = require('components/DemoView');
 
 // Styles
@@ -8,14 +8,14 @@ const DemoView = require('components/DemoView');
 const lStyles = require('./styles');
 
 const {
-    BlueBall,
-    Wrapper } = lStyles;
+    Wrapper,
+    Header,
+    Footer,
+    Sidebar } = lStyles;
 
 // Anims
 
 const lAnims = require('./anims');
-
-const { BlueBallAnim } = lAnims;
 
 // Component
 
@@ -45,15 +45,15 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
 
     render() {
 
-        const { ballAnim } = this.state;
-
         return (
             <Wrapper>
-                <Motion
-                    animConfig={ballAnim}
+                <MultiMotion
+                    animConfigs={lAnims}
                 >
-                    <BlueBall />
-                </Motion>
+                    <Header key='Header' />
+                    <Footer key='Footer' />
+                    <Sidebar key='Sidebar' />
+                </MultiMotion>
             </Wrapper>
         );
     }

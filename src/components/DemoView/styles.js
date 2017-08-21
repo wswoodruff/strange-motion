@@ -27,6 +27,7 @@ module.exports = {
     StyledCardContent: styled(CardContent)`
         flex-grow: 1;
         display: flex;
+        position: relative;
         flex-flow: column nowrap;
     `,
     StyledActionsInnerContainer: styled.div`
@@ -35,7 +36,6 @@ module.exports = {
     DemoContent: styled.div`
         flex-grow: 1;
         position: relative;
-
         display: flex;
         flex-flow: row nowrap;
         align-items: center;
