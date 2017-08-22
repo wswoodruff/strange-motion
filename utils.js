@@ -31,30 +31,28 @@ module.exports = {
 
         let delays = {};
 
+        console.warn('ayoo123', beginAnimConfig);
+
         const assignedAnimConfig = Object.keys(beginAnimConfig)
         .reduce((collector, animStyleName) => {
 
-            const animStyle = newAnimConfig[animStyleName];
+            const newAnimStyle = newAnimConfig[animStyleName];
+            const beginAnimStyle = beginAnimConfig[animStyleName];
 
-            if (typeof animStyle === 'undefined') {
-                return collector;
+            if (animStyleName === 'start' ||
+                animStyleName === 'beforeEnter') {
+
+                collector[animStyleName] = beginAnimStyle;
             }
+            else if(animStyleName === 'enter' ||
+                    animStyleName === 'leave') {
 
-            if (animStyleName === 'beforeEnter' ||
-                animStyleName === 'start') {
+                // TODO Assert that animStyleName === 'enter' or 'leave'
 
-                collector[animStyleName] = animStyle;
-            }
-            else {
-
-                // TODO Assert that animStyleName === 'enter'
-
-                console.log(animStyle);
-
-                collector[animStyleName] = Object.keys(animStyle)
+                collector[animStyleName] = Object.keys(newAnimStyle)
                 .reduce((newCSSProps, cssPropName) => {
 
-                    let cssProp = animStyle[cssPropName];
+                    let cssProp = newAnimStyle[cssPropName];
 
                     if (typeof cssProp === 'object') {
 
@@ -92,8 +90,10 @@ module.exports = {
 
                             const { delay, ...cssPropWithoutDelay } = cssProp;
 
+                            cssProp = cssPropWithoutDelay;
+
                             // Set cssProp to the latest of reactMotion here
-                            cssProp = reactMotion.state.lastIdealStyle[cssPropName];
+                            // cssProp = reactMotion.state.lastIdealStyle[cssPropName];
 
                             const delayedAnimConfig = {};
                             delayedAnimConfig[animStyleName] = {};
@@ -115,8 +115,6 @@ module.exports = {
                                 delayedAnimConfig
                             );
 
-                            // const stylesNotDelayed = sharedAnimStyles
-                            // top scope
                             delays = _merge({},
                                 delays,
                                 delayObj
@@ -127,14 +125,6 @@ module.exports = {
                             beginAnimConfig[animStyleName][cssPropName] :
                             {};
 
-                        console.log(_merge(
-                            {},
-                            defaultSpring,
-                            beginStyleMerge,
-                            additional,
-                            cssProp
-                        ));
-
                         newCSSProps[cssPropName] = _merge(
                             {},
                             defaultSpring,
@@ -144,8 +134,6 @@ module.exports = {
                         );
                     }
                     else {
-
-                        console.log(beginAnimConfig[animStyleName][cssPropName]);
 
                         const beginStyleMerge = typeof beginAnimConfig[animStyleName][cssPropName] !== 'undefined' ?
                             beginAnimConfig[animStyleName][cssPropName] :
@@ -161,15 +149,22 @@ module.exports = {
                     return newCSSProps;
                 }, {});
             }
+            else {
+                throw new Error(`animConfig can only have
+                    start,
+                    beforeEnter,
+                    enter, or
+                    leave`);
+            }
 
             return collector;
         }, {});
 
-        console.log('why man');
-
         if (Object.keys(delays).length === 0) {
             delays = undefined;
         }
+
+        console.log('assignedAnimConfigassignedAnimConfigassignedAnimConfigassignedAnimConfig', assignedAnimConfig);
 
         return {
             assignedAnimConfig,

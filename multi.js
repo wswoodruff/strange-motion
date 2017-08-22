@@ -112,10 +112,6 @@ module.exports = class MultiMotion extends StrangeMotion {
 
         const { animConfigs } = this.state;
 
-        console.warn('animConfigs', animConfigs);
-        console.log('key', key);
-        console.warn('animConfigs[key]', animConfigs[key]);
-
         return {
             animConfig: animConfigs[key]
         }
@@ -134,7 +130,7 @@ module.exports = class MultiMotion extends StrangeMotion {
             >
                 {(interpolatedStyles) => {
 
-                    console.log('interpolatedStyles', interpolatedStyles);
+                    console.log('multi interpolatedStyles', interpolatedStyles);
                     return this.getChildren(interpolatedStyles);
                 }}
             </TransitionMotion>

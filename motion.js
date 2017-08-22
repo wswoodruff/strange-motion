@@ -8,13 +8,6 @@ const { assignAnimConfig } = require('./utils');
 
 module.exports = class Motion extends StrangeMotion {
 
-    static propTypes = {
-        animConfig: T.shape({
-            startStyle: T.object,
-            enterAnim: T.object
-        })
-    }
-
     constructor(props) {
 
         super(props);
@@ -33,19 +26,20 @@ module.exports = class Motion extends StrangeMotion {
 
         const { children } = this.props;
 
+        console.warn(this.getDefaultStyles());
+        console.warn(this.getStyles());
+
         return (
             <ReactMotion
                 // Only built for a single child
                 defaultStyle={this.getDefaultStyles()[0].style}
                 style={this.getStyles()[0].style}
-                ref={this.getRef('reactMotion')}
+                ref={this.getRef('reactMotion')} // Set this.reactMotion ref
             >
                 {(interpolatedStyles) => {
 
-                    return this.applyInterpolatedStyles({
-                        style: interpolatedStyles,
-                        child: children
-                    });
+                    console.log('motion interpolatedStyles', interpolatedStyles);
+                    return this.getChildren(interpolatedStyles);
                 }}
             </ReactMotion>
         );

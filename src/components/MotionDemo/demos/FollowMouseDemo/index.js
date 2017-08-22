@@ -92,7 +92,8 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                     }
                 }
             });
-        }, 1400);
+        }, 4400);
+        // }, 1400);
     }
 
     _setRef(refName) {

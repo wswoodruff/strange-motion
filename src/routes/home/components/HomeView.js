@@ -37,10 +37,10 @@ module.exports = class HomePage extends React.PureComponent {
                 </SectionTitle>
 
                 <DemosContainer>
-                    {/* <MotionDemo /> */}
+                    <MotionDemo />
                     {/* <MotionListDemo /> */}
                     {/* <MotionToggleDemo /> */}
-                    <MultiMotion />
+                    {/* <MultiMotion /> */}
                 </DemosContainer>
 
                 <SectionTitle type='headline' component='h1'>
