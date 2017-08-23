@@ -52,17 +52,21 @@ module.exports = class ToggleMotion extends StrangeMotion {
 
     render() {
 
+        // Left off logging this because for some reason new entering objects
+        // is causing [object]NaN to be set here.
+
         return (
+
             <TransitionMotion
                 defaultStyles={this.getDefaultStyles()}
                 styles={this.getStyles()}
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
             >
-                {(interpolatedStyles) =>
+                {(interpolatedStyles) => {
 
-                    this.getChildren(interpolatedStyles)
-                }
+                    return this.getChildren(interpolatedStyles);
+                }}
             </TransitionMotion>
         );
     }

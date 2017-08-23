@@ -10,7 +10,6 @@ const defaultSpring = {
 
 module.exports = {
 
-
     /*
         Returns:
         {
@@ -31,8 +30,6 @@ module.exports = {
 
         let delays = {};
 
-        console.warn('ayoo123', beginAnimConfig);
-
         const assignedAnimConfig = Object.keys(beginAnimConfig)
         .reduce((collector, animStyleName) => {
 
@@ -46,8 +43,6 @@ module.exports = {
             }
             else if(animStyleName === 'enter' ||
                     animStyleName === 'leave') {
-
-                // TODO Assert that animStyleName === 'enter' or 'leave'
 
                 collector[animStyleName] = Object.keys(newAnimStyle)
                 .reduce((newCSSProps, cssPropName) => {
@@ -80,6 +75,9 @@ module.exports = {
 
                         // spring is an alias for val
                         if (typeof cssProp.spring !== 'undefined') {
+                            if (cssProp.val) {
+                                throw new Error('Can\'t have spring and val both set');
+                            }
                             cssProp.val = cssProp.spring;
                             delete cssProp.spring;
                         }
@@ -90,8 +88,6 @@ module.exports = {
 
                             const { delay, ...cssPropWithoutDelay } = cssProp;
 
-                            cssProp = cssPropWithoutDelay;
-
                             // Set cssProp to the latest of reactMotion here
                             // cssProp = reactMotion.state.lastIdealStyle[cssPropName];
 
@@ -99,9 +95,11 @@ module.exports = {
                             delayedAnimConfig[animStyleName] = {};
                             delayedAnimConfig[animStyleName][cssPropName] = cssPropWithoutDelay;
 
-                            const animKeyDiff = Object.keys(beginAnimConfig[animStyleName]).filter(function(item) {
+                            const animKeyDiff = Object.keys(beginAnimConfig[animStyleName])
+                            .filter(function(item) {
 
-                                return Object.keys(delayedAnimConfig[animStyleName]).indexOf(item) < 0;
+                                return Object.keys(delayedAnimConfig[animStyleName])
+                                .indexOf(item) < 0;
                             })
                             .reduce((collector, diffKey) => {
 
@@ -125,13 +123,26 @@ module.exports = {
                             beginAnimConfig[animStyleName][cssPropName] :
                             {};
 
-                        newCSSProps[cssPropName] = _merge(
-                            {},
-                            defaultSpring,
-                            beginStyleMerge,
-                            additional,
-                            cssProp
-                        );
+                        if (cssProp.delay) {
+
+                            delete cssProp.delay;
+                            newCSSProps[cssPropName] = _merge(
+                                {},
+                                defaultSpring,
+                                cssProp,
+                                beginStyleMerge,
+                                additional
+                            );
+                        }
+                        else {
+                            newCSSProps[cssPropName] = _merge(
+                                {},
+                                defaultSpring,
+                                beginStyleMerge,
+                                additional,
+                                cssProp
+                            );
+                        }
                     }
                     else {
 
@@ -164,12 +175,43 @@ module.exports = {
             delays = undefined;
         }
 
-        console.log('assignedAnimConfigassignedAnimConfigassignedAnimConfigassignedAnimConfig', assignedAnimConfig);
+        // Left off where I need to make sure to omit the
+        // css prop that has `delay` in it, from going through
+        // in this animConfig
 
         return {
             assignedAnimConfig,
             delays
         }
+    },
+
+    flattenCssPropsToValIfNeeded: function(cssProps) {
+
+        return Object.keys(cssProps)
+        .reduce((collector, cssPropName) => {
+
+            const currentCssProp = cssProps[cssPropName];
+
+            if (typeof currentCssProp === 'object' &&
+                !Array.isArray(currentCssProp)) {
+
+                const currentCssPropKeys = Object.keys(currentCssProp);
+
+                if (currentCssPropKeys.length === 1 &&
+                    currentCssPropKeys[0] === 'val') {
+
+                    collector[cssPropName] = currentCssProp.val;
+                }
+                else {
+                    collector[cssPropName] = currentCssProp;
+                }
+            }
+            else {
+                collector[cssPropName] = currentCssProp;
+            }
+
+            return collector;
+        }, {});
     },
 
     debounce: function(func, wait, immediate) {

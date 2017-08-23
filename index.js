@@ -93,7 +93,8 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const interpolatedAsArray = [].concat(interpolatedStyles);
 
-        if (typeof interpolatedStyles === 'object') {
+        if (typeof interpolatedStyles === 'object' &&
+            !Array.isArray(interpolatedStyles)) {
 
             // it's a Motion object
 
@@ -105,6 +106,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                     newChildPropsVal = childProps(style);
                 }
 
+                // Use model right here
                 const newChild = Array.isArray(model) ? model[0] : model;
 
                 return this.applyInterpolatedStyles({
@@ -114,15 +116,29 @@ module.exports = class StrangeMotion extends React.PureComponent {
                     childWrapperProps,
                     newChildPropsVal
                 });
-            });
+            })[0]; // Grab the first and only item here
 
-            return React.createElement(
-                animWrapperComponent || 'div',
-                animWrapperProps && animWrapperProps(interpolatedStyles) || {},
-                model
-            );
+            if (!animWrapperComponent && !animWrapperProps) {
+                return interpolatedChild;
+            }
 
-            return ;
+            if (animWrapperComponent) {
+                return React.createElement(
+                    animWrapperComponent,
+                    animWrapperProps && animWrapperProps(interpolatedStyles) || {},
+                    interpolatedChild
+                );
+            }
+            else {
+                return React.cloneElement(
+                    interpolatedChild
+                );
+            }
+            // return React.createElement(
+            //     animWrapperComponent || 'div',
+            //     animWrapperProps && animWrapperProps(interpolatedStyles) || {},
+            //     model
+            // );
         }
 
         // Apply new styles to children
@@ -188,21 +204,19 @@ module.exports = class StrangeMotion extends React.PureComponent {
             style
         );
 
-        console.log('newStyle inside applyInterpolatedStyles', newStyle);
-
         let newChild;
 
         const newChildProps = newChildPropsVal;
 
         if (this.state.childIsFunc && !childWrapperComponent) {
-            console.log('this.state.childIsFunc && !childWrapperComponent');
+
             newChild = React.cloneElement(
                 children({ style: newStyle, child, key }),
                 { ...newChildProps, style }
             );
         }
         else if (this.state.childIsFunc && childWrapperComponent) {
-            console.log('this.state.childIsFunc && childWrapperComponent');
+
             newChild = React.cloneElement(
                 children({ style: childStyle, child, key }),
                 newChildProps
@@ -210,22 +224,19 @@ module.exports = class StrangeMotion extends React.PureComponent {
         }
 
         if (!this.state.childIsFunc && !childWrapperComponent) {
-            console.log('!this.state.childIsFunc && !childWrapperComponent');
-            console.log('child before cloning', child);
+
             newChild = React.cloneElement(
                 child,
                 { ...newChildProps, style }
             );
         }
         else if (!this.state.childIsFunc && childWrapperComponent) {
-            console.log('!this.state.childIsFunc && childWrapperComponent');
+
             newChild = React.cloneElement(
                 child,
                 newChildProps
             );
         }
-
-        console.log('CLONING THIS FOR MOTION', newChild);
 
         if (childWrapperComponent) {
 
@@ -247,7 +258,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
             );
         }
 
-        console.log('newChild', newChild);
         return newChild;
     }
 
@@ -274,7 +284,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                     collector[key] = cssItem;
                 }
                 else {
-                    collector[key] = { val: cssItem };
+                    collector[key] = cssItem;
                 }
 
                 return collector;
@@ -316,11 +326,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
     assignAnimConfig({ newAnimConfig: passedInAnimConfig }) {
 
-        // TODO Left off trying to consume the `delay` on some of these
-        // passedInConfigs
-
-        console.log('passedInAnimConfig', passedInAnimConfig);
-
         let reactMotion;
 
         if (this.reactMotion) {
@@ -331,7 +336,31 @@ module.exports = class StrangeMotion extends React.PureComponent {
             reactMotion = this.reactTransitionMotion;
         }
 
-        const newAnimConfig = Object.keys(passedInAnimConfig)
+        let newAnimConfig = passedInAnimConfig;
+
+        if (passedInAnimConfig.enter &&
+            passedInAnimConfig.enter.delay) {
+
+            const { delay: enterDelay, ...enterWithoutDelay } = passedInAnimConfig.enter;
+
+            // heeeeere's the delay!
+            setTimeout(() => {
+
+                this.assignAnimConfig({
+                    newAnimConfig: { enter: enterWithoutDelay }
+                })
+            }, enterDelay);
+
+            const { enter, ...rest } = passedInAnimConfig;
+            if (Object.keys(rest).length !== 0) {
+                newAnimConfig = rest;
+            }
+            else {
+                return; // exit the assignAnimConfig func
+            }
+        }
+
+        newAnimConfig = Object.keys(newAnimConfig)
         .reduce((collector, animType) => {
 
             const currentAnimType = passedInAnimConfig[animType];
@@ -360,15 +389,11 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const self = this;
 
-        console.log('self.state.animConfig', self.state.animConfig);
-
         const { assignedAnimConfig, delays } = Utils.assignAnimConfig({
             beginAnimConfig: self.state && self.state.animConfig,
             newAnimConfig,
             reactMotion
         });
-
-        console.warn('assignedAnimConfig abcd', assignedAnimConfig);
 
         this.setState({
             animConfig: assignedAnimConfig
@@ -380,7 +405,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
             if (delays) {
 
                 /*
-                    // TODO Actually lookup what goes in this delays object
                     Delays object is organized by its delay times. ex:
 
                     {
@@ -487,12 +511,29 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
     _getDefaultStyles() {
 
-        return this.getStyles('start');
+        const defaultStyles = this.getStyles('start')
+        .map((interpolatedStyle) => {
+
+            // const newCssVals = Utils.flattenCssPropsToValIfNeeded(interpolatedStyle.style);
+            const newCssVals = interpolatedStyle.style;
+
+            const newInterpolatedStyle = _merge(
+                {},
+                interpolatedStyle,
+                { style: newCssVals }
+            );
+
+            return newInterpolatedStyle;
+        });
+
+        return defaultStyles;
     }
 
     _getStyles(animConfigKey) {
 
         const { model, animConfig } = this.state;
+
+        this.lastModel = model;
 
         let filteredModel;
         if (this.props.model) {
@@ -503,21 +544,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
             filteredModel = this.filterChildrenForType(model);
         }
 
-        console.log(filteredModel[0]);
-
-        console.warn('animConfigooooooooooooo', animConfig);
-
-        console.warn(`{
-            data: child,
-            style: animConfig.start,
-            key: String(newKey)
-        }`, {
-            data: filteredModel[0],
-            style: animConfig.enter,
-            key: String(this._genId())
-        });
-
-        return filteredModel.map((child, i) => {
+        const newStyles = filteredModel.map((child, i) => {
 
             const { key, id: itemId } = child;
 
@@ -532,14 +559,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 }
             }
 
-            console.log('this.reactMotion', this.reactMotion);
-
-            console.warn('animConfig', animConfig);
-
-            console.warn('animConfigKey', animConfigKey);
-            const newStyle = animConfigKey ? animConfig[animConfigKey] : animConfig.enter;
-
-            console.warn('newStyle', newStyle);
+            let newStyle = animConfigKey ? animConfig[animConfigKey] : animConfig.enter;
 
             return {
                 data: child,
@@ -547,5 +567,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 key: String(newKey)
             };
         });
+
+        return newStyles;
     }
 };

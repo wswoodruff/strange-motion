@@ -44,11 +44,11 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                 ballAnim: {
                     enter: {
                         left: {
-                            val: ev.clientX - bounds.left,
-                            delay: 400
+                            val: ev.clientX - bounds.left
                         },
                         top: {
-                            val: ev.clientY - bounds.top
+                            val: ev.clientY - bounds.top,
+                            delay: 500
                         }
                     }
                 }
@@ -79,21 +79,17 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
             this.setState({
                 ballAnim: {
                     enter: {
-
-                        delay: 400,
-
                         left: {
                             val: Math.random() * bounds.width
                         },
                         top: {
                             val: Math.random() * bounds.height,
-                            delay: 400
+                            delay: 1000
                         }
                     }
                 }
             });
-        }, 4400);
-        // }, 1400);
+        }, 1500);
     }
 
     _setRef(refName) {

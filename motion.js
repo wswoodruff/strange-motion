@@ -26,9 +26,6 @@ module.exports = class Motion extends StrangeMotion {
 
         const { children } = this.props;
 
-        console.warn(this.getDefaultStyles());
-        console.warn(this.getStyles());
-
         return (
             <ReactMotion
                 // Only built for a single child
@@ -38,7 +35,6 @@ module.exports = class Motion extends StrangeMotion {
             >
                 {(interpolatedStyles) => {
 
-                    console.log('motion interpolatedStyles', interpolatedStyles);
                     return this.getChildren(interpolatedStyles);
                 }}
             </ReactMotion>
