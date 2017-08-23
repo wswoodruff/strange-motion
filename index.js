@@ -134,11 +134,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
                     interpolatedChild
                 );
             }
-            // return React.createElement(
-            //     animWrapperComponent || 'div',
-            //     animWrapperProps && animWrapperProps(interpolatedStyles) || {},
-            //     model
-            // );
         }
 
         // Apply new styles to children
@@ -160,24 +155,11 @@ module.exports = class StrangeMotion extends React.PureComponent {
             });
         });
 
-        // if (animWrapperComponent) {
-            return React.createElement(
-                animWrapperComponent || 'div',
-                animWrapperProps && animWrapperProps(interpolatedStyles) || {},
-                interpolatedChildren
-            );
-        // }
-        // else {
-        //     return interpolatedChildren.map((interpolatedChild) => {
-        //
-        //         return React.cloneElement(
-        //             interpolatedChild,
-        //             animWrapperProps && animWrapperProps(interpolatedStyles) || {}
-        //         );
-        //     })
-        //
-        // }
-
+        return React.createElement(
+            animWrapperComponent || 'div',
+            animWrapperProps && animWrapperProps(interpolatedStyles) || {},
+            interpolatedChildren
+        );
     };
 
     _applyInterpolatedStyles({
@@ -514,7 +496,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
         const defaultStyles = this.getStyles('start')
         .map((interpolatedStyle) => {
 
-            // const newCssVals = Utils.flattenCssPropsToValIfNeeded(interpolatedStyle.style);
             const newCssVals = interpolatedStyle.style;
 
             const newInterpolatedStyle = _merge(

@@ -24,8 +24,7 @@ module.exports = class MultiMotion extends StrangeMotion {
         const childrenByKeys = this._getModelByKeys(props.children);
 
         const {
-            delayedAnimConfigs,
-            delayedChildren,
+            delayedInfo,
             immediateAnimConfigs,
             immediateChildren
         } = Object.keys(props.animConfigs)
@@ -35,8 +34,11 @@ module.exports = class MultiMotion extends StrangeMotion {
             const child = childrenByKeys[animKey];
 
             if (!!anim.delay) {
-                collector.delayedAnimConfigs[animKey] = anim;
-                collector.delayedChildren.push(child);
+                delete anim.delay;
+                collector.delayedInfo.push({
+                    delayAnimConfig: { key: animKey, val: anim },
+                    delayChild: child
+                });
             }
             else {
                 collector.immediateAnimConfigs[animKey] = anim;
@@ -45,8 +47,7 @@ module.exports = class MultiMotion extends StrangeMotion {
 
             return collector;
         }, {
-            delayedAnimConfigs: {},
-            delayedChildren: [],
+            delayedInfo: [],
             immediateAnimConfigs: {},
             immediateChildren: []
         });
@@ -63,9 +64,16 @@ module.exports = class MultiMotion extends StrangeMotion {
             }
         );
 
-        Object.keys(delayedAnimConfigs).forEach((delayedAnimKey) => {
+        // could be either animConfigs or
+        delayedInfo.forEach((delayInfo, i) => {
 
-            const delayedAnim = delayedAnimConfigs[delayedAnimKey];
+            const { delayAnimConfig, delayChild } = delayInfo;
+
+            // LEFT OFF HERE IMPLEMENTING THIS
+            // const { delayAnimConfig, delayChild } = delayInfo;
+            // I just put this here
+
+            const delayedAnim = delayAnimConfig[delayedAnimKey];
 
             setTimeout(() => {
 
@@ -73,10 +81,20 @@ module.exports = class MultiMotion extends StrangeMotion {
                 const currentModel = this.state.model;
                 delete delayedAnim.delay;
 
-                const delayElem = model.find((child) => {
+                console.log('currentModel', currentModel)
 
+                console.warn('delayedAnim', delayedAnim);
+
+                const delayElem = currentModel.find((child) => {
+
+                    console.log('child', child);
                     return child.key === delayedAnimKey;
                 });
+
+                console.log('delayedAnimKey', delayedAnimKey);
+
+                console.log([...currentModel, delayElem]);
+                console.warn('[...currentModel, delayElem]', [...currentModel, delayElem]);
 
                 this.setState({
                     model: [...currentModel, delayElem],
@@ -130,7 +148,6 @@ module.exports = class MultiMotion extends StrangeMotion {
             >
                 {(interpolatedStyles) => {
 
-                    console.log('multi interpolatedStyles', interpolatedStyles);
                     return this.getChildren(interpolatedStyles);
                 }}
             </TransitionMotion>

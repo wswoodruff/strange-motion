@@ -5,7 +5,8 @@ module.exports = {
     Wrapper: styled.div`
         width: 100%;
         height: 100%;
-        position: relative;
+        position: absolute;
+        overflow: hidden;
     `,
     Header: styled.div`
         width: 100%;

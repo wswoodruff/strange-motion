@@ -6,7 +6,7 @@ module.exports = {
     Header: {
 
         start: {
-            top: 80
+            top: -80
         },
         enter: {
             top: 0
@@ -16,7 +16,7 @@ module.exports = {
 
         // delay: 300,
         start: {
-            bottom: 80
+            bottom: -80
         },
         enter: {
             bottom: 0
@@ -24,9 +24,10 @@ module.exports = {
     },
     Sidebar: {
 
-        // delay: 300,
+        delay: 300,
+
         start: {
-            right: 80
+            right: -80
         },
         enter: {
             right: 0
