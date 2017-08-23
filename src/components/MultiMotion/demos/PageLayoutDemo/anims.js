@@ -24,7 +24,7 @@ module.exports = {
     },
     Sidebar: {
 
-        delay: 300,
+        delay: 1000,
 
         start: {
             right: -80

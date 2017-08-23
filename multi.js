@@ -34,10 +34,12 @@ module.exports = class MultiMotion extends StrangeMotion {
             const child = childrenByKeys[animKey];
 
             if (!!anim.delay) {
+                const delay = anim.delay;
                 delete anim.delay;
                 collector.delayedInfo.push({
                     delayAnimConfig: { key: animKey, val: anim },
-                    delayChild: child
+                    delayChild: child,
+                    delay
                 });
             }
             else {
@@ -65,45 +67,31 @@ module.exports = class MultiMotion extends StrangeMotion {
         );
 
         // could be either animConfigs or
-        delayedInfo.forEach((delayInfo, i) => {
+        delayedInfo.forEach((delayInfo) => {
 
-            const { delayAnimConfig, delayChild } = delayInfo;
+            const { delayAnimConfig, delayChild, delay } = delayInfo;
 
-            // LEFT OFF HERE IMPLEMENTING THIS
-            // const { delayAnimConfig, delayChild } = delayInfo;
-            // I just put this here
-
-            const delayedAnim = delayAnimConfig[delayedAnimKey];
+            console.log(delayAnimConfig);
 
             setTimeout(() => {
 
                 const currentAnimConfigs = this.state.animConfigs;
                 const currentModel = this.state.model;
-                delete delayedAnim.delay;
+                delete delayAnimConfig.delay;
 
                 console.log('currentModel', currentModel)
 
-                console.warn('delayedAnim', delayedAnim);
-
-                const delayElem = currentModel.find((child) => {
-
-                    console.log('child', child);
-                    return child.key === delayedAnimKey;
-                });
-
-                console.log('delayedAnimKey', delayedAnimKey);
-
-                console.log([...currentModel, delayElem]);
-                console.warn('[...currentModel, delayElem]', [...currentModel, delayElem]);
+                console.log([...currentModel, delayChild]);
+                console.warn('[...currentModel, delayElem]', [...currentModel, delayChild]);
 
                 this.setState({
-                    model: [...currentModel, delayElem],
+                    model: [...currentModel, delayChild],
                     animConfigs: {
                         ...currentAnimConfigs,
-                        [delayedAnimKey]: delayedAnim
+                        [delayAnimConfig.key]: delayAnimConfig.val
                     }
                 })
-            }, delayedAnim.delay);
+            }, delay);
         });
 
         this.getRef = this._getRef.bind(this);
