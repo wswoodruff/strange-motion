@@ -14,6 +14,10 @@ module.exports = class StrangeMotion extends React.PureComponent {
             enter: T.object.isRequired,
             leave: T.object
         }),
+        animPlugins: T.array,
+
+        // Left off implementing animPlugins for the motion blur plugin.
+
         children: T.any.isRequired,
         animWrapperComponent: T.any,
         animWrapperProps: T.func,
@@ -308,15 +312,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
     assignAnimConfig({ newAnimConfig: passedInAnimConfig }) {
 
-        let reactMotion;
-
-        if (this.reactMotion) {
-            reactMotion = this.reactMotion;
-        }
-
-        if (this.reactTransitionMotion) {
-            reactMotion = this.reactTransitionMotion;
-        }
+        const reactMotion = this.reactMotion;
 
         let newAnimConfig = passedInAnimConfig;
 

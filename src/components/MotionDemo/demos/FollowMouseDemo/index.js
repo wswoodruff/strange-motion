@@ -21,6 +21,14 @@ const { BlueBallAnim } = lAnims;
 
 module.exports = class FollowMouseDemo extends React.PureComponent {
 
+    static propTypes = {
+        animPlugins: T.array
+    }
+
+    static defaultProps = {
+        animPlugins: []
+    }
+
     constructor(props) {
 
         super();
@@ -103,7 +111,10 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
 
     render() {
 
+        const { animPlugins } = this.props;
         const { ballAnim } = this.state;
+
+        console.log(animPlugins);
 
         return (
             <Wrapper
@@ -111,6 +122,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
             >
                 <Motion
                     animConfig={ballAnim}
+                    animPlugins={animPlugins}
                 >
                     <BlueBall />
                 </Motion>

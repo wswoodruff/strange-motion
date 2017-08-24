@@ -25,13 +25,28 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
 
         super();
 
-        this.state = {};
+        this.state = {
+            mouseOver: false
+        };
 
         this.setRef = this._setRef.bind(this);
     }
 
     componentDidMount() {
 
+        this.mouseWatcher.addEventListener('mouseover', (ev) => {
+
+            this.setState({
+                mouseOver: true
+            });
+        });
+
+        this.mouseWatcher.addEventListener('mouseout', (ev) => {
+
+            this.setState({
+                mouseOver: false
+            });
+        });
     }
 
     _setRef(refName) {
@@ -45,8 +60,12 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
 
     render() {
 
+        const { mouseOver } = this.state;
+
         return (
-            <Wrapper>
+            <Wrapper
+                innerRef={this.setRef('mouseWatcher')}
+            >
                 <MultiMotion
                     animConfigs={lAnims}
                 >

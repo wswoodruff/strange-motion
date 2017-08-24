@@ -1,11 +1,13 @@
 const React = require('react');
 const T = require('prop-types');
 const DemoView = require('components/DemoView');
-const PageLayoutDemo = require('./demos/PageLayoutDemo');
+// const FollowMouseDemo = require('./demos/FollowMouseDemo');
 
 // Component
 
-module.exports = class MultiMotionDemo extends React.PureComponent {
+// TODO Add a mount demo
+
+module.exports = class MotionBlurDemo extends React.PureComponent {
 
     constructor(props) {
 
@@ -15,8 +17,10 @@ module.exports = class MultiMotionDemo extends React.PureComponent {
     render() {
 
         return (
-            <DemoView title='Multi Motion'>
-                <PageLayoutDemo />
+            <DemoView title='Motion'>
+                <div>
+
+                </div>
             </DemoView>
         );
     }

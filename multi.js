@@ -66,23 +66,24 @@ module.exports = class MultiMotion extends StrangeMotion {
             }
         );
 
-        // could be either animConfigs or
+        /*
+            delayInfo's schema
+            [{
+                delayAnimConfig,
+                delayChild,
+                delay
+            }]
+        */
+
         delayedInfo.forEach((delayInfo) => {
 
             const { delayAnimConfig, delayChild, delay } = delayInfo;
-
-            console.log(delayAnimConfig);
 
             setTimeout(() => {
 
                 const currentAnimConfigs = this.state.animConfigs;
                 const currentModel = this.state.model;
                 delete delayAnimConfig.delay;
-
-                console.log('currentModel', currentModel)
-
-                console.log([...currentModel, delayChild]);
-                console.warn('[...currentModel, delayElem]', [...currentModel, delayChild]);
 
                 this.setState({
                     model: [...currentModel, delayChild],
@@ -133,6 +134,7 @@ module.exports = class MultiMotion extends StrangeMotion {
                 styles={this.getStyles()}
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
+                ref={this.getRef('reactMotion')} // Set this.reactMotion ref
             >
                 {(interpolatedStyles) => {
 

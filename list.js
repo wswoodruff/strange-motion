@@ -46,7 +46,7 @@ module.exports = class MotionList extends StrangeMotion {
                 styles={this.getStyles()}
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
-                ref={this.getRef('reactTransitionMotion')}
+                ref={this.getRef('reactMotion')} // Set this.reactMotion ref
             >
                 {(interpolatedStyles) => {
 
