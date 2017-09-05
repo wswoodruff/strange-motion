@@ -8,19 +8,31 @@ const { TransitionMotion } = require('react-motion');
 module.exports = class ToggleMotion extends StrangeMotion {
 
     static propTypes = {
-        noWrapper: T.bool,
-        trigger: T.bool
+        trigger: T.bool,
+        animConfig: T.shape({
+            start: T.object,
+            enter: T.object,
+            leave: T.object.isRequired
+        })
     }
 
     constructor(props) {
 
         super(props);
+        this.getRef = this._getRef.bind(this);
+    }
+
+    _getRef(refName) {
+
+        return (ref) => {
+            this[refName] = ref;
+        }
     }
 
     processAnimConfig(animConfig) {
 
-        if (!animConfig.leaveAnim) {
-            throw new Error('Must provide leaveAnim to animConfig for toggle type');
+        if (!animConfig.leave) {
+            throw new Error('Must provide "leave" to animConfig for toggle type');
         }
 
         return super.processAnimConfig(animConfig);
@@ -43,22 +55,24 @@ module.exports = class ToggleMotion extends StrangeMotion {
             });
         }
 
-        throw new Error('Why is children not a boolean?');
+        throw new Error('ToggleMotion: Bad value for trigger: ' + trigger);
     }
 
     render() {
 
         return (
+
             <TransitionMotion
                 defaultStyles={this.getDefaultStyles()}
                 styles={this.getStyles()}
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
+                ref={this.getRef('reactMotion')} // Set this.reactMotion ref
             >
-                {(interpolatedStyles) =>
+                {(interpolatedStyles) => {
 
-                    this.getChildren(interpolatedStyles)
-                }
+                    return this.getChildren(interpolatedStyles);
+                }}
             </TransitionMotion>
         );
     }
