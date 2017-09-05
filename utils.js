@@ -1,64 +1,222 @@
 
 const { presets } = require('react-motion');
+const _merge = require('lodash/merge');
+
+const defaultSpring = {
+    stiffness: 170,
+    damping: 26,
+    precision: 0.01
+}
 
 module.exports = {
 
-    assignAnimConfig: (beginAnimConfig, incomingAnimConfig, assignOverride) => {
+    defaultSpring,
+
+    /*
+        Returns:
+        {
+            assignedAnimConfig,
+            delays
+        }
+    */
+
+    assignAnimConfig: function({
+        beginAnimConfig,
+        newAnimConfig,
+        reactMotion
+    }) {
 
         if (!beginAnimConfig) {
-            beginAnimConfig = incomingAnimConfig;
+            beginAnimConfig = newAnimConfig;
         }
 
-        return Object.keys(beginAnimConfig)
-        .reduce((newAnimConfig, animStyleName) => {
+        let delays = {};
 
-            const animStyle = incomingAnimConfig[animStyleName];
+        const assignedAnimConfig = Object.keys(beginAnimConfig)
+        .reduce((collector, animStyleName) => {
 
-            if (animStyleName === 'beforeEnterStyle' ||
-                animStyleName === 'startStyle') {
+            const newAnimStyle = newAnimConfig[animStyleName];
+            const beginAnimStyle = beginAnimConfig[animStyleName];
 
-                newAnimConfig[animStyleName] = animStyle;
+            if (animStyleName === 'start' ||
+                animStyleName === 'beforeEnter') {
+
+                collector[animStyleName] = beginAnimStyle;
             }
-            else {
+            else if(animStyleName === 'enter' ||
+                    animStyleName === 'leave') {
 
-                newAnimConfig[animStyleName] = Object.keys(animStyle)
-                .reduce((collector, cssPropName) => {
+                collector[animStyleName] = Object.keys(newAnimStyle)
+                .reduce((newCSSProps, cssPropName) => {
 
-                    const cssProp = animStyle[cssPropName];
+                    let cssProp = newAnimStyle[cssPropName];
 
                     if (typeof cssProp === 'object') {
 
                         let additional = {};
 
+                        // Special config settings
+
                         if (typeof cssProp.preset === 'string') {
-                            additional = presets[cssProp.preset];
+
+                            const reactPreset = presets[cssProp.preset];
+
+                            if (reactPreset) {
+                                additional = presets[cssProp.preset];
+                            }
+
+                            // Gotta find a way to pass in options now
+                            // const userPreset = internals.userPresets[cssProp.preset];
+
+                            // if (reactPreset) {
+                            //     additional = internals.userPresets[cssProp.preset];
+                            // }
+
+                            delete cssProp.preset;
                         }
 
-                        collector[cssPropName] = Object.assign({},
-                            assignOverride || beginAnimConfig[animStyleName][cssPropName],
-                            additional,
-                            cssProp
-                        );
+                        // spring is an alias for val
+                        if (typeof cssProp.spring !== 'undefined') {
+                            if (cssProp.val) {
+                                throw new Error('Can\'t have spring and val both set');
+                            }
+                            cssProp.val = cssProp.spring;
+                            delete cssProp.spring;
+                        }
 
-                        // Faster than `delete collector[cssPropName].preset;`
-                        collector[cssPropName].preset = undefined;
+                        if (typeof cssProp.delay !== 'undefined') {
+
+                            // TODO Use something similar for the repeat prop
+
+                            const { delay, ...cssPropWithoutDelay } = cssProp;
+
+                            // Set cssProp to the latest of reactMotion here
+                            // cssProp = reactMotion.state.lastIdealStyle[cssPropName];
+
+                            const delayedAnimConfig = {};
+                            delayedAnimConfig[animStyleName] = {};
+                            delayedAnimConfig[animStyleName][cssPropName] = cssPropWithoutDelay;
+
+                            const animKeyDiff = Object.keys(beginAnimConfig[animStyleName])
+                            .filter(function(item) {
+
+                                return Object.keys(delayedAnimConfig[animStyleName])
+                                .indexOf(item) < 0;
+                            })
+                            .reduce((collector, diffKey) => {
+
+                                collector.enter[diffKey] = 'getLastIdealStyle';
+                                return collector;
+                            }, { enter: {} });
+
+                            const delayObj = {};
+                            delayObj[delay] = _merge({},
+                                animKeyDiff,
+                                delayedAnimConfig
+                            );
+
+                            delays = _merge({},
+                                delays,
+                                delayObj
+                            );
+                        }
+
+                        const beginStyleMerge = typeof beginAnimConfig[animStyleName][cssPropName] !== 'undefined' ?
+                            beginAnimConfig[animStyleName][cssPropName] :
+                            {};
+
+                        if (cssProp.delay) {
+
+                            delete cssProp.delay;
+                            newCSSProps[cssPropName] = _merge(
+                                {},
+                                defaultSpring,
+                                cssProp,
+                                beginStyleMerge,
+                                additional
+                            );
+                        }
+                        else {
+                            newCSSProps[cssPropName] = _merge(
+                                {},
+                                defaultSpring,
+                                beginStyleMerge,
+                                additional,
+                                cssProp
+                            );
+                        }
                     }
                     else {
-                        collector[cssPropName] = Object.assign({},
-                            assignOverride || beginAnimConfig[animStyleName][cssPropName],
+
+                        const beginStyleMerge = typeof beginAnimConfig[animStyleName][cssPropName] !== 'undefined' ?
+                            beginAnimConfig[animStyleName][cssPropName] :
+                            {};
+
+                        newCSSProps[cssPropName] = _merge({},
+                            defaultSpring,
+                            beginStyleMerge,
                             { val: cssProp }
                         );
                     }
 
-                    return collector;
+                    return newCSSProps;
                 }, {});
             }
+            else {
+                throw new Error(`animConfig can only have
+                    start,
+                    beforeEnter,
+                    enter, or
+                    leave`);
+            }
 
-            return newAnimConfig;
+            return collector;
+        }, {});
+
+        if (Object.keys(delays).length === 0) {
+            delays = undefined;
+        }
+
+        // Left off where I need to make sure to omit the
+        // css prop that has `delay` in it, from going through
+        // in this animConfig
+
+        return {
+            assignedAnimConfig,
+            delays
+        }
+    },
+
+    flattenCssPropsToValIfNeeded: function(cssProps) {
+
+        return Object.keys(cssProps)
+        .reduce((collector, cssPropName) => {
+
+            const currentCssProp = cssProps[cssPropName];
+
+            if (typeof currentCssProp === 'object' &&
+                !Array.isArray(currentCssProp)) {
+
+                const currentCssPropKeys = Object.keys(currentCssProp);
+
+                if (currentCssPropKeys.length === 1 &&
+                    currentCssPropKeys[0] === 'val') {
+
+                    collector[cssPropName] = currentCssProp.val;
+                }
+                else {
+                    collector[cssPropName] = currentCssProp;
+                }
+            }
+            else {
+                collector[cssPropName] = currentCssProp;
+            }
+
+            return collector;
         }, {});
     },
 
-    debounce: (func, wait, immediate) => {
+    debounce: function(func, wait, immediate) {
 
         let timeout;
         return (...args) => {
