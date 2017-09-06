@@ -10,9 +10,6 @@ module.exports = {
         },
         enter: {
             top: 0
-        },
-        leave: {
-            top: -80
         }
     },
     Footer: {
@@ -22,9 +19,6 @@ module.exports = {
         },
         enter: {
             bottom: 0
-        },
-        leave: {
-            bottom: -80
         }
     },
     Sidebar: {
@@ -32,13 +26,10 @@ module.exports = {
         delay: 500,
 
         start: {
-            right: -80
+            right: -110
         },
         enter: {
             right: 0
-        },
-        leave: {
-            right: -80
         }
     }
 }

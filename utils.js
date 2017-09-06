@@ -10,6 +10,8 @@ const defaultSpring = {
 
 module.exports = {
 
+    defaultSpring,
+
     /*
         Returns:
         {

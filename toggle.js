@@ -29,15 +29,6 @@ module.exports = class ToggleMotion extends StrangeMotion {
         }
     }
 
-    processAnimConfig(animConfig) {
-
-        if (!animConfig.leave) {
-            throw new Error('Must provide "leave" to animConfig for toggle type');
-        }
-
-        return super.processAnimConfig(animConfig);
-    }
-
     filterChildrenForType(children) {
 
         const { trigger } = this.props;
@@ -59,9 +50,6 @@ module.exports = class ToggleMotion extends StrangeMotion {
     }
 
     render() {
-
-        // Left off logging this because for some reason new entering objects
-        // is causing [object]NaN to be set here.
 
         return (
 

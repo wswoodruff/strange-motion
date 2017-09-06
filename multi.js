@@ -3,6 +3,7 @@ const T = require('prop-types');
 const StrangeMotion = require('./index');
 const { TransitionMotion } = require('react-motion');
 const Motion = require('./motion');
+const Utils = require('./utils');
 
 // Component
 
@@ -24,7 +25,7 @@ module.exports = class MultiMotion extends StrangeMotion {
         const childrenByKeys = this._getModelByKeys(props.children);
 
         const {
-            delayedInfo,
+            delayConfigs,
             immediateAnimConfigs,
             immediateChildren
         } = Object.keys(props.animConfigs)
@@ -36,7 +37,7 @@ module.exports = class MultiMotion extends StrangeMotion {
             if (!!anim.delay) {
                 const delay = anim.delay;
                 delete anim.delay;
-                collector.delayedInfo.push({
+                collector.delayConfigs.push({
                     delayAnimConfig: { key: animKey, val: anim },
                     delayChild: child,
                     delay
@@ -49,12 +50,16 @@ module.exports = class MultiMotion extends StrangeMotion {
 
             return collector;
         }, {
-            delayedInfo: [],
+            delayConfigs: [],
             immediateAnimConfigs: {},
             immediateChildren: []
         });
 
         const self = this;
+
+        // Where we set childWrapperComponent
+        // and childWrapperProps
+
         this.state = Object.assign(
             {},
             this.state,
@@ -67,7 +72,7 @@ module.exports = class MultiMotion extends StrangeMotion {
         );
 
         /*
-            delayInfo's schema
+            delayConfig's schema
             [{
                 delayAnimConfig,
                 delayChild,
@@ -75,9 +80,9 @@ module.exports = class MultiMotion extends StrangeMotion {
             }]
         */
 
-        delayedInfo.forEach((delayInfo) => {
+        delayConfigs.forEach((delayConfig) => {
 
-            const { delayAnimConfig, delayChild, delay } = delayInfo;
+            const { delayAnimConfig, delayChild, delay } = delayConfig;
 
             setTimeout(() => {
 
@@ -85,18 +90,23 @@ module.exports = class MultiMotion extends StrangeMotion {
                 const currentModel = this.state.model;
                 delete delayAnimConfig.delay;
 
+                const newAnimConfigs = {
+                    ...currentAnimConfigs,
+                    [delayAnimConfig.key]: delayAnimConfig.val
+                }
+
+                const newModel = [...currentModel, delayChild];
+
                 this.setState({
-                    model: [...currentModel, delayChild],
-                    animConfigs: {
-                        ...currentAnimConfigs,
-                        [delayAnimConfig.key]: delayAnimConfig.val
-                    }
+                    model: newModel,
+                    animConfigs: newAnimConfigs
                 })
             }, delay);
         });
 
         this.getRef = this._getRef.bind(this);
         this.getModelByKeys = this._getModelByKeys.bind(this);
+        this.willLeave = this._willLeave.bind(this);
     }
 
     _getModelByKeys(model) {
@@ -126,21 +136,16 @@ module.exports = class MultiMotion extends StrangeMotion {
 
     render() {
 
-        const { model, animConfigs } = this.state;
+        // TODO Get the children in a way where the child wrapper and all that gets set
+        // Pretty sure this needs to not be a strange-motion element now, it just needs
+        // to be a puppet master
 
+        const { children } = this.props;
         return (
-            <TransitionMotion
-                defaultStyles={this.getDefaultStyles()}
-                styles={this.getStyles()}
-                willEnter={this.willEnter}
-                willLeave={this.willLeave}
-                ref={this.getRef('reactMotion')} // Set this.reactMotion ref
-            >
-                {(interpolatedStyles) => {
-
-                    return this.getChildren(interpolatedStyles);
-                }}
-            </TransitionMotion>
+            <div>
+                {children}
+            </div>
         );
+        // return this.getChildren(interpolatedStyles);
     }
 };

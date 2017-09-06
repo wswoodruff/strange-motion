@@ -26,7 +26,7 @@ module.exports = {
     `,
     Sidebar: styled.div`
         height: 800px;
-        width: 100px;
+        width: 80px;
         position: absolute;
         top: 0;
         right: 0;

@@ -4,6 +4,11 @@ const { spring } = require('react-motion');
 const Utils = require('./utils');
 const _merge = require('lodash/merge');
 
+// TODO -- to fix the leave anim problem, allow an api that, under the hood
+// in this file, just sets a new animConfig to - for example - the 'leave' anim:
+// setState({ animConfig: { enter: beginAnimConfig.leave } });
+
+
 module.exports = class StrangeMotion extends React.PureComponent {
 
     static propTypes = {
@@ -261,24 +266,14 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         if (animConfig.leave) {
 
-            const leaveAnimVals = Object.keys(animConfig.leave)
-            .reduce((collector, key) => {
-
-                const cssItem = animConfig.leave[key];
-
-                if (typeof cssItem === 'object') {
-                    collector[key] = cssItem;
-                }
-                else {
-                    collector[key] = cssItem;
-                }
-
-                return collector;
-            }, {});
+            const leaveAnimVals = Object.assign({}, animConfig.leave);
 
             if (!animConfig.start) {
                 animConfig.start = leaveAnimVals;
             }
+        }
+        else if (animConfig.start) {
+            animConfig.leave = animConfig.start;
         }
 
         if (!animConfig.beforeEnter) {
@@ -484,6 +479,8 @@ module.exports = class StrangeMotion extends React.PureComponent {
     _willLeave() {
 
         const { animConfig } = this.state;
+        console.warn('In Core animConfig', animConfig);
+        console.warn('In Core animConfig.leave', animConfig.leave);
         return animConfig.leave;
     }
 

@@ -38,8 +38,8 @@ module.exports = class HomePage extends React.PureComponent {
                 </SectionTitle>
 
                 <DemosContainer>
-                    <MotionDemo />
-                    <MotionListDemo />
+                    {/* <MotionDemo /> */}
+                    {/* <MotionListDemo /> */}
                     <MotionToggleDemo />
                     <MultiMotion />
                 </DemosContainer>
@@ -49,7 +49,7 @@ module.exports = class HomePage extends React.PureComponent {
                 </SectionTitle>
 
                 <DemosContainer>
-                    <ToggleIconDemo />
+                    {/* <ToggleIconDemo /> */}
 
                     {/*
                         Note to self:
