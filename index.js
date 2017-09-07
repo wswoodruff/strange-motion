@@ -69,7 +69,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
             if (props.model) {
                 throw new Error('StrangeMotion: Must pass function as child if model is provided in props');
             }
-            model = this._getElementsFromChildren(props.children);
+            model = Utils.getElementsFromChildren(props.children);
         }
 
         this.state = {
@@ -84,7 +84,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
         this.willLeave = this._willLeave.bind(this);
         this.getStyles = this._getStyles.bind(this);
         this.getDefaultStyles = this._getDefaultStyles.bind(this);
-        this.getElementsFromChildren = this._getElementsFromChildren.bind(this);
         this.applyInterpolatedStyles = this._applyInterpolatedStyles.bind(this);
         this.genId = this._genId.bind(this);
     }
@@ -431,7 +430,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
         if (children && typeof children !== 'function') {
 
             this.setState({
-                model: this.getElementsFromChildren(children)
+                model: Utils.getElementsFromChildren(children)
             });
         }
 
@@ -447,22 +446,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
     filterChildrenForType(children) {
 
         return children;
-    }
-
-    _getElementsFromChildren(children) {
-
-        if (!Array.isArray(children)) {
-            children = [].concat(children);
-        }
-
-        return children.reduce((collector, child) => {
-
-            if (React.isValidElement(child)) {
-                collector.push(child);
-            }
-
-            return collector;
-        }, []);
     }
 
     _genId() {

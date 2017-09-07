@@ -1,6 +1,7 @@
 
 const { presets } = require('react-motion');
 const _merge = require('lodash/merge');
+const React = require('react');
 
 const defaultSpring = {
     stiffness: 170,
@@ -11,6 +12,36 @@ const defaultSpring = {
 module.exports = {
 
     defaultSpring,
+
+    getElementsFromChildren: (children) => {
+
+        if (!Array.isArray(children)) {
+            children = [].concat(children);
+        }
+
+        return children.reduce((collector, child) => {
+
+            if (React.isValidElement(child)) {
+                collector.push(child);
+            }
+
+            return collector;
+        }, []);
+    },
+
+    /*
+
+        Make util here that fills out animConfigs
+        with sensible defaults based on the animConfig
+        provided. So if leave isn't set, it'll set leave
+        equal to start
+
+        Also, for doggo-dish -- for each user that has access to an
+        organization, make an encrypted copy of the key to unencrypt
+        a single secure item. Each user gets a copy of the key to
+        unencrypt each secure.
+
+    */
 
     /*
         Returns:

@@ -7,11 +7,12 @@ const Utils = require('./utils');
 
 // Component
 
-module.exports = class MultiMotion extends StrangeMotion {
+module.exports = class MultiMotion extends React.PureComponent {
 
     static propTypes = {
         animConfigs: T.object.isRequired,
-        children: T.any.isRequired
+        children: T.any.isRequired,
+        getAnimController: T.func
     }
 
     constructor(props) {
@@ -20,7 +21,7 @@ module.exports = class MultiMotion extends StrangeMotion {
 
         super(props);
 
-        const children = this._getElementsFromChildren(props.children);
+        const children = Utils.getElementsFromChildren(props.children);
         const configKeys = Object.keys(props.animConfigs);
         const childrenByKeys = this._getModelByKeys(props.children);
 
@@ -104,7 +105,16 @@ module.exports = class MultiMotion extends StrangeMotion {
             }, delay);
         });
 
-        this.getRef = this._getRef.bind(this);
+        this.animController = Object.keys(immediateAnimConfigs)
+        .reduce((collector, childKey) => {
+
+            collector[childKey] = 'enter';
+        }, {});
+
+        if (props.getAnimController) {
+            prop.getAnimController(this.animController);
+        }
+
         this.getModelByKeys = this._getModelByKeys.bind(this);
         this.willLeave = this._willLeave.bind(this);
     }
@@ -118,34 +128,18 @@ module.exports = class MultiMotion extends StrangeMotion {
         }, {});
     }
 
-    _getRef(refName) {
-
-        return (ref) => {
-            this[refName] = ref;
-        }
-    }
-
-    getChildWrapperProps({ child, key }) {
-
-        const { animConfigs } = this.state;
-
-        return {
-            animConfig: animConfigs[key]
-        }
-    }
-
     render() {
 
-        // TODO Get the children in a way where the child wrapper and all that gets set
-        // Pretty sure this needs to not be a strange-motion element now, it just needs
-        // to be a puppet master
+        const { animConfigs } = this.props;
 
-        const { children } = this.props;
         return (
             <div>
-                {children}
+                {Object.keys(animConfigs).map((animName) => {
+                    return (
+                        <div>Ayoo</div>
+                    );
+                })}
             </div>
         );
-        // return this.getChildren(interpolatedStyles);
     }
 };

@@ -77,7 +77,7 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
             >
                 <MultiMotion
                     animConfigs={animConfigs}
-                    getController={this.setAnimController}
+                    getAnimController={this.setAnimController}
                 >
                     <Header key='Header' />
                     <Footer key='Footer' />
