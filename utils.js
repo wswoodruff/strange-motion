@@ -54,28 +54,21 @@ module.exports = {
     },
 
     /*
-
         Also, for doggo-dish -- for each user that has access to an
         organization, make an encrypted copy of the key to unencrypt
         a single secure item. Each user gets a copy of the key to
         unencrypt each secure.
-
         Make a symmetrically encrypted copy of the user's password,
         save it locally and create different ways to unlock it.
-
         Make the doggo-dish server local, and offer the option to sync
         with a db.
-
         When you want to share, it will send a message out to the
         doggo-dish server saying it's got an invite waiting for someone.
-
         When the invited person signs in, their app checks the server, gets the
         invite and shares the secure item(s)
-
         To share a secure item, invite the person. This will require your
         encrypted key to be unencrypted, then encrypted for that person,
         and sent up for them to download
-
     */
 
     /*

@@ -159,9 +159,7 @@ module.exports = class MultiMotion extends React.PureComponent {
         Make a strange-motion plugin called `quake` that accepts seismic number
         etc. and makes the thing shake perpendicularly or in a sine-wavelike fasion
         like an earthquake
-
         Make a strange-motion plugin called `blur` that accepts a blur multiplier number
-
         The `timeline` plugin can accept an array of plugins to apply to a partial of
         a timeline animation
     */

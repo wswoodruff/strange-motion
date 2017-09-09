@@ -1,6 +1,6 @@
 {
   "name": "strange-motion",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Cool website for cool util wrapper around `react-motion`!",
   "main": "server/plugin.js",
   "engines": {

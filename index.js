@@ -4,11 +4,6 @@ const { spring } = require('react-motion');
 const Utils = require('./utils');
 const _merge = require('lodash/merge');
 
-// TODO -- to fix the leave anim problem, allow an api that, under the hood
-// in this file, just sets a new animConfig to - for example - the 'leave' anim:
-// setState({ animConfig: { enter: beginAnimConfig.leave } });
-
-
 module.exports = class StrangeMotion extends React.PureComponent {
 
     static propTypes = {
@@ -145,6 +140,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
         }
 
         // Apply new styles to children
+
         const interpolatedChildren = interpolatedAsArray
         .map(({ style, data, key }) => {
 
@@ -356,13 +352,12 @@ module.exports = class StrangeMotion extends React.PureComponent {
         },
         () => {
 
-            // if there weren't any delays, 'delay' will be set to undefined
+            // if there weren't any delays, '$delay' will be set to undefined
             // from Utils.assignAnimConfig
             if (delays) {
 
                 /*
                     Delays object is organized by its delay times. ex:
-
                     {
                         400: [{ enter: { top: 100, left: 100 } }],
                         10000: [{ enter: { top: 500, left: 300 }] }
