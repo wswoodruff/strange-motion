@@ -18,7 +18,9 @@
     "test": "better-npm-run test",
     "deploy": "better-npm-run deploy",
     "deploy:dev": "better-npm-run deploy:dev && cp dist/index.html ./index.html",
+    "deploy:development": "better-npm-run deploy:dev && cp dist/index.html ./index.html",
     "deploy:prod": "better-npm-run deploy:prod && cp dist/index.html ./index.html",
+    "deploy:production": "better-npm-run deploy:prod && cp dist/index.html ./index.html",
     "codecov": "cat coverage/*/lcov.info | codecov"
   },
   "betterScripts": {
