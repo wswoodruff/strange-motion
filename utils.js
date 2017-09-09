@@ -106,8 +106,6 @@ module.exports = {
             }
             else {
 
-                console.log(newAnimStyle);
-
                 collector[animStyleName] = Object.keys(newAnimStyle)
                 .reduce((newCSSProps, cssPropName) => {
 

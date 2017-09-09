@@ -22,4 +22,20 @@
   *:after {
     box-sizing: inherit;
   }
+
+  .github-fork-ribbon-wrapper {
+
+      .github-fork-ribbon {
+
+          display: flex !important;
+          align-items: center;
+
+          a {
+              font-size: 11px !important;
+          }
+      }
+
+      position: fixed !important;
+      top: 56px !important;
+  }
 }

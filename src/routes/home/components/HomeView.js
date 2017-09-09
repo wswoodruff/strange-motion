@@ -5,19 +5,31 @@ const MotionDemo = require('components/MotionDemo');
 const MotionToggleDemo = require('components/MotionToggleDemo');
 const MotionListDemo = require('components/MotionListDemo');
 const MultiMotion = require('components/MultiMotion');
+const { FPSStats } = require('react-stats');
+const { default: GitHubForkRibbon } = require('react-github-fork-ribbon');
 
+const GithubMark = require('assets/GitHub-Mark-Light-32px.png');
 
 // Component demos
 const ToggleIconDemo = require('components/ToggleIconDemo');
 
 // Styles
 
+const { default: styled } = require('styled-components');
 const lStyles = require('./styles');
 
 const {
     HomeContainer,
     DemosContainer,
     SectionTitle } = lStyles;
+
+const StyledGithubMark = styled.img.attrs({
+    src: GithubMark
+})`
+    margin-left: 2px;
+    margin-bottom: -3px;
+    height: 15px;
+`;
 
 // Component
 
@@ -33,13 +45,23 @@ module.exports = class HomePage extends React.PureComponent {
         return (
             <HomeContainer> {/* MainContainer is in src/layouts/CoreLayout */}
 
-                {/* <SectionTitle type='headline' component='h1'>
+                <FPSStats isActive={true} top={'auto'} />
+                <GitHubForkRibbon
+                    href='https://github.com/wswoodruff/strange-motion'
+                    target='_blank'
+                    position='right'
+                    color='black'
+                >
+                    Fork me on GitHub! <StyledGithubMark />
+                </GitHubForkRibbon>
+
+                <SectionTitle type='headline' component='h1'>
                     Featured Demos
                 </SectionTitle>
 
                 <DemosContainer>
                     <MotionToggleDemo />
-                </DemosContainer> */}
+                </DemosContainer>
 
                 <SectionTitle type='headline' component='h1'>
                     Building Blocks
@@ -52,9 +74,9 @@ module.exports = class HomePage extends React.PureComponent {
                     <MultiMotion />
                 </DemosContainer>
 
-                <SectionTitle type='headline' component='h1'>
+                {/* <SectionTitle type='headline' component='h1'>
                     Components
-                </SectionTitle>
+                </SectionTitle> */}
 
                 <DemosContainer>
                     {/* <ToggleIconDemo /> */}
