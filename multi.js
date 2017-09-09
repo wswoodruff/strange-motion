@@ -1,7 +1,5 @@
 const React = require('react');
 const T = require('prop-types');
-const StrangeMotion = require('./index');
-const { TransitionMotion } = require('react-motion');
 const Motion = require('./motion');
 const Utils = require('./utils');
 
@@ -12,12 +10,10 @@ module.exports = class MultiMotion extends React.PureComponent {
     static propTypes = {
         animConfigs: T.object.isRequired,
         children: T.any.isRequired,
-        getAnimController: T.func
+        getAnimControllers: T.func
     }
 
     constructor(props) {
-
-        // TODO Check to make sure each keyed child has an animConfig
 
         super(props);
 
@@ -35,13 +31,19 @@ module.exports = class MultiMotion extends React.PureComponent {
             const anim = props.animConfigs[animKey];
             const child = childrenByKeys[animKey];
 
-            if (!!anim.delay) {
-                const delay = anim.delay;
-                delete anim.delay;
+            if (!!anim.$delay) {
+
+                const $delay = anim.$delay;
+
+                // delete the $delay for the future animConfig
+                // or we'd be in an infinite loop right?
+
+                delete anim.$delay;
+
                 collector.delayConfigs.push({
                     delayAnimConfig: { key: animKey, val: anim },
                     delayChild: child,
-                    delay
+                    $delay
                 });
             }
             else {
@@ -56,19 +58,27 @@ module.exports = class MultiMotion extends React.PureComponent {
             immediateChildren: []
         });
 
+        const immediateAnimConfigsWithDefaults = Object.keys(immediateAnimConfigs)
+        .reduce((collector, animKey) => {
+
+            // 'Utils.assignDefaultsToAnimConfig' handles
+            // $delay set for individual css props
+
+            collector[animKey] = Utils.assignDefaultsToAnimConfig(immediateAnimConfigs[animKey]);
+
+            return collector;
+        }, {});
+
         const self = this;
 
-        // Where we set childWrapperComponent
-        // and childWrapperProps
+        this.animControllers = {};
 
         this.state = Object.assign(
             {},
             this.state,
             {
                 model: immediateChildren,
-                animConfigs: immediateAnimConfigs,
-                childWrapperComponent: Motion,
-                childWrapperProps: this.getChildWrapperProps.bind(self)
+                animConfigs: immediateAnimConfigsWithDefaults
             }
         );
 
@@ -77,23 +87,26 @@ module.exports = class MultiMotion extends React.PureComponent {
             [{
                 delayAnimConfig,
                 delayChild,
-                delay
+                $delay
             }]
         */
 
         delayConfigs.forEach((delayConfig) => {
 
-            const { delayAnimConfig, delayChild, delay } = delayConfig;
+            const { delayAnimConfig, delayChild, $delay } = delayConfig;
 
             setTimeout(() => {
 
                 const currentAnimConfigs = this.state.animConfigs;
                 const currentModel = this.state.model;
-                delete delayAnimConfig.delay;
+                delete delayAnimConfig.$delay;
+
+                // Can process nested $delays set here
+                const delayedAnimConfigWithDefaults = Utils.assignDefaultsToAnimConfig(delayAnimConfig);
 
                 const newAnimConfigs = {
                     ...currentAnimConfigs,
-                    [delayAnimConfig.key]: delayAnimConfig.val
+                    [delayedAnimConfigWithDefaults.key]: delayedAnimConfigWithDefaults.val
                 }
 
                 const newModel = [...currentModel, delayChild];
@@ -102,21 +115,11 @@ module.exports = class MultiMotion extends React.PureComponent {
                     model: newModel,
                     animConfigs: newAnimConfigs
                 })
-            }, delay);
+            }, $delay);
         });
 
-        this.animController = Object.keys(immediateAnimConfigs)
-        .reduce((collector, childKey) => {
-
-            collector[childKey] = 'enter';
-        }, {});
-
-        if (props.getAnimController) {
-            prop.getAnimController(this.animController);
-        }
-
         this.getModelByKeys = this._getModelByKeys.bind(this);
-        this.willLeave = this._willLeave.bind(this);
+        this.setAnimController = this._setAnimController.bind(this);
     }
 
     _getModelByKeys(model) {
@@ -128,15 +131,67 @@ module.exports = class MultiMotion extends React.PureComponent {
         }, {});
     }
 
+    _setAnimController(animName) {
+
+        const { animConfigs } = this.state;
+        const { getAnimControllers } = this.props;
+
+        return (animController) => {
+
+            const { animConfigs } = this.state;
+
+            const newAnimControllers = Object.assign({},
+                { ...this.animControllers },
+                {
+                    [animName]: animController
+                }
+            );
+
+            this.animControllers = newAnimControllers;
+
+            if (typeof getAnimControllers === 'function') {
+                getAnimControllers(this.animControllers);
+            }
+        }
+    }
+
+    /*
+        Make a strange-motion plugin called `quake` that accepts seismic number
+        etc. and makes the thing shake perpendicularly or in a sine-wavelike fasion
+        like an earthquake
+
+        Make a strange-motion plugin called `blur` that accepts a blur multiplier number
+
+        The `timeline` plugin can accept an array of plugins to apply to a partial of
+        a timeline animation
+    */
+
     render() {
 
-        const { animConfigs } = this.props;
+        const { model, animConfigs } = this.state;
+
+        const modelByKeys = this.getModelByKeys(model);
+
+        const controlledAnimConfigs = Object.keys(animConfigs)
+        .reduce((collector, animName) => {
+
+            collector[animName] = animConfigs[animName];
+
+
+            return collector;
+        }, {});
 
         return (
             <div>
-                {Object.keys(animConfigs).map((animName) => {
+                {Object.keys(controlledAnimConfigs).map((animName) => {
                     return (
-                        <div>Ayoo</div>
+                        <Motion
+                            animConfig={controlledAnimConfigs[animName]}
+                            getAnimController={this.setAnimController(animName)}
+                            key={animName}
+                        >
+                            {modelByKeys[animName]}
+                        </Motion>
                     );
                 })}
             </div>

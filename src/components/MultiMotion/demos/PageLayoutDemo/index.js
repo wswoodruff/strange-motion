@@ -31,22 +31,26 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
         };
 
         this.setRef = this._setRef.bind(this);
-        this.setAnimController = this._setAnimController.bind(this);
+        this.setAnimControllers = this._setAnimControllers.bind(this);
     }
 
     componentDidMount() {
 
         this.mouseWatcher.addEventListener('mouseover', (ev) => {
 
-            this.setState({
-                mouseOver: true
+            Object.keys(this.animControllers)
+            .forEach((animName) => {
+
+                this.animControllers[animName].halfway();
             });
         });
 
         this.mouseWatcher.addEventListener('mouseout', (ev) => {
 
-            this.setState({
-                mouseOver: false
+            Object.keys(this.animControllers)
+            .forEach((animName) => {
+
+                this.animControllers[animName].enter();
             });
         });
     }
@@ -60,9 +64,9 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
         }
     }
 
-    _setAnimController(animController) {
+    _setAnimControllers(animControllers) {
 
-        this.animController = animController;
+        this.animControllers = animControllers;
     }
 
     render() {
@@ -77,7 +81,7 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
             >
                 <MultiMotion
                     animConfigs={animConfigs}
-                    getAnimController={this.setAnimController}
+                    getAnimControllers={this.setAnimControllers}
                 >
                     <Header key='Header' />
                     <Footer key='Footer' />

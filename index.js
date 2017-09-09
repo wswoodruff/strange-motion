@@ -263,24 +263,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
     processAnimConfig(animConfig) {
 
-        if (animConfig.leave) {
-
-            const leaveAnimVals = Object.assign({}, animConfig.leave);
-
-            if (!animConfig.start) {
-                animConfig.start = leaveAnimVals;
-            }
-        }
-        else if (animConfig.start) {
-            animConfig.leave = animConfig.start;
-        }
-
-        if (!animConfig.beforeEnter) {
-            animConfig.beforeEnter = _merge(
-                {},
-                animConfig.start
-            );
-        }
+        const animConfigWithDefaults = Utils.assignDefaultsToAnimConfig(animConfig);
 
         const self = this;
 
@@ -289,7 +272,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
             delays
         } = Utils.assignAnimConfig({
             beginAnimConfig: self.state && self.state.animConfig,
-            newAnimConfig: animConfig
+            newAnimConfig: animConfigWithDefaults
         });
 
         if (delays) {
@@ -311,17 +294,18 @@ module.exports = class StrangeMotion extends React.PureComponent {
         let newAnimConfig = passedInAnimConfig;
 
         if (passedInAnimConfig.enter &&
-            passedInAnimConfig.enter.delay) {
+            passedInAnimConfig.enter.$delay) {
 
-            const { delay: enterDelay, ...enterWithoutDelay } = passedInAnimConfig.enter;
+            const { $delay: $enterDelay, ...enterWithoutDelay } = passedInAnimConfig.enter;
 
             // heeeeere's the delay!
+
             setTimeout(() => {
 
                 this.assignAnimConfig({
                     newAnimConfig: { enter: enterWithoutDelay }
-                })
-            }, enterDelay);
+                });
+            }, $enterDelay);
 
             const { enter, ...rest } = passedInAnimConfig;
             if (Object.keys(rest).length !== 0) {
@@ -462,8 +446,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
     _willLeave() {
 
         const { animConfig } = this.state;
-        console.warn('In Core animConfig', animConfig);
-        console.warn('In Core animConfig.leave', animConfig.leave);
         return animConfig.leave;
     }
 
@@ -490,8 +472,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const { model, animConfig } = this.state;
 
-        this.lastModel = model;
-
         let filteredModel;
         if (this.props.model) {
             filteredModel = model;
@@ -503,17 +483,22 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const newStyles = filteredModel.map((child, i) => {
 
-            const { key, id: itemId } = child;
+            const { key, id: itemId, name } = child;
 
-            let newKey = key;
+            let newKey = key || '';
 
-            if (!newKey) {
+            if (!key) {
                 if (itemId) {
-                    newKey = itemId;
+                    newKey += itemId;
                 }
-                else {
-                    newKey = this._genId();
+
+                if (name) {
+                    newKey += name + i;
                 }
+            }
+
+            if (newKey === '') {
+                newKey = this._genId();
             }
 
             let newStyle = animConfigKey ? animConfig[animConfigKey] : animConfig.enter;

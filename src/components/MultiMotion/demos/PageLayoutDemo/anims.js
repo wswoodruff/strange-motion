@@ -10,6 +10,9 @@ module.exports = {
         },
         enter: {
             top: 0
+        },
+        halfway: {
+            top: -20
         }
     },
     Footer: {
@@ -19,17 +22,23 @@ module.exports = {
         },
         enter: {
             bottom: 0
+        },
+        halfway: {
+            bottom: -20
         }
     },
     Sidebar: {
 
-        delay: 500,
+        $delay: 500,
 
         start: {
             right: -110
         },
         enter: {
             right: 0
+        },
+        halfway: {
+            right: -30
         }
     }
 }

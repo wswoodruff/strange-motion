@@ -33,13 +33,21 @@ module.exports = class HomePage extends React.PureComponent {
         return (
             <HomeContainer> {/* MainContainer is in src/layouts/CoreLayout */}
 
-                <SectionTitle type='headline' component='h1'>
-                    Motions
+                {/* <SectionTitle type='headline' component='h1'>
+                    Featured Demos
                 </SectionTitle>
 
                 <DemosContainer>
-                    {/* <MotionDemo /> */}
-                    {/* <MotionListDemo /> */}
+                    <MotionToggleDemo />
+                </DemosContainer> */}
+
+                <SectionTitle type='headline' component='h1'>
+                    Building Blocks
+                </SectionTitle>
+
+                <DemosContainer>
+                    <MotionDemo />
+                    <MotionListDemo />
                     <MotionToggleDemo />
                     <MultiMotion />
                 </DemosContainer>

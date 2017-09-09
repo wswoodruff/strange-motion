@@ -56,7 +56,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                         },
                         top: {
                             val: ev.clientY - bounds.top,
-                            delay: 500
+                            $delay: 500
                         }
                     }
                 }
@@ -92,7 +92,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                         },
                         top: {
                             val: Math.random() * bounds.height,
-                            delay: 1000
+                            $delay: 1000
                         }
                     }
                 }
@@ -113,8 +113,6 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
 
         const { animPlugins } = this.props;
         const { ballAnim } = this.state;
-
-        console.log(animPlugins);
 
         return (
             <Wrapper
