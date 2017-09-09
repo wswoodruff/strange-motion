@@ -1,6 +1,7 @@
 
 const { presets } = require('react-motion');
 const _merge = require('lodash/merge');
+const React = require('react');
 
 const defaultSpring = {
     stiffness: 170,
@@ -11,6 +12,64 @@ const defaultSpring = {
 module.exports = {
 
     defaultSpring,
+
+    assignDefaultsToAnimConfig: (animConfig) => {
+
+        if (animConfig.leave) {
+
+            const leaveAnimVals = _merge({}, animConfig.leave);
+
+            if (!animConfig.start) {
+                animConfig.start = leaveAnimVals;
+            }
+        }
+        else if (animConfig.start) {
+            animConfig.leave = animConfig.start;
+        }
+
+        if (!animConfig.beforeEnter) {
+            animConfig.beforeEnter = _merge(
+                {},
+                animConfig.start
+            );
+        }
+
+        return animConfig;
+    },
+
+    getElementsFromChildren: (children) => {
+
+        if (!Array.isArray(children)) {
+            children = [].concat(children);
+        }
+
+        return children.reduce((collector, child) => {
+
+            if (React.isValidElement(child)) {
+                collector.push(child);
+            }
+
+            return collector;
+        }, []);
+    },
+
+    /*
+        Also, for doggo-dish -- for each user that has access to an
+        organization, make an encrypted copy of the key to unencrypt
+        a single secure item. Each user gets a copy of the key to
+        unencrypt each secure.
+        Make a symmetrically encrypted copy of the user's password,
+        save it locally and create different ways to unlock it.
+        Make the doggo-dish server local, and offer the option to sync
+        with a db.
+        When you want to share, it will send a message out to the
+        doggo-dish server saying it's got an invite waiting for someone.
+        When the invited person signs in, their app checks the server, gets the
+        invite and shares the secure item(s)
+        To share a secure item, invite the person. This will require your
+        encrypted key to be unencrypted, then encrypted for that person,
+        and sent up for them to download
+    */
 
     /*
         Returns:
@@ -35,16 +94,19 @@ module.exports = {
         const assignedAnimConfig = Object.keys(beginAnimConfig)
         .reduce((collector, animStyleName) => {
 
-            const newAnimStyle = newAnimConfig[animStyleName];
             const beginAnimStyle = beginAnimConfig[animStyleName];
+            const newAnimStyle = newAnimConfig[animStyleName] || beginAnimStyle;
 
             if (animStyleName === 'start' ||
-                animStyleName === 'beforeEnter') {
+               animStyleName === 'beforeEnter') {
 
-                collector[animStyleName] = beginAnimStyle;
+               // These can't handle springs set on them
+
+               collector[animStyleName] = newAnimConfig[animStyleName] || beginAnimConfig[animStyleName];
             }
-            else if(animStyleName === 'enter' ||
-                    animStyleName === 'leave') {
+            else {
+
+                console.log(newAnimStyle);
 
                 collector[animStyleName] = Object.keys(newAnimStyle)
                 .reduce((newCSSProps, cssPropName) => {
@@ -65,7 +127,8 @@ module.exports = {
                                 additional = presets[cssProp.preset];
                             }
 
-                            // Gotta find a way to pass in options now
+                            // TODO pass in user options
+
                             // const userPreset = internals.userPresets[cssProp.preset];
 
                             // if (reactPreset) {
@@ -76,19 +139,20 @@ module.exports = {
                         }
 
                         // spring is an alias for val
+
                         if (typeof cssProp.spring !== 'undefined') {
-                            if (cssProp.val) {
+                            if (typeof cssProp.val !== 'undefined') {
                                 throw new Error('Can\'t have spring and val both set');
                             }
                             cssProp.val = cssProp.spring;
                             delete cssProp.spring;
                         }
 
-                        if (typeof cssProp.delay !== 'undefined') {
+                        if (typeof cssProp.$delay !== 'undefined') {
 
                             // TODO Use something similar for the repeat prop
 
-                            const { delay, ...cssPropWithoutDelay } = cssProp;
+                            const { $delay, ...cssPropWithoutDelay } = cssProp;
 
                             // Set cssProp to the latest of reactMotion here
                             // cssProp = reactMotion.state.lastIdealStyle[cssPropName];
@@ -110,7 +174,7 @@ module.exports = {
                             }, { enter: {} });
 
                             const delayObj = {};
-                            delayObj[delay] = _merge({},
+                            delayObj[$delay] = _merge({},
                                 animKeyDiff,
                                 delayedAnimConfig
                             );
@@ -125,9 +189,9 @@ module.exports = {
                             beginAnimConfig[animStyleName][cssPropName] :
                             {};
 
-                        if (cssProp.delay) {
+                        if (cssProp.$delay) {
 
-                            delete cssProp.delay;
+                            delete cssProp.$delay;
                             newCSSProps[cssPropName] = _merge(
                                 {},
                                 defaultSpring,
@@ -162,13 +226,6 @@ module.exports = {
                     return newCSSProps;
                 }, {});
             }
-            else {
-                throw new Error(`animConfig can only have
-                    start,
-                    beforeEnter,
-                    enter, or
-                    leave`);
-            }
 
             return collector;
         }, {});
@@ -176,10 +233,6 @@ module.exports = {
         if (Object.keys(delays).length === 0) {
             delays = undefined;
         }
-
-        // Left off where I need to make sure to omit the
-        // css prop that has `delay` in it, from going through
-        // in this animConfig
 
         return {
             assignedAnimConfig,

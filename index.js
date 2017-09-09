@@ -1,29 +1,35 @@
 const React = require('react');
 const T = require('prop-types');
 const { spring } = require('react-motion');
-const { assignAnimConfig } = require('./utils');
-
-const internals = {
-    defaultSpring: {
-        stiffness: 170,
-        damping: 26,
-        precision: 0.01
-    }
-};
+const Utils = require('./utils');
+const _merge = require('lodash/merge');
 
 module.exports = class StrangeMotion extends React.PureComponent {
 
     static propTypes = {
         model: T.array,
         animConfig: T.shape({
-            startStyle: T.object,
-            beforeEnterStyle: T.object,
-            enterAnim: T.object.isRequired,
-            leaveAnim: T.object
+            start: T.object,
+            beforeEnter: T.object,
+            enter: T.object.isRequired,
+            leave: T.object
         }),
+        animPlugins: T.array,
+
+        // Left off implementing animPlugins for the motion blur plugin.
+
         children: T.any.isRequired,
-        wrapperComponent: T.any,
-        wrapperProps: T.object
+        animWrapperComponent: T.any,
+        animWrapperProps: T.func,
+        childWrapperComponent: T.any,
+        childWrapperProps: T.func,
+        childProps: T.func
+    }
+
+    static defaultSpring = {
+        stiffness: 170,
+        damping: 26,
+        precision: 0.01
     }
 
     constructor(props) {
@@ -39,148 +45,386 @@ module.exports = class StrangeMotion extends React.PureComponent {
         }
 
         let model;
+        let childIsFunc;
+
+        if (props.model) {
+            model = props.model;
+        }
 
         if (typeof props.children === 'function') {
 
+            childIsFunc = true;
             if (!props.model) {
-                throw new Error('Must pass in model if children is a function');
+                throw new Error('StrangeMotion: Must pass in model if children is a function');
             }
-            this.getChildren = props.children;
             model = props.model;
         }
         else {
-
-            model = this._getElementsFromChildren(props.children);
-
-            this.getChildren = (interpolatedStyles) => {
-
-                const interpolatedChildren = [];
-
-                interpolatedStyles.forEach(({ data, key, style }) => {
-
-                    const child = data;
-                    const childStyle = child.props.style;
-
-                    if (childStyle) {
-                        style = { ...childStyle, ...style };
-                    }
-
-                    const childProps = Object.assign({},
-                        { key, style },
-                        props.wrapperProps || {}
-                    );
-
-                    const clonedChild = React.cloneElement(child, {
-                        style,
-                        ...childProps
-                    });
-
-                    interpolatedChildren.push(clonedChild);
-                });
-
-                return React.createElement(
-                    props.wrapperComponent || 'div',
-                    props.wrapperProps || {},
-                    interpolatedChildren
-                );
-            };
+            childIsFunc = false;
+            if (props.model) {
+                throw new Error('StrangeMotion: Must pass function as child if model is provided in props');
+            }
+            model = Utils.getElementsFromChildren(props.children);
         }
 
         this.state = {
             animConfig,
-            model
+            model,
+            childIsFunc,
+            childWrapperComponent: props.childWrapperComponent,
+            childWrapperProps: props.childWrapperProps
         };
 
         this.willEnter = this._willEnter.bind(this);
         this.willLeave = this._willLeave.bind(this);
         this.getStyles = this._getStyles.bind(this);
         this.getDefaultStyles = this._getDefaultStyles.bind(this);
-        this.getElementsFromChildren = this._getElementsFromChildren.bind(this);
+        this.applyInterpolatedStyles = this._applyInterpolatedStyles.bind(this);
+        this.genId = this._genId.bind(this);
+    }
+
+    getChildren(interpolatedStyles) {
+
+        const {
+            animWrapperComponent,
+            animWrapperProps,
+            childWrapperComponent,
+            childWrapperProps,
+            childProps,
+            model
+        } = this.state;
+
+        const interpolatedAsArray = [].concat(interpolatedStyles);
+
+        if (typeof interpolatedStyles === 'object' &&
+            !Array.isArray(interpolatedStyles)) {
+
+            // it's a Motion object
+
+            const interpolatedChild = interpolatedAsArray
+            .map((style) => {
+
+                let newChildPropsVal = {};
+                if (childProps) {
+                    newChildPropsVal = childProps(style);
+                }
+
+                // Use model right here
+                const newChild = Array.isArray(model) ? model[0] : model;
+
+                return this.applyInterpolatedStyles({
+                    style,
+                    child: newChild,
+                    childWrapperComponent,
+                    childWrapperProps,
+                    newChildPropsVal
+                });
+            })[0]; // Grab the first and only item here
+
+            if (!animWrapperComponent && !animWrapperProps) {
+                return interpolatedChild;
+            }
+
+            if (animWrapperComponent) {
+                return React.createElement(
+                    animWrapperComponent,
+                    animWrapperProps && animWrapperProps(interpolatedStyles) || {},
+                    interpolatedChild
+                );
+            }
+            else {
+                return React.cloneElement(
+                    interpolatedChild
+                );
+            }
+        }
+
+        // Apply new styles to children
+
+        const interpolatedChildren = interpolatedAsArray
+        .map(({ style, data, key }) => {
+
+            let newChildPropsVal = {};
+            if (childProps) {
+                newChildPropsVal = childProps({ style, data, key });
+            }
+
+            return this.applyInterpolatedStyles({
+                style,
+                child: data,
+                key,
+                childWrapperComponent,
+                childWrapperProps,
+                newChildPropsVal,
+            });
+        });
+
+        return React.createElement(
+            animWrapperComponent || 'div',
+            animWrapperProps && animWrapperProps(interpolatedStyles) || {},
+            interpolatedChildren
+        );
+    };
+
+    _applyInterpolatedStyles({
+        style,
+        child,
+        key,
+        childWrapperComponent,
+        childWrapperProps,
+        newChildPropsVal
+    }) {
+
+        if (!key) {
+            key = this.genId();
+        }
+
+        const { children } = this.props;
+        const childStyle = child.props && child.props.style;
+
+        let newStyle = style;
+
+        newStyle = _merge(
+            {},
+            childStyle || {},
+            style
+        );
+
+        let newChild;
+
+        const newChildProps = newChildPropsVal;
+
+        if (this.state.childIsFunc && !childWrapperComponent) {
+
+            newChild = React.cloneElement(
+                children({ style: newStyle, child, key }),
+                { ...newChildProps, style }
+            );
+        }
+        else if (this.state.childIsFunc && childWrapperComponent) {
+
+            newChild = React.cloneElement(
+                children({ style: childStyle, child, key }),
+                newChildProps
+            );
+        }
+
+        if (!this.state.childIsFunc && !childWrapperComponent) {
+
+            newChild = React.cloneElement(
+                child,
+                { ...newChildProps, style }
+            );
+        }
+        else if (!this.state.childIsFunc && childWrapperComponent) {
+
+            newChild = React.cloneElement(
+                child,
+                newChildProps
+            );
+        }
+
+        if (childWrapperComponent) {
+
+            let childWrapperPropsVal = {};
+
+            if (typeof childWrapperProps === 'function') {
+                childWrapperPropsVal = childWrapperProps(
+                    { child, key }
+                );
+            }
+            else if (childWrapperProps) {
+                childWrapperPropsVal = childWrapperProps;
+            }
+
+            newChild = React.createElement(
+                childWrapperComponent,
+                { key, ...childWrapperPropsVal },
+                newChild
+            );
+        }
+
+        return newChild;
     }
 
     _getDefaultAnimConfig() {
 
         return {
-            startStyle: {
-                opacity: 0,
-                fontSize: 10
-            },
-            beforeEnterStyle: {
-                opacity: 0,
-                fontSize: 10
-            },
-            enterAnim: {
-                opacity: spring(1, {
-                    stiffness: 210,
-                    damping: 25
-                }),
-                fontSize: spring(100, {
-                    stiffness: 180,
-                    damping: 16
-                })
-            },
-            leaveAnim: {
-                opacity: spring(0),
-                fontSize: spring(60)
-            }
+            start: {},
+            beforeEnter: {},
+            enter: {},
+            leave: {}
         };
     }
 
     processAnimConfig(animConfig) {
 
-        const leaveAnimVals = Object.keys(animConfig.leaveAnim)
-        .reduce((collector, key) => {
+        const animConfigWithDefaults = Utils.assignDefaultsToAnimConfig(animConfig);
 
-            const item = animConfig.leaveAnim[key];
+        const self = this;
 
-            if (typeof item === 'object') {
-                collector[key] = item.val;
+        const {
+            assignedAnimConfig,
+            delays
+        } = Utils.assignAnimConfig({
+            beginAnimConfig: self.state && self.state.animConfig,
+            newAnimConfig: animConfigWithDefaults
+        });
+
+        if (delays) {
+            this.waitingDelays = delays;
+        }
+
+        return assignedAnimConfig;
+    }
+
+    // Why do I have newAnimConfig here if nobody is using it?
+    // it's to make sure you know what you're passing in. So when
+    // you look at code you'll know what it is in the function that
+    // calls 'assignAnimConfig'
+
+    assignAnimConfig({ newAnimConfig: passedInAnimConfig }) {
+
+        const reactMotion = this.reactMotion;
+
+        let newAnimConfig = passedInAnimConfig;
+
+        if (passedInAnimConfig.enter &&
+            passedInAnimConfig.enter.$delay) {
+
+            const { $delay: $enterDelay, ...enterWithoutDelay } = passedInAnimConfig.enter;
+
+            // heeeeere's the delay!
+
+            setTimeout(() => {
+
+                this.assignAnimConfig({
+                    newAnimConfig: { enter: enterWithoutDelay }
+                });
+            }, $enterDelay);
+
+            const { enter, ...rest } = passedInAnimConfig;
+            if (Object.keys(rest).length !== 0) {
+                newAnimConfig = rest;
             }
             else {
-                collector[key] = item;
+                return; // exit the assignAnimConfig func
             }
+        }
+
+        newAnimConfig = Object.keys(newAnimConfig)
+        .reduce((collector, animType) => {
+
+            const currentAnimType = passedInAnimConfig[animType];
+
+            const newAnimType = Object.keys(currentAnimType)
+            .reduce((collector, cssProp) => {
+
+                const cssPropVal = currentAnimType[cssProp];
+
+                if (cssPropVal === 'getLastIdealStyle') {
+                    collector[cssProp] = { val: reactMotion.state.lastIdealStyle[cssProp] };
+                }
+                else {
+                    collector[cssProp] = cssPropVal;
+                }
+
+                return collector;
+            }, {});
+
+            collector[animType] = newAnimType;
 
             return collector;
         }, {});
 
-        if (!animConfig.startStyle) {
-            animConfig.startStyle = leaveAnimVals;
-        }
+        //
 
-        if (!animConfig.beforeEnterStyle) {
-            animConfig.beforeEnterStyle = leaveAnimVals;
-        }
+        const self = this;
 
-        return assignAnimConfig(null, animConfig, internals.defaultSpring);
+        const { assignedAnimConfig, delays } = Utils.assignAnimConfig({
+            beginAnimConfig: self.state && self.state.animConfig,
+            newAnimConfig,
+            reactMotion
+        });
+
+        this.setState({
+            animConfig: assignedAnimConfig
+        },
+        () => {
+
+            // if there weren't any delays, '$delay' will be set to undefined
+            // from Utils.assignAnimConfig
+            if (delays) {
+
+                /*
+                    Delays object is organized by its delay times. ex:
+                    {
+                        400: [{ enter: { top: 100, left: 100 } }],
+                        10000: [{ enter: { top: 500, left: 300 }] }
+                    }
+                }
+                */
+
+                Object.keys(delays).forEach((delay) => {
+
+                    setTimeout(() => {
+
+                        [].concat(delays[delay]).forEach((currentDelay) => {
+
+                            this.assignAnimConfig({
+                                newAnimConfig: currentDelay
+                            });
+                        })
+
+                    }, delay);
+                });
+            }
+        });
+    }
+
+    componentDidMount() {
+
+        const { waitingDelays } = this;
+
+        if (waitingDelays) {
+
+            Object.keys(waitingDelays).forEach((delay) => {
+
+                setTimeout(() => {
+
+                    this.assignAnimConfig({ newAnimConfig: waitingDelays[delay] });
+                }, delay);
+            });
+        }
     }
 
     componentWillReceiveProps(nextProps) {
 
-        const children = nextProps.children;
+        const {
+            children,
+            model,
+            animConfig
+        } = nextProps;
 
         if (children && typeof children !== 'function') {
 
             this.setState({
-                model: this.getElementsFromChildren(children)
+                model: Utils.getElementsFromChildren(children)
             });
+        }
+
+        if (model) {
+            this.setState({ model });
+        }
+
+        if (animConfig) {
+            this.assignAnimConfig({ newAnimConfig: animConfig });
         }
     }
 
     filterChildrenForType(children) {
 
         return children;
-    }
-
-    _getElementsFromChildren(children) {
-
-        if (!Array.isArray(children)) {
-            children = [].concat(children);
-        }
-
-        return children.filter((child) => {
-
-            return React.isValidElement(child);
-        });
     }
 
     _genId() {
@@ -191,73 +435,76 @@ module.exports = class StrangeMotion extends React.PureComponent {
     _willEnter() {
 
         const { animConfig } = this.state;
-        return animConfig.beforeEnterStyle;
+        return animConfig.beforeEnter;
     }
 
     _willLeave() {
 
         const { animConfig } = this.state;
-        return animConfig.leaveAnim;
+        return animConfig.leave;
     }
 
     _getDefaultStyles() {
 
+        const defaultStyles = this.getStyles('start')
+        .map((interpolatedStyle) => {
+
+            const newCssVals = interpolatedStyle.style;
+
+            const newInterpolatedStyle = _merge(
+                {},
+                interpolatedStyle,
+                { style: newCssVals }
+            );
+
+            return newInterpolatedStyle;
+        });
+
+        return defaultStyles;
+    }
+
+    _getStyles(animConfigKey) {
+
         const { model, animConfig } = this.state;
 
-        const filteredModel = this.filterChildrenForType(model);
+        let filteredModel;
+        if (this.props.model) {
+            filteredModel = model;
+        }
+        else {
+            // TODO This doesn't make any sense, it's only here for the toggle-motion
+            filteredModel = this.filterChildrenForType(model);
+        }
 
-        return filteredModel.map((item, i) => {
+        const newStyles = filteredModel.map((child, i) => {
 
-            const key = item.key;
+            const { key, id: itemId, name } = child;
 
-            if (this.childIsFunc && !key) {
-                if (item.id) {
-                    item.key = item.id;
+            let newKey = key || '';
+
+            if (!key) {
+                if (itemId) {
+                    newKey += itemId;
                 }
-                else {
-                    item.key = this._genId();
-                }
-            }
 
-            return { data: item, style: animConfig.startStyle, key: String(key) };
-        });
-    }
-
-    mutateEnterAnimHook(enterAnim, key) {
-
-        return enterAnim;
-    }
-
-    _getStyles() {
-
-        const {
-            model,
-            animConfig } = this.state;
-
-        const filteredModel = this.filterChildrenForType(model);
-
-        return filteredModel.map((item, i) => {
-
-            let key = item.key;
-
-            if (this.childIsFunc && !key) {
-                if (item.id) {
-                    key = item.key = item.id;
-                }
-                else {
-                    key = item.key = this._genId();
+                if (name) {
+                    newKey += name + i;
                 }
             }
 
-            let enterAnim = JSON.parse(JSON.stringify(animConfig.enterAnim));
+            if (newKey === '') {
+                newKey = this._genId();
+            }
 
-            enterAnim = this.mutateEnterAnimHook(enterAnim, key);
+            let newStyle = animConfigKey ? animConfig[animConfigKey] : animConfig.enter;
 
             return {
-                data: item,
-                style: enterAnim,
-                key: String(key)
+                data: child,
+                style: newStyle,
+                key: String(newKey)
             };
         });
+
+        return newStyles;
     }
 };
