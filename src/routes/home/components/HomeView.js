@@ -8,10 +8,11 @@ const MultiMotion = require('components/MultiMotion');
 const { FPSStats } = require('react-stats');
 const { default: GitHubForkRibbon } = require('react-github-fork-ribbon');
 
-const GithubMark = require('assets/GitHub-Mark-Light-32px.png');
-
-// Component demos
 const ToggleIconDemo = require('components/ToggleIconDemo');
+
+const FewContentsSharedTransitionDemo = require('components/MaterialMotionDemos/Choreography/FewContentsSharedTransitionDemo');
+
+const GithubMark = require('assets/GitHub-Mark-Light-32px.png');
 
 // Styles
 
@@ -60,7 +61,7 @@ module.exports = class HomePage extends React.PureComponent {
                 </SectionTitle>
 
                 <DemosContainer>
-                    <MotionToggleDemo />
+                    <FewContentsSharedTransitionDemo />
                 </DemosContainer>
 
                 <SectionTitle type='headline' component='h1'>
@@ -68,7 +69,7 @@ module.exports = class HomePage extends React.PureComponent {
                 </SectionTitle>
 
                 <DemosContainer>
-                    <MotionDemo />
+                    {/* <MotionDemo /> */}
                     <MotionListDemo />
                     <MotionToggleDemo />
                     <MultiMotion />

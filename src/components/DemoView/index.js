@@ -17,7 +17,7 @@ const {
 
 // Component
 
-module.exports = class CoreLayout extends React.PureComponent {
+module.exports = class DemoView extends React.PureComponent {
 
     static propTypes = {
         children: T.any,
@@ -26,10 +26,9 @@ module.exports = class CoreLayout extends React.PureComponent {
         CardActionsInnerContainer: T.any
     }
 
-    constructor() {
+    constructor(props) {
 
         super();
-
         this.state = {};
     }
 

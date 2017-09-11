@@ -1,20 +1,10 @@
 const React = require('react');
-const T = require('prop-types');
 const StrangeMotion = require('./index');
 const { TransitionMotion } = require('react-motion');
 
 // Component
 
-module.exports = class ToggleMotion extends StrangeMotion {
-
-    static propTypes = {
-        trigger: T.bool,
-        animConfig: T.shape({
-            start: T.object,
-            enter: T.object,
-            leave: T.object.isRequired
-        })
-    }
+module.exports = class MountMotion extends StrangeMotion {
 
     constructor(props) {
 
@@ -27,26 +17,6 @@ module.exports = class ToggleMotion extends StrangeMotion {
         return (ref) => {
             this[refName] = ref;
         }
-    }
-
-    filterChildrenForType(children) {
-
-        const { trigger } = this.props;
-
-        if (trigger === true) {
-            return children.filter((child) => {
-
-                return child.key === 'on';
-            });
-        }
-        else if (trigger === false) {
-            return children.filter((child) => {
-
-                return child.key === 'off';
-            });
-        }
-
-        throw new Error('ToggleMotion: Bad value for trigger: ' + trigger);
     }
 
     render() {

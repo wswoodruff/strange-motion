@@ -25,6 +25,9 @@ module.exports = {
         }
         else if (animConfig.start) {
             animConfig.leave = animConfig.start;
+            if (!animConfig.enter) {
+                animConfig.enter = animConfig.start;
+            }
         }
 
         if (!animConfig.beforeEnter) {
