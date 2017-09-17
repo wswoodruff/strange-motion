@@ -20,6 +20,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         children: T.any.isRequired,
         animWrapperComponent: T.any,
+        animWrapperComponentRef: T.func,
         animWrapperProps: T.func,
         childWrapperComponent: T.any,
         childWrapperProps: T.func,
@@ -134,7 +135,8 @@ module.exports = class StrangeMotion extends React.PureComponent {
             }
             else {
                 return React.cloneElement(
-                    interpolatedChild
+                    interpolatedChild,
+                    animWrapperProps && animWrapperProps(interpolatedStyles) || {}
                 );
             }
         }
@@ -347,10 +349,42 @@ module.exports = class StrangeMotion extends React.PureComponent {
             reactMotion
         });
 
+        console.log(this.reactMotion);
+
+        //////// Need to set model's styles same way react-motion
+        // sets styles with defaultStyles()
+        if (newAnimConfig.start) {
+            console.log('newAnimConfig.start', newAnimConfig.start);
+            console.log('Heyoo! loL');
+
+            const self = this;
+
+            console.log(`{
+                ...self.state.animConfig,
+                enter: newAnimConfig.start
+            }`);
+
+            return this.setState({
+                animConfig: {
+                    ...self.state.animConfig,
+                    enter: newAnimConfig.start
+                }
+            }, () => {
+
+                this.setState({
+                    animConfig: assignedAnimConfig
+                }, this.handleDelays(delays));
+            });
+        }
+
         this.setState({
             animConfig: assignedAnimConfig
-        },
-        () => {
+        }, this.handleDelays(delays));
+    }
+
+    handleDelays(delays) {
+
+        return () => {
 
             // if there weren't any delays, '$delay' will be set to undefined
             // from Utils.assignAnimConfig
@@ -378,8 +412,8 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
                     }, delay);
                 });
-            }
-        });
+            };
+        };
     }
 
     componentDidMount() {
@@ -432,12 +466,14 @@ module.exports = class StrangeMotion extends React.PureComponent {
         return Math.random().toString(16).slice(2);
     }
 
+    // Only used with TransitionMotion
     _willEnter() {
 
         const { animConfig } = this.state;
         return animConfig.beforeEnter;
     }
 
+    // Only used with TransitionMotion
     _willLeave() {
 
         const { animConfig } = this.state;

@@ -4,8 +4,8 @@ const MultiMotion = require('../../multi');
 const Motion = require('../../motion');
 const DemoView = require('components/DemoView');
 const _merge = require('lodash/merge');
-const Utils = require('./utils');
 
+const { default: styled } = require('styled-components');
 const { default: Card, CardActions, CardContent, CardMedia } = require('material-ui/Card');
 const { default: Paper } = require('material-ui/Paper');
 const { default: Button } = require('material-ui/Button');
@@ -18,6 +18,16 @@ const lStyles = require('./styles');
 const {
     Viewport,
     Placeholder } = lStyles;
+
+let { Card: StyledCard } = lStyles;
+
+// Anims
+
+const lAnims = require('./anims');
+
+const {
+    ViewportAnim,
+    CardAnim } = lAnims;
 
 // Component
 
@@ -38,8 +48,6 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
         this.animControllers = {};
 
         this.state= {
-            ViewportAnimConfig: null,
-            CardContentAnimConfig: null,
             animState: 'start'
         };
 
@@ -65,7 +73,10 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
         }
     }
 
-    _placeholderClick() {
+    _placeholderClick(e) {
+
+        console.warn(e);
+        console.log('e.currentTarget', e.currentTarget);
         this.gotoAnim('detail');
     }
 
@@ -84,8 +95,43 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
         switch (animName) {
 
             case 'detail':
-                console.warn(this.Placeholder.offsetTop);
-                console.dir(this.Placeholder);
+
+                // console.warn(this.Placeholder.offsetTop);
+                // console.log(this.Placeholder.offsetParent);
+                // console.log(this.animControllers);
+
+                // console.log(Card);
+
+                const top = this.Placeholder.offsetTop;
+                const left = this.Placeholder.offsetLeft;
+                const width = this.Placeholder.offsetWidth;
+                const height = this.Placeholder.offsetHeight;
+
+                this.Placeholder.style.height = `${height}px`;
+
+                // this.Card.style.left = `${left}px`;
+                // this.Card.style.top = `${top}px`;
+                this.Card.style.width = `${width}px`;
+                this.Card.style.height = `${height}px`;
+
+                this.Card.style.position = 'absolute';
+
+                this.animControllers.Card.mergeAnimConfig({
+                    start: {
+                        left,
+                        top
+                    },
+                    enter: {
+                        left: 0,
+                        top: 0
+                    }
+                });
+
+                // this.animControllers.Card.play({
+                //     left: 0,
+                //     top: 0
+                // });
+
                 // console.warn(this.transitionContainer);
                 // console.log(Utils.getRelativePosition(this.Placeholder, this.transitionContainer));
                 // get boundingClientRect of transitionContainer
@@ -105,9 +151,6 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
     render() {
 
         const { sharedContents } = this.props;
-        const {
-            ViewportAnimConfig,
-            CardContentAnimConfig } = this.state;
 
         return (
             <Placeholder
@@ -115,21 +158,22 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
                 innerRef={this.setRef('Placeholder')}
                 >
                 <Motion
-                    animConfig={ViewportAnimConfig}
+                    animConfig={ViewportAnim}
                     getAnimController={this.setAnimController('Viewport')}
                 >
                     <Viewport
                         innerRef={this.setRef('Viewport')}>
                         <Motion
-                            animConfig={CardContentAnimConfig}
+                            animConfig={CardAnim}
                             getAnimController={this.setAnimController('Card')}
                         >
-                            <Card
-                                innerRef={this.setRef('Card')}>
-                                <CardContent>
-                                    {sharedContents}
-                                </CardContent>
-                            </Card>
+                            <div ref={this.setRef('Card')}>
+                                <StyledCard>
+                                    <CardContent>
+                                        {sharedContents}
+                                    </CardContent>
+                                </StyledCard>
+                            </div>
                         </Motion>
                     </Viewport>
                 </Motion>
