@@ -75,8 +75,6 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
 
     _placeholderClick(e) {
 
-        console.warn(e);
-        console.log('e.currentTarget', e.currentTarget);
         this.gotoAnim('detail');
     }
 
@@ -99,7 +97,6 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
                 // console.warn(this.Placeholder.offsetTop);
                 // console.log(this.Placeholder.offsetParent);
                 // console.log(this.animControllers);
-
                 // console.log(Card);
 
                 const top = this.Placeholder.offsetTop;
@@ -123,7 +120,10 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
                     },
                     enter: {
                         left: 0,
-                        top: 0
+                        top: {
+                            $delay: 500,
+                            val: 60 // appbar height
+                        }
                     }
                 });
 

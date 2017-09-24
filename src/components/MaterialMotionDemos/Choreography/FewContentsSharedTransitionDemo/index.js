@@ -64,7 +64,7 @@ module.exports = class FewContentsSharedTransitionDemo extends React.PureCompone
             company: '@BigRoomStudios',
             location: 'Maine',
             email: null,
-            bio: 'react, react-native, node.js, hapi =P',
+            bio: 'react, react-native, hapi, node.js =P',
             public_repos: 51,
             public_gists :1,
             followers: 6,

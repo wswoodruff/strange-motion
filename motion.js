@@ -28,13 +28,13 @@ module.exports = class Motion extends StrangeMotion {
         this.playProp = 'enter';
     }
 
-    _setAnimController(newAnimConfig) {
+    _setAnimController(userAnimConfig) {
 
         const { animConfig } = this.state;
 
         const mergedAnimConfig = Object.assign({},
             animConfig,
-            newAnimConfig
+            userAnimConfig
         );
 
         const animControllerApi = {
@@ -56,9 +56,11 @@ module.exports = class Motion extends StrangeMotion {
             },
             mergeAnimConfig: (animConfig) => {
 
+                console.log('animConfig', JSON.parse(JSON.stringify(animConfig)));
+
                 this.assignAnimConfig({
                     newAnimConfig: animConfig
-                })
+                });
             },
             replay: () => {
 

@@ -3,14 +3,14 @@ module.exports = {
 
     ViewportAnim: {
         start: {
-            left: 0,
-            top: 0
+            left: 50,
+            top: 200
         }
     },
     CardAnim: {
         start: {
-            left: 0,
-            top: 0
+            left: 50,
+            top: 150
         }
     }
 }

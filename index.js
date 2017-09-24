@@ -42,7 +42,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
             animConfig = this._getDefaultAnimConfig();
         }
         else {
-            animConfig = this.processAnimConfig(props.animConfig);
+            animConfig = this.processInitAnimConfig(props.animConfig);
         }
 
         let model;
@@ -259,7 +259,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
         };
     }
 
-    processAnimConfig(animConfig) {
+    processInitAnimConfig(animConfig) {
 
         const animConfigWithDefaults = Utils.assignDefaultsToAnimConfig(animConfig);
 
@@ -281,13 +281,9 @@ module.exports = class StrangeMotion extends React.PureComponent {
     }
 
     // Why do I have newAnimConfig here if nobody is using it?
-    // it's to make sure you know what you're passing in. So when
-    // you look at code you'll know what it is in the function that
-    // calls 'assignAnimConfig'
+    // it's for documentation to make sure you know what you're passing in.
 
-    assignAnimConfig({ newAnimConfig: passedInAnimConfig }) {
-
-        const reactMotion = this.reactMotion;
+    assignAnimConfig({ newAnimConfig: passedInAnimConfig }, setStateCb) {
 
         let newAnimConfig = passedInAnimConfig;
 
@@ -296,90 +292,135 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
             const { $delay: $enterDelay, ...enterWithoutDelay } = passedInAnimConfig.enter;
 
-            // heeeeere's the delay!
+            // setup the $delay
 
             setTimeout(() => {
 
+                const newAnimConfigClone = JSON.parse(JSON.stringify(newAnimConfig));
+
                 this.assignAnimConfig({
                     newAnimConfig: { enter: enterWithoutDelay }
-                });
+                }, this._setNewAnimConfig(passedInAnimConfig, newAnimConfigClone));
             }, $enterDelay);
 
             const { enter, ...rest } = passedInAnimConfig;
             if (Object.keys(rest).length !== 0) {
                 newAnimConfig = rest;
             }
-            else {
-                return; // exit the assignAnimConfig func
-            }
         }
 
-        newAnimConfig = Object.keys(newAnimConfig)
-        .reduce((collector, animType) => {
+        this._setNewAnimConfig(passedInAnimConfig, newAnimConfig, setStateCb)();
+    }
 
-            const currentAnimType = passedInAnimConfig[animType];
+    _setNewAnimConfig(passedInAnimConfig, newAnimConfig, setStateCb) {
 
-            const newAnimType = Object.keys(currentAnimType)
-            .reduce((collector, cssProp) => {
+        const reactMotion = this.reactMotion;
 
-                const cssPropVal = currentAnimType[cssProp];
+        return () => {
 
-                if (cssPropVal === 'getLastIdealStyle') {
-                    collector[cssProp] = { val: reactMotion.state.lastIdealStyle[cssProp] };
-                }
-                else {
-                    collector[cssProp] = cssPropVal;
-                }
+            newAnimConfig = Object.keys(newAnimConfig)
+            .reduce((collector, animType) => {
+
+                const currentAnimType = passedInAnimConfig[animType];
+
+                const newAnimType = Object.keys(currentAnimType)
+                .reduce((collector, cssProp) => {
+
+                    const cssPropVal = currentAnimType[cssProp];
+
+                    // console.warn(reactMotion);
+                    // const delayPropVal = reactMotion.state.lastIdealStyle[cssProp];
+                    // const delayPropVal = reactMotion.props.style[cssProp].val;
+
+                    if (cssPropVal === 'getLastIdealStyle') {
+
+                        const delayPropVal = reactMotion.props.defaultStyle[cssProp];
+
+                        console.log(reactMotion);
+                        console.log('delayPropVal', delayPropVal);
+                        console.log('cssProp', cssProp);
+                        console.log('cssPropVal', cssPropVal);
+
+                        // collector[cssProp] = { val: reactMotion.state.lastIdealStyle[cssProp] };
+                        collector[cssProp] = { val: delayPropVal };
+                    }
+                    else {
+                        collector[cssProp] = cssPropVal;
+                    }
+
+                    return collector;
+                }, {});
+
+                collector[animType] = newAnimType;
 
                 return collector;
             }, {});
 
-            collector[animType] = newAnimType;
+            //
 
-            return collector;
-        }, {});
+            let beginAnimConfig = this.state && this.state.animConfig
 
-        //
+            if (newAnimConfig.start) {
+                console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
+                // beginAnimConfig = _merge({},
+                //     beginAnimConfig,
+                //     newAnimConfig.start
+                // );
+            }
 
-        const self = this;
+            // Left off trying to fix this delay crap
 
-        const { assignedAnimConfig, delays } = Utils.assignAnimConfig({
-            beginAnimConfig: self.state && self.state.animConfig,
-            newAnimConfig,
-            reactMotion
-        });
+            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
+            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
+            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
+            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
+            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
+            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
+            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
 
-        console.log(this.reactMotion);
+            const { assignedAnimConfig, delays } = Utils.assignAnimConfig({
+                beginAnimConfig,
+                newAnimConfig,
+                reactMotion
+            });
 
-        //////// Need to set model's styles same way react-motion
-        // sets styles with defaultStyles()
-        if (newAnimConfig.start) {
-            console.log('newAnimConfig.start', newAnimConfig.start);
-            console.log('Heyoo! loL');
+            console.log('setStateCb', setStateCb);
 
-            const self = this;
+            if (newAnimConfig.start) {
 
-            console.log(`{
-                ...self.state.animConfig,
-                enter: newAnimConfig.start
-            }`);
+                return this.setState({
+                    animConfig: {
+                        ...assignedAnimConfig,
+                        enter: newAnimConfig.start
+                    }
+                }, () => {
 
-            return this.setState({
-                animConfig: {
-                    ...self.state.animConfig,
-                    enter: newAnimConfig.start
-                }
+                    this.setState({
+                        animConfig: assignedAnimConfig
+                    }, () => {
+
+                        if (typeof setStateCb === 'function') {
+                            setStateCb();
+                        }
+
+                        this.handleDelays(delays)
+                    });
+                });
+            }
+
+            this.setState({
+                animConfig: assignedAnimConfig
             }, () => {
 
-                this.setState({
-                    animConfig: assignedAnimConfig
-                }, this.handleDelays(delays));
+                console.log('setStateCb', setStateCb);
+
+                if (typeof setStateCb === 'function') {
+                    setStateCb();
+                }
+
+                this.handleDelays(delays)
             });
         }
-
-        this.setState({
-            animConfig: assignedAnimConfig
-        }, this.handleDelays(delays));
     }
 
     handleDelays(delays) {
@@ -422,12 +463,12 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         if (waitingDelays) {
 
-            Object.keys(waitingDelays).forEach((delay) => {
+            Object.keys(waitingDelays).forEach(($delay) => {
 
                 setTimeout(() => {
 
-                    this.assignAnimConfig({ newAnimConfig: waitingDelays[delay] });
-                }, delay);
+                    this.assignAnimConfig({ newAnimConfig: waitingDelays[$delay] });
+                }, $delay);
             });
         }
     }
@@ -450,6 +491,19 @@ module.exports = class StrangeMotion extends React.PureComponent {
         if (model) {
             this.setState({ model });
         }
+
+        // Thanks to React, we won't have to worry
+        // about the same animConfig being passed in twice,
+        // so we can safely assume that whatever animConfig
+        // props the user assigns via the `animController` will
+        // take precedence in `getStyles()`, and won't be
+        // immediately overwritten with styles here.
+
+        // NOTE: This does mean that any animations defined with
+        // the animController will be overwritten with this one.
+        // Of course they can be changed again via the animController
+        // which will take over. This is basically now an alias of
+        // animController.mergeAnimConfig()
 
         if (animConfig) {
             this.assignAnimConfig({ newAnimConfig: animConfig });
@@ -503,6 +557,15 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const { model, animConfig } = this.state;
 
+        let mergedAnimConfig = animConfig;
+
+        if (this.animController && this.animControllerAnimConfig) {
+            mergedAnimConfig = Object.assign({},
+                animConfig,
+                this.animControllerAnimConfig
+            );
+        };
+
         let filteredModel;
         if (this.props.model) {
             filteredModel = model;
@@ -532,7 +595,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 newKey = this._genId();
             }
 
-            let newStyle = animConfigKey ? animConfig[animConfigKey] : animConfig.enter;
+            let newStyle = animConfigKey ? mergedAnimConfig[animConfigKey] : mergedAnimConfig.enter;
 
             return {
                 data: child,
