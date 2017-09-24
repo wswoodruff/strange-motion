@@ -56,8 +56,6 @@ module.exports = class Motion extends StrangeMotion {
             },
             mergeAnimConfig: (animConfig) => {
 
-                console.log('animConfig', JSON.parse(JSON.stringify(animConfig)));
-
                 this.assignAnimConfig({
                     newAnimConfig: animConfig
                 });
