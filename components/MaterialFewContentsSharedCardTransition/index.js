@@ -121,22 +121,12 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
                     enter: {
                         left: 0,
                         top: {
-                            $delay: 500,
+                            $delay: 150,
                             val: 60 // appbar height
                         }
                     }
                 });
 
-                // this.animControllers.Card.play({
-                //     left: 0,
-                //     top: 0
-                // });
-
-                // console.warn(this.transitionContainer);
-                // console.log(Utils.getRelativePosition(this.Placeholder, this.transitionContainer));
-                // get boundingClientRect of transitionContainer
-                // console.warn(this.transitionContainer);
-                // console.warn(this.transitionContainer && this.transitionContainer.getBoundingClientRect());
                 break;
             case 'init':
 
@@ -156,7 +146,7 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
             <Placeholder
                 onClick={this.placeholderClick}
                 innerRef={this.setRef('Placeholder')}
-                >
+            >
                 <Motion
                     animConfig={ViewportAnim}
                     getAnimController={this.setAnimController('Viewport')}

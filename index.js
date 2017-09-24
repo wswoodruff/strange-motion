@@ -316,6 +316,8 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const reactMotion = this.reactMotion;
 
+        let beginAnimConfig = this.state.animConfig;
+
         return () => {
 
             newAnimConfig = Object.keys(newAnimConfig)
@@ -324,28 +326,23 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 const currentAnimType = passedInAnimConfig[animType];
 
                 const newAnimType = Object.keys(currentAnimType)
-                .reduce((collector, cssProp) => {
+                .reduce((collector, cssPropName) => {
 
-                    const cssPropVal = currentAnimType[cssProp];
-
-                    // console.warn(reactMotion);
-                    // const delayPropVal = reactMotion.state.lastIdealStyle[cssProp];
-                    // const delayPropVal = reactMotion.props.style[cssProp].val;
+                    const cssPropVal = currentAnimType[cssPropName];
 
                     if (cssPropVal === 'getLastIdealStyle') {
 
-                        const delayPropVal = reactMotion.props.defaultStyle[cssProp];
+                        const delayPropVal = reactMotion.props.defaultStyle[cssPropName].val;
 
-                        console.log(reactMotion);
-                        console.log('delayPropVal', delayPropVal);
-                        console.log('cssProp', cssProp);
-                        console.log('cssPropVal', cssPropVal);
+                        collector[cssPropName] = { val: delayPropVal };
+                    }
+                    else if (cssPropVal === 'getBeginEnterVal') {
 
-                        // collector[cssProp] = { val: reactMotion.state.lastIdealStyle[cssProp] };
-                        collector[cssProp] = { val: delayPropVal };
+                        const delayPropVal = beginAnimConfig.enter[cssPropName].val;
+                        collector[cssPropName] = { val: delayPropVal };
                     }
                     else {
-                        collector[cssProp] = cssPropVal;
+                        collector[cssPropName] = cssPropVal;
                     }
 
                     return collector;
@@ -358,33 +355,14 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
             //
 
-            let beginAnimConfig = this.state && this.state.animConfig
-
-            if (newAnimConfig.start) {
-                console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
-                // beginAnimConfig = _merge({},
-                //     beginAnimConfig,
-                //     newAnimConfig.start
-                // );
-            }
-
-            // Left off trying to fix this delay crap
-
-            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
-            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
-            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
-            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
-            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
-            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
-            console.warn('beginAnimConfig', JSON.parse(JSON.stringify(beginAnimConfig)));
-
-            const { assignedAnimConfig, delays } = Utils.assignAnimConfig({
+            const {
+                assignedAnimConfig,
+                delays
+            } = Utils.assignAnimConfig({
                 beginAnimConfig,
                 newAnimConfig,
                 reactMotion
             });
-
-            console.log('setStateCb', setStateCb);
 
             if (newAnimConfig.start) {
 
@@ -403,7 +381,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                             setStateCb();
                         }
 
-                        this.handleDelays(delays)
+                        this.handleDelays(delays);
                     });
                 });
             }
@@ -412,48 +390,42 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 animConfig: assignedAnimConfig
             }, () => {
 
-                console.log('setStateCb', setStateCb);
-
                 if (typeof setStateCb === 'function') {
                     setStateCb();
                 }
 
-                this.handleDelays(delays)
+                this.handleDelays(delays);
             });
         }
     }
 
     handleDelays(delays) {
 
-        return () => {
-
-            // if there weren't any delays, '$delay' will be set to undefined
-            // from Utils.assignAnimConfig
-            if (delays) {
-
-                /*
-                    Delays object is organized by its delay times. ex:
-                    {
-                        400: [{ enter: { top: 100, left: 100 } }],
-                        10000: [{ enter: { top: 500, left: 300 }] }
-                    }
+        // if there weren't any delays, '$delay' will be set to undefined
+        // from Utils.assignAnimConfig
+        if (delays) {
+            /*
+                Delays object is organized by its delay times. ex:
+                {
+                    400: [{ enter: { top: 100, left: 100 } }],
+                    10000: [{ enter: { top: 500, left: 300 }] }
                 }
-                */
+            }
+            */
 
-                Object.keys(delays).forEach((delay) => {
+            Object.keys(delays).forEach((delay) => {
 
-                    setTimeout(() => {
+                setTimeout(() => {
 
-                        [].concat(delays[delay]).forEach((currentDelay) => {
+                    [].concat(delays[delay]).forEach((currentDelay) => {
 
-                            this.assignAnimConfig({
-                                newAnimConfig: currentDelay
-                            });
-                        })
+                        this.assignAnimConfig({
+                            newAnimConfig: currentDelay
+                        });
+                    })
 
-                    }, delay);
-                });
-            };
+                }, delay);
+            });
         };
     }
 

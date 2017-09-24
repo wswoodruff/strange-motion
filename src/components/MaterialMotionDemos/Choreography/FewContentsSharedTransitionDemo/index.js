@@ -34,7 +34,7 @@ module.exports = class FewContentsSharedTransitionDemo extends React.PureCompone
 
     static propTypes = {
         animPlugins: T.array
-    }
+    };
 
     static defaultProps = {
         animPlugins: []
@@ -125,7 +125,7 @@ module.exports = class FewContentsSharedTransitionDemo extends React.PureCompone
         //         githubUsers: [].concat(res.data)
         //     })
         // });
-    }
+    };
 
     _setRef(refName) {
 
@@ -178,6 +178,7 @@ module.exports = class FewContentsSharedTransitionDemo extends React.PureCompone
                 </AppBar>
 
                 <GithubUsersContainer>
+
                     {githubUsers.map((githubUser) => {
 
                         return (

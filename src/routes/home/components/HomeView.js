@@ -3,7 +3,6 @@ const React = require('react');
 // Motion demos
 const MotionDemo = require('components/MotionDemo');
 const MotionToggleDemo = require('components/MotionToggleDemo');
-const MotionListDemo = require('components/MotionListDemo');
 const MultiMotion = require('components/MultiMotion');
 const { FPSStats } = require('react-stats');
 const { default: GitHubForkRibbon } = require('react-github-fork-ribbon');
@@ -69,8 +68,7 @@ module.exports = class HomePage extends React.PureComponent {
                 </SectionTitle>
 
                 <DemosContainer>
-                    {/* <MotionDemo /> */}
-                    <MotionListDemo />
+                    <MotionDemo />
                     <MotionToggleDemo />
                     <MultiMotion />
                 </DemosContainer>

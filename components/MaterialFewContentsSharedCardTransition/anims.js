@@ -9,8 +9,8 @@ module.exports = {
     },
     CardAnim: {
         start: {
-            left: 50,
-            top: 150
+            left: 200,
+            top: 200
         }
     }
 }
