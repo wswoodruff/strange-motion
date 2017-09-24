@@ -1,10 +1,8 @@
 const { default: styled } = require('styled-components');
-const { blue } = require('material-ui/colors');
 const { default: AppBar } = require('material-ui/AppBar');
 const { default: Avatar } = require('material-ui/Avatar');
 const { default: Typography } = require('material-ui/Typography');
-
-const { default: Layers } = require('styles/layers');
+// const { default: Layers } = require('styles/layers');
 
 module.exports = {
     AppBar: styled(AppBar)`

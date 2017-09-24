@@ -2,12 +2,11 @@ const React = require('react');
 const T = require('prop-types');
 const DemoView = require('components/DemoView');
 const { default: Toolbar } = require('material-ui/Toolbar');
-const { default: Paper } = require('material-ui/Paper');
 const { default: Typography } = require('material-ui/Typography');
 const MaterialFewContentsSharedCardTransition = require('../../../../../components/MaterialFewContentsSharedCardTransition');
 const MountMotion = require('../../../../../mount');
 
-const Axios = require('axios');
+// const Axios = require('axios');
 
 // Styles
 
@@ -48,7 +47,7 @@ module.exports = class FewContentsSharedTransitionDemo extends React.PureCompone
             inDetailView: false,
             githubUsers: [],
             transitionStates: {}
-        }
+        };
 
         this.setRef = this._setRef.bind(this);
         this.onCardTransitionStateChange = this._onCardTransitionStateChange.bind(this);
@@ -106,13 +105,13 @@ module.exports = class FewContentsSharedTransitionDemo extends React.PureCompone
 
         this.setTransitionContainer = function (ref) {
 
-            this['transitionContainer'] = ref;
+            this.transitionContainer = ref;
         };
 
         this.bindSetTransitionContainer = (elToBind) => {
 
             this.setTransitionContainer = this.setTransitionContainer.bind(elToBind);
-        }
+        };
 
         // Use axios to get contributor profiles
 
@@ -136,8 +135,8 @@ module.exports = class FewContentsSharedTransitionDemo extends React.PureCompone
             if (refName === 'transitionContainer') {
                 this.setTransitionContainer(ref);
             }
-        }
-    }
+        };
+    };
 
     _onCardTransitionStateChange(key) {
 
@@ -149,8 +148,8 @@ module.exports = class FewContentsSharedTransitionDemo extends React.PureCompone
             this.setState({
                 transitionStates
             });
-        }
-    }
+        };
+    };
 
     render() {
 
@@ -159,8 +158,7 @@ module.exports = class FewContentsSharedTransitionDemo extends React.PureCompone
 
         const {
             inDetailView,
-            githubUsers,
-            transitionStates } = this.state;
+            githubUsers } = this.state;
 
         // TODO replace inDetailView with transitionStates[key] === 'detail'
 
@@ -169,7 +167,7 @@ module.exports = class FewContentsSharedTransitionDemo extends React.PureCompone
                 <AppBar>
                     <Toolbar>
                         {inDetailView && (
-                            <div></div>
+                            <div>inDetailView</div>
                         )}
                         <Typography type='title'>
                             Github Profiles

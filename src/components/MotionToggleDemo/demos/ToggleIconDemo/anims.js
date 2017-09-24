@@ -19,4 +19,4 @@ module.exports = {
             fontSize: 60
         }
     }
-}
+};

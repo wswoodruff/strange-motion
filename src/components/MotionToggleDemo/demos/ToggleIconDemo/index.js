@@ -1,7 +1,6 @@
 const React = require('react');
-const T = require('prop-types');
 const ToggleMotion = require('../../../../../toggle');
-const DemoView = require('components/DemoView');
+const T = require('prop-types');
 
 // Styles
 
@@ -34,7 +33,7 @@ module.exports = class ToggleIconDemo extends React.PureComponent {
         super();
 
         this.state = {
-            trigger: props.trigger === true ? true : false,
+            trigger: props.trigger === true ? true : false
         };
 
         this.toggle = this._toggle.bind(this);

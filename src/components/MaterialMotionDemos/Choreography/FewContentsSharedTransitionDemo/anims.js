@@ -1,6 +1,4 @@
 
-const { spring } = require('react-motion');
-
 module.exports = {
 
     FadeAnim: {
@@ -11,4 +9,4 @@ module.exports = {
             opacity: 1
         }
     }
-}
+};

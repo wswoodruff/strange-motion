@@ -1,5 +1,4 @@
 const React = require('react');
-const T = require('prop-types');
 const DemoView = require('components/DemoView');
 const PageLayoutDemo = require('./demos/PageLayoutDemo');
 

@@ -1,6 +1,4 @@
 
-const { spring } = require('react-motion');
-
 module.exports = {
 
     BlueBallAnim: {
@@ -19,4 +17,4 @@ module.exports = {
             }
         }
     }
-}
+};

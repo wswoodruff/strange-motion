@@ -1,11 +1,8 @@
 const React = require('react');
-const T = require('prop-types');
 const DemoView = require('components/DemoView');
 // const FollowMouseDemo = require('./demos/FollowMouseDemo');
 
 // Component
-
-// TODO Add a mount demo
 
 module.exports = class MotionBlurDemo extends React.PureComponent {
 
@@ -19,9 +16,9 @@ module.exports = class MotionBlurDemo extends React.PureComponent {
         return (
             <DemoView title='Motion'>
                 <div>
-
+                    Plugin called Smear
                 </div>
             </DemoView>
         );
-    }
+    };
 };

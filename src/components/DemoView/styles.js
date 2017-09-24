@@ -1,6 +1,6 @@
 const { default: styled } = require('styled-components');
 const { default: Typography } = require('material-ui/Typography');
-const { default: Card, CardActions, CardContent } = require('material-ui/Card');
+const { default: Card, CardContent } = require('material-ui/Card');
 
 module.exports = {
 
@@ -29,9 +29,6 @@ module.exports = {
         display: flex;
         position: relative;
         flex-flow: column nowrap;
-    `,
-    StyledActionsInnerContainer: styled.div`
-        display: flex;
     `,
     DemoContent: styled.div`
         flex-grow: 1;

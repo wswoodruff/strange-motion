@@ -1,5 +1,5 @@
 const { default: styled } = require('styled-components');
-const { blue, grey } = require('material-ui/colors');
+const { grey } = require('material-ui/colors');
 
 module.exports = {
     Wrapper: styled.div`

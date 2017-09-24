@@ -1,8 +1,5 @@
 const React = require('react');
-const T = require('prop-types');
 const MultiMotion = require('../../../../../multi');
-const DemoView = require('components/DemoView');
-const _merge = require('lodash/merge');
 
 // Styles
 
@@ -61,7 +58,7 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
         return (ref) => {
 
             self[refName] = ref;
-        }
+        };
     }
 
     _setAnimControllers(animControllers) {
@@ -71,9 +68,7 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
 
     render() {
 
-        const { mouseOver } = this.state;
-
-        let animConfigs = lAnims;
+        const animConfigs = lAnims;
 
         return (
             <Wrapper

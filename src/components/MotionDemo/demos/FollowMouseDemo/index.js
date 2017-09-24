@@ -1,7 +1,6 @@
 const React = require('react');
 const T = require('prop-types');
 const Motion = require('../../../../../motion');
-const DemoView = require('components/DemoView');
 
 // Styles
 
@@ -106,7 +105,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
         return (ref) => {
 
             self[refName] = ref;
-        }
+        };
     }
 
     render() {

@@ -1,7 +1,5 @@
 const React = require('react');
 const T = require('prop-types');
-const { CardActions } = require('material-ui/Card');
-const { default: Button } = require('material-ui/Button');
 
 // Styles
 
@@ -12,8 +10,7 @@ const {
     Title,
     StyledCard,
     StyledCardContent,
-    DemoContent,
-    StyledActionsInnerContainer } = lStyles;
+    DemoContent } = lStyles;
 
 // Component
 
@@ -21,9 +18,7 @@ module.exports = class DemoView extends React.PureComponent {
 
     static propTypes = {
         children: T.any,
-        title: T.string,
-        cardActions: T.any,
-        CardActionsInnerContainer: T.any
+        title: T.string
     }
 
     constructor(props) {
@@ -36,12 +31,7 @@ module.exports = class DemoView extends React.PureComponent {
 
         const {
             children,
-            title,
-            cardActions,
-            CardActionsInnerContainer } = this.props;
-
-            const ActionsInnerContainer = CardActionsInnerContainer ||
-                StyledActionsInnerContainer;
+            title } = this.props;
 
         return (
             <Bg>
@@ -57,22 +47,6 @@ module.exports = class DemoView extends React.PureComponent {
                             })}
                         </DemoContent>
                     </StyledCardContent>
-                    {/* <CardActions>
-                        {cardActions ? (
-                            <ActionsInnerContainer>
-                                {cardActions}
-                            </ActionsInnerContainer>
-                        ) : (
-                            <ActionsInnerContainer>
-                                <Button dense color="primary">
-                                    Share
-                                </Button>
-                                <Button dense color="primary">
-                                    See Codepen
-                                </Button>
-                            </ActionsInnerContainer>
-                        )}
-                    </CardActions> */}
                 </StyledCard>
             </Bg>
         );

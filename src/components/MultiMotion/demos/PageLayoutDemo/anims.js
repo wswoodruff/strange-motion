@@ -1,6 +1,4 @@
 
-const { spring } = require('react-motion');
-
 module.exports = {
 
     Header: {
@@ -41,4 +39,4 @@ module.exports = {
             right: -30
         }
     }
-}
+};

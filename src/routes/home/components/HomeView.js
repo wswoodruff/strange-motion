@@ -4,10 +4,8 @@ const React = require('react');
 const MotionDemo = require('components/MotionDemo');
 const MotionToggleDemo = require('components/MotionToggleDemo');
 const MultiMotion = require('components/MultiMotion');
-const { FPSStats } = require('react-stats');
+// const { FPSStats } = require('react-stats');
 const { default: GitHubForkRibbon } = require('react-github-fork-ribbon');
-
-const ToggleIconDemo = require('components/ToggleIconDemo');
 
 const FewContentsSharedTransitionDemo = require('components/MaterialMotionDemos/Choreography/FewContentsSharedTransitionDemo');
 
@@ -45,7 +43,8 @@ module.exports = class HomePage extends React.PureComponent {
         return (
             <HomeContainer> {/* MainContainer is in src/layouts/CoreLayout */}
 
-                <FPSStats isActive={true} top={'auto'} />
+                {/* <FPSStats isActive top={'auto'} /> */}
+
                 <GitHubForkRibbon
                     href='https://github.com/wswoodruff/strange-motion'
                     target='_blank'
