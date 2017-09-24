@@ -66,6 +66,8 @@ module.exports = {
             beginAnimConfig = newAnimConfig;
         }
 
+        beginAnimConfig = JSON.parse(JSON.stringify(beginAnimConfig));
+
         let delays = {};
 
         const assignedAnimConfig = Object.keys(beginAnimConfig)
@@ -147,7 +149,8 @@ module.exports = {
                             })
                             .reduce((collector, diffKey) => {
 
-                                collector.enter[diffKey] = 'getLastIdealStyle';
+                                // collector.enter[diffKey] = 'getLastIdealStyle';
+                                collector.enter[diffKey] = 'getBeginEnterVal';
                                 return collector;
                             }, { enter: {} });
 
@@ -165,14 +168,20 @@ module.exports = {
 
                         if (cssProp.$delay) {
 
-                            // Need to set this delay's key to the current one!!
+                            let explicitStartCssProp = {};
+
+                            if (newAnimConfig.start) {
+                                explicitStartCssProp = {
+                                    val: newAnimConfig.start[cssPropName]
+                                };
+                            }
 
                             delete cssProp.$delay;
                             newCSSProps[cssPropName] = _merge({},
                                 defaultSpring,
-                                beginCssProp,
                                 additional,
-                                cssProp
+                                beginCssProp,
+                                explicitStartCssProp
                             );
                         }
                         else {
