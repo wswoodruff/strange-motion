@@ -124,7 +124,15 @@ module.exports = class MultiMotion extends React.PureComponent {
 
     _getModelByKeys(model) {
 
-        return model.reduce((collector, child) => {
+        let newModel = model;
+
+        if (typeof model === 'object' &&
+            !Array.isArray(model)) {
+
+            newModel = [].concat(model);
+        }
+
+        return newModel.reduce((collector, child) => {
 
             collector[child.key] = child;
             return collector;
