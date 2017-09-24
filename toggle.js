@@ -19,10 +19,10 @@ module.exports = class ToggleMotion extends StrangeMotion {
     constructor(props) {
 
         super(props);
-        this.getRef = this._getRef.bind(this);
+        this.setRef = this._setRef.bind(this);
     }
 
-    _getRef(refName) {
+    _setRef(refName) {
 
         return (ref) => {
             this[refName] = ref;
@@ -58,7 +58,7 @@ module.exports = class ToggleMotion extends StrangeMotion {
                 styles={this.getStyles()}
                 willEnter={this.willEnter}
                 willLeave={this.willLeave}
-                ref={this.getRef('reactMotion')} // Set this.reactMotion ref
+                ref={this.setRef('reactMotion')}
             >
                 {(interpolatedStyles) => {
 
