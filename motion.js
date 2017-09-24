@@ -25,30 +25,46 @@ module.exports = class Motion extends StrangeMotion {
     componentWillMount() {
 
         this.setAnimController(this.props.animConfig);
-        this.setState({
-            playProp: 'enter'
-        });
+        this.playProp = 'enter';
     }
 
-    _setAnimController(newAnimConfig) {
+    _setAnimController(userAnimConfig) {
 
         const { animConfig } = this.state;
 
         const mergedAnimConfig = Object.assign({},
             animConfig,
-            newAnimConfig
+            userAnimConfig
         );
 
         const animControllerApi = {
-            enter: (animName) => {
+            enter: (animNameOrConfig) => {
 
-                this.setState({
-                    playProp: animName
+                if (typeof animNameOrConfig === 'string') {
+                    this.playProp = animNameOrConfig;
+                    this.forceUpdate();
+                }
+
+                if (typeof animNameOrConfig === 'object') {
+
+                    this.playProp = 'enter';
+
+                    this.assignAnimConfig({ newAnimConfig: {
+                        enter: animNameOrConfig
+                    }});
+                }
+            },
+            mergeAnimConfig: (animConfig) => {
+
+                console.log('animConfig', JSON.parse(JSON.stringify(animConfig)));
+
+                this.assignAnimConfig({
+                    newAnimConfig: animConfig
                 });
             },
-            enterFromStart: () => {
+            replay: () => {
 
-                console.warn('enterFromStart not implemented yet, sorry!');
+                console.warn('replay not implemented yet, sorry!');
             }
         };
 
@@ -61,9 +77,7 @@ module.exports = class Motion extends StrangeMotion {
 
             collector[animName] = (plugins) => {
 
-                this.setState({
-                    playProp: animName
-                });
+                animControllerApi.play(animName);
             }
             return collector;
         }, animControllerApi);
@@ -83,7 +97,6 @@ module.exports = class Motion extends StrangeMotion {
     render() {
 
         const { children } = this.props;
-        const { playProp } = this.state;
 
         // ReactMotion is only built for a single child, so that's what
         // the '[0]' in 'this.getDefaultStyles()[0]' is about
@@ -91,7 +104,7 @@ module.exports = class Motion extends StrangeMotion {
          // 'ref={this.setRef('reactMotion')}' sets the this.reactMotion ref
          // used in strange-motion/index.js
 
-         const newPlayProp = playProp || 'enter';
+         const newPlayProp = this.playProp || 'enter';
 
         return (
             <ReactMotion
