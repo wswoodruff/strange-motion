@@ -56,6 +56,9 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                         top: {
                             val: ev.clientY - bounds.top,
                             $delay: 500
+                        },
+                        backgroundColor: {
+                            val: 'orange'
                         }
                     }
                 }
@@ -83,6 +86,19 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
 
             const bounds = this.mouseWatcher.getBoundingClientRect();
 
+            const colors = [
+                'red',
+                'orange',
+                'yellow',
+                'green',
+                'blue',
+                'purple'
+            ];
+
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+            console.log('randomColor', randomColor);
+
             this.setState({
                 ballAnim: {
                     enter: {
@@ -91,7 +107,10 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                         },
                         top: {
                             val: Math.random() * bounds.height,
-                            $delay: 1000
+                            $delay: 800
+                        },
+                        backgroundColor: {
+                            val: randomColor
                         }
                     }
                 }

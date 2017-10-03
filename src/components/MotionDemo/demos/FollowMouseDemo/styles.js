@@ -6,8 +6,8 @@ module.exports = {
         position: absolute;
         left: 0;
         top: 0;
-        width: 35px;
-        height: 35px;
+        width: 95px;
+        height: 95px;
         border-radius: 50%;
         border: 2px solid ${blue[200]};
         transform: translate(-50%, -50%);

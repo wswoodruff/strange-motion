@@ -26,3 +26,20 @@ utils.debounce = (func, wait, immediate) => {
         }
     };
 };
+
+utils.isAnimConfig = (maybeAnimConfig) => {
+
+    if (typeof maybeAnimConfig !== 'object' ||
+        Array.isArray(maybeAnimConfig)) {
+        return false;
+    }
+
+    if (maybeAnimConfig.enter ||
+        maybeAnimConfig.start ||
+        maybeAnimConfig.beforeEnter ||
+        maybeAnimConfig.leave) {
+            return true;
+    }
+
+    return false;
+}

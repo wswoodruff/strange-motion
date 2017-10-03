@@ -4,6 +4,8 @@ const { spring } = require('react-motion');
 const Utils = require('./utils');
 const _merge = require('lodash/merge');
 
+const Loggy = require('utils/loggy');
+
 module.exports = class StrangeMotion extends React.PureComponent {
 
     static propTypes = {
@@ -82,6 +84,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
         this.getDefaultStyles = this._getDefaultStyles.bind(this);
         this.applyInterpolatedStyles = this._applyInterpolatedStyles.bind(this);
         this.genId = this._genId.bind(this);
+        this.applyPlugins = this._applyPlugins.bind(this);
     }
 
     getChildren(interpolatedStyles) {
@@ -177,6 +180,11 @@ module.exports = class StrangeMotion extends React.PureComponent {
         newChildPropsVal
     }) {
 
+        const stylePluginsApplied = this.applyPlugins({
+           pluginFunc: 'toCss',
+           applyTo: style
+        });
+
         if (!key) {
             key = this.genId();
         }
@@ -184,12 +192,12 @@ module.exports = class StrangeMotion extends React.PureComponent {
         const { children } = this.props;
         const childStyle = child.props && child.props.style;
 
-        let newStyle = style;
+        let newStyle = stylePluginsApplied;
 
         newStyle = _merge(
             {},
             childStyle || {},
-            style
+            stylePluginsApplied
         );
 
         let newChild;
@@ -206,7 +214,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
         else if (this.state.childIsFunc && childWrapperComponent) {
 
             newChild = React.cloneElement(
-                children({ style: childStyle, child, key }),
+                children({ style: newStyle, child, key }),
                 newChildProps
             );
         }
@@ -215,7 +223,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
             newChild = React.cloneElement(
                 child,
-                { ...newChildProps, style }
+                { ...newChildProps, style: newStyle }
             );
         }
         else if (!this.state.childIsFunc && childWrapperComponent) {
@@ -265,12 +273,20 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const self = this;
 
+        // Should call `applyPlugins` here and set animConfigPluginsApplied
+        // const animConfigPluginsApplied = animConfigWithDefaults
+
+        const animConfigPluginsApplied = this._applyPlugins({
+            pluginFunc: 'assignAnimConfig',
+            applyTo: animConfigWithDefaults
+        });
+
         const {
             assignedAnimConfig,
             delays
         } = Utils.assignAnimConfig({
             beginAnimConfig: self.state && self.state.animConfig,
-            newAnimConfig: animConfigWithDefaults
+            newAnimConfig: animConfigPluginsApplied
         });
 
         if (delays) {
@@ -280,12 +296,36 @@ module.exports = class StrangeMotion extends React.PureComponent {
         return assignedAnimConfig;
     }
 
+    _applyPlugins({ pluginFunc, applyTo }) {
+
+        if (!this.props) {
+            return applyTo;
+        }
+
+        const { animPlugins } = this.props;
+
+        const filteredAnimPlugins = [].concat(animPlugins).filter((plugin) => plugin ? true : false);
+
+        let pluginsApplied = applyTo;
+
+        // TODO implement Topo sorting for plugins
+
+        filteredAnimPlugins.forEach((plugin) => {
+
+            if (plugin[pluginFunc]) {
+                pluginsApplied = plugin[pluginFunc](applyTo);
+            }
+        });
+
+        return pluginsApplied;
+    }
+
     // Why do I have newAnimConfig here if nobody is using it?
     // it's for documentation to make sure you know what you're passing in.
 
     assignAnimConfig({ newAnimConfig: passedInAnimConfig }, setStateCb) {
 
-        let newAnimConfig = passedInAnimConfig;
+        let newAnimConfig = JSON.parse(JSON.stringify(passedInAnimConfig));
 
         if (passedInAnimConfig.enter &&
             passedInAnimConfig.enter.$delay) {
@@ -332,14 +372,12 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
                     if (cssPropVal === 'getLastIdealStyle') {
 
-                        const delayPropVal = reactMotion.props.defaultStyle[cssPropName].val;
+                        const lastIdealStyle = reactMotion.state.lastIdealStyle[cssPropName];
 
-                        collector[cssPropName] = { val: delayPropVal };
-                    }
-                    else if (cssPropVal === 'getBeginEnterVal') {
+                        if (typeof lastIdealStyle !== 'undefined') {
 
-                        const delayPropVal = beginAnimConfig.enter[cssPropName].val;
-                        collector[cssPropName] = { val: delayPropVal };
+                            collector[cssPropName] = lastIdealStyle;
+                        }
                     }
                     else {
                         collector[cssPropName] = cssPropVal;
@@ -355,12 +393,17 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
             //
 
+            const animConfigPluginsApplied = this.applyPlugins({
+                pluginFunc: 'assignAnimConfig',
+                applyTo: newAnimConfig
+            });
+
             const {
                 assignedAnimConfig,
                 delays
             } = Utils.assignAnimConfig({
                 beginAnimConfig,
-                newAnimConfig,
+                newAnimConfig: animConfigPluginsApplied,
                 reactMotion
             });
 
@@ -397,7 +440,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 this.handleDelays(delays);
             });
         }
-    }
+    };
 
     handleDelays(delays) {
 
@@ -427,7 +470,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 }, delay);
             });
         };
-    }
+    };
 
     componentDidMount() {
 
@@ -443,7 +486,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 }, $delay);
             });
         }
-    }
+    };
 
     componentWillReceiveProps(nextProps) {
 
@@ -480,40 +523,46 @@ module.exports = class StrangeMotion extends React.PureComponent {
         if (animConfig) {
             this.assignAnimConfig({ newAnimConfig: animConfig });
         }
-    }
+    };
 
     filterChildrenForType(children) {
 
         return children;
-    }
+    };
 
     _genId() {
 
         return Math.random().toString(16).slice(2);
-    }
+    };
 
     // Only used with TransitionMotion
     _willEnter() {
 
         const { animConfig } = this.state;
         return animConfig.beforeEnter;
-    }
+    };
 
     // Only used with TransitionMotion
     _willLeave() {
 
         const { animConfig } = this.state;
         return animConfig.leave;
-    }
+    };
 
     _getDefaultStyles() {
 
         const defaultStyles = this.getStyles('start')
         .map((interpolatedStyle) => {
 
-            const newCssVals = interpolatedStyle.style;
+            const newCssVals = this.applyPlugins({
+                pluginFunc: 'getDefaultStyles',
+                applyTo: interpolatedStyle.style
+            });
 
-            const newInterpolatedStyle = _merge(
+            // Do NOT deep merge this. applyPlugins is allowed to do
+            // transformations on the styles, and we want the `style`
+            // prop to be preserved in `{ style: newCssVals }`
+            const newInterpolatedStyle = Object.assign(
                 {},
                 interpolatedStyle,
                 { style: newCssVals }
@@ -523,7 +572,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
         });
 
         return defaultStyles;
-    }
+    };
 
     _getStyles(animConfigKey) {
 
@@ -567,15 +616,18 @@ module.exports = class StrangeMotion extends React.PureComponent {
                 newKey = this._genId();
             }
 
-            let newStyle = animConfigKey ? mergedAnimConfig[animConfigKey] : mergedAnimConfig.enter;
+            const newCssVals = this.applyPlugins({
+                pluginFunc: 'getStyles',
+                applyTo: animConfigKey ? mergedAnimConfig[animConfigKey] : mergedAnimConfig.enter
+            });
 
             return {
                 data: child,
-                style: newStyle,
+                style: newCssVals,
                 key: String(newKey)
             };
         });
 
         return newStyles;
-    }
+    };
 };

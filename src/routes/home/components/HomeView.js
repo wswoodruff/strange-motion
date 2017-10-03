@@ -58,9 +58,9 @@ module.exports = class HomePage extends React.PureComponent {
                     Featured Demos
                 </SectionTitle>
 
-                <DemosContainer>
+                {/* <DemosContainer>
                     <FewContentsSharedTransitionDemo />
-                </DemosContainer>
+                </DemosContainer> */}
 
                 <SectionTitle type='headline' component='h1'>
                     Building Blocks
@@ -68,8 +68,8 @@ module.exports = class HomePage extends React.PureComponent {
 
                 <DemosContainer>
                     <MotionDemo />
-                    <MotionToggleDemo />
-                    <MultiMotion />
+                    {/* <MotionToggleDemo /> */}
+                    {/* <MultiMotion /> */}
                 </DemosContainer>
 
                 {/* <SectionTitle type='headline' component='h1'>
