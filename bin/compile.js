@@ -17,7 +17,7 @@ WebpackCompiler(WebpackConfig)
     }
 
     Debug('Copy static assets to dist folder.');
-    Fs.copySync(paths.client('static'), paths.dist());
+    Fs.copySync(paths.client('static'), paths.distBuilding());
 })
 .catch((err) => {
 

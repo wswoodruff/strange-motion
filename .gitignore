@@ -2,3 +2,6 @@ node_modules/*
 .tmp/
 npm-debug*
 .DS_STORE*
+
+dist-building
+dist-rollback

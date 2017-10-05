@@ -18,7 +18,7 @@ const config = module.exports = {
     // ----------------------------------
     path_base: Path.resolve(__dirname, '..'),
     dir_client: 'src',
-    dir_dist: 'dist',
+    dir_dist: 'dist-building',
     dir_server: 'server',
     dir_test: 'tests',
 
@@ -116,7 +116,7 @@ const base = (...args) => {
 config.utils_paths = {
     base,
     client: base.bind(null, config.dir_client),
-    dist: base.bind(null, config.dir_dist)
+    distBuilding: base.bind(null, config.dir_dist)
 };
 
 // ========================================================

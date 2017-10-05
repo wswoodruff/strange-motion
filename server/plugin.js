@@ -11,7 +11,7 @@ module.exports = (server, options, next) => {
     server.register({
         register: StrangeluvCore,
         options: {
-            dist: Config.utils_paths.dist(),
+            dist: Config.utils_paths.distBuilding(),
             static: Config.utils_paths.client('static'),
             compiler: (Config.env === 'dev') && Webpack(WebpackConfig),
             assets: {
