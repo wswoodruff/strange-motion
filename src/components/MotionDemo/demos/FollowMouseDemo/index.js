@@ -1,20 +1,39 @@
+
 const React = require('react');
 const T = require('prop-types');
 const Motion = require('../../../../../motion');
+const MaterialColors = require('material-ui/colors');
+const Throttle = require('lodash/throttle');
+
+const Material500s = Object.keys(MaterialColors)
+                    .filter((colorName) => colorName !== 'common')
+                    .map((colorName) => {
+
+                        return MaterialColors[colorName][500];
+                    });
+
+const internals = {};
+
+internals.randomMaterialColor = () => {
+
+    return Material500s[Math.floor(Math.random() * Material500s.length)];
+};
+
+internals.debouncedRandomMaterialColor = Throttle(internals.randomMaterialColor, 600);
 
 // Styles
 
 const lStyles = require('./styles');
 
 const {
-    BlueBall,
+    MaterialColorBall,
     Wrapper } = lStyles;
 
 // Anims
 
 const lAnims = require('./anims');
 
-const { BlueBallAnim } = lAnims;
+const { MaterialColorBallAnim } = lAnims;
 
 // Component
 
@@ -33,7 +52,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
         super();
 
         this.state = {
-            ballAnim: BlueBallAnim
+            ballAnim: MaterialColorBallAnim
         };
 
         this.setRef = this._setRef.bind(this);
@@ -58,7 +77,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                             $delay: 500
                         },
                         backgroundColor: {
-                            val: 'orange'
+                            val: internals.debouncedRandomMaterialColor()
                         }
                     }
                 }
@@ -75,7 +94,6 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
             this.mouseOver = false;
         });
 
-
         // Have ball animate to random spots until the mouse takes over
 
         setInterval(() => {
@@ -84,20 +102,11 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                 return;
             }
 
+            if (!this.mouseWatcher) {
+                return;
+            }
+
             const bounds = this.mouseWatcher.getBoundingClientRect();
-
-            const colors = [
-                'red',
-                'orange',
-                'yellow',
-                'green',
-                'blue',
-                'purple'
-            ];
-
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
-            console.log('randomColor', randomColor);
 
             this.setState({
                 ballAnim: {
@@ -110,13 +119,13 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                             $delay: 800
                         },
                         backgroundColor: {
-                            val: randomColor
+                            val: internals.randomMaterialColor()
                         }
                     }
                 }
             });
         }, 1500);
-    }
+    };
 
     _setRef(refName) {
 
@@ -140,7 +149,7 @@ module.exports = class FollowMouseDemo extends React.PureComponent {
                     animConfig={ballAnim}
                     animPlugins={animPlugins}
                 >
-                    <BlueBall />
+                    <MaterialColorBall />
                 </Motion>
             </Wrapper>
         );

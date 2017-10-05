@@ -194,7 +194,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         let newStyle = stylePluginsApplied;
 
-        newStyle = _merge(
+        newStyle = Object.assign(
             {},
             childStyle || {},
             stylePluginsApplied
@@ -273,9 +273,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const self = this;
 
-        // Should call `applyPlugins` here and set animConfigPluginsApplied
-        // const animConfigPluginsApplied = animConfigWithDefaults
-
         const animConfigPluginsApplied = this._applyPlugins({
             pluginFunc: 'assignAnimConfig',
             applyTo: animConfigWithDefaults
@@ -304,6 +301,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const { animPlugins } = this.props;
 
+        // Plugin validation
         const filteredAnimPlugins = [].concat(animPlugins).filter((plugin) => plugin ? true : false);
 
         let pluginsApplied = applyTo;
@@ -313,7 +311,17 @@ module.exports = class StrangeMotion extends React.PureComponent {
         filteredAnimPlugins.forEach((plugin) => {
 
             if (plugin[pluginFunc]) {
-                pluginsApplied = plugin[pluginFunc](applyTo);
+
+                if (pluginFunc === 'getStyles') {
+                    pluginsApplied = plugin[pluginFunc](applyTo, this.reactMotion);
+                }
+                else {
+                    pluginsApplied = plugin[pluginFunc](applyTo);
+                }
+            }
+
+            if (plugin['getReactMotion']) {
+                plugin['getReactMotion'](this.reactMotion);
             }
         });
 

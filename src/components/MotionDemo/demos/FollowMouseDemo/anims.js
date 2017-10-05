@@ -1,11 +1,11 @@
 
 module.exports = {
 
-    BlueBallAnim: {
+    MaterialColorBallAnim: {
         start: {
             left: 0,
             top: 0,
-            backgroundColor: 'green'
+            backgroundColor: 'white'
         },
         enter: {
             left: {
@@ -16,7 +16,7 @@ module.exports = {
                 val: 200,
                 preset: 'wobbly'
             },
-            backgroundColor: 'orange'
+            backgroundColor: 'white'
         }
     }
 };

@@ -4,8 +4,6 @@ const Color = require('color');
 const { spring } = require('react-motion');
 const StrangeMotion = require('../../index');
 
-const Loggy = require('utils/loggy');
-
 const defaultSpring = StrangeMotion.defaultSpring;
 
 const internals = {
@@ -25,9 +23,9 @@ module.exports = {
         const transformedAnimConfig = internals.parseColors(styles);
         return transformedAnimConfig;
     },
-    getStyles: (interpolatedStyles) => {
+    getStyles: (interpolatedStyles, reactMotion) => {
 
-        const transformedAnimConfig = internals.getStyles(interpolatedStyles);
+        const transformedAnimConfig = internals.getStyles(interpolatedStyles, reactMotion);
         return transformedAnimConfig;
     },
     transform: (interpolatedStyles) => {
@@ -44,24 +42,18 @@ module.exports = {
 
 internals.assignNewAnimConfig = (newAnimConfig) => {
 
-    if (isAnimConfig(newAnimConfig)) {
+    return Object.keys(newAnimConfig)
+    .reduce((collector, animCssName) => {
 
-        return Object.keys(newAnimConfig)
-        .reduce((collector, animCssName) => {
+        collector[animCssName] = internals.addColorSpringProps(newAnimConfig[animCssName]);
 
-            collector[animCssName] = internals.addColorSpringProps(newAnimConfig[animCssName]);
-
-            return collector;
-        }, {});
-    }
-    else {
-        return internals.addColorSpringProps(newAnimConfig);
-    }
+        return collector;
+    }, {});
 };
 
-internals.getStyles = (interpolatedStyles) => {
+internals.getStyles = (interpolatedStyles, reactMotion) => {
 
-    return internals.addColorSpringPropsWithDefaults(interpolatedStyles);
+    return internals.addColorSpringPropsWithDefaults(interpolatedStyles, reactMotion);
 };
 
 internals.parseColors = (interpolatedStyles) => {
@@ -69,7 +61,13 @@ internals.parseColors = (interpolatedStyles) => {
     return internals.addColorSpringProps(interpolatedStyles);
 };
 
-internals.addColorSpringPropsWithDefaults = (cssProps) => {
+internals.addColorSpringPropsWithDefaults = (cssProps, reactMotion) => {
+
+    let lastIdealStyle = {};
+
+    if (reactMotion) {
+        lastIdealStyle = reactMotion.state.lastIdealStyle;
+    }
 
     const isSpringLoaded = Object.keys(cssProps).some((propName) => { return typeof cssProps[propName].val !== 'undefined' });
 
@@ -77,13 +75,13 @@ internals.addColorSpringPropsWithDefaults = (cssProps) => {
 
     if (isSpringLoaded) {
         propsWithDefaults = {
-            ...internals.lastSpringVals,
+            ...lastIdealStyle,
             ...cssProps
         };
     }
     else {
         propsWithDefaults = {
-            ...internals.lastVals,
+            ...lastIdealStyle,
             ...cssProps
         };
     }
@@ -100,8 +98,6 @@ internals.addColorSpringProps = (cssProps) => {
         let color;
 
         const currentCssPropVal = cssProps[currentCssPropName];
-
-        Loggy.log('currentCssPropName', currentCssPropName);
 
         if (currentCssPropName.includes('ColorSpring')) {
 
@@ -126,7 +122,7 @@ internals.addColorSpringProps = (cssProps) => {
             throw new Error(err, 'err setting color from currentCssPropVal');
         };
 
-        const hslArr = color.hsl().color;
+        const colorsArr = color.rgb().color;
 
         if (currentCssPropVal.val) {
 
@@ -142,42 +138,31 @@ internals.addColorSpringProps = (cssProps) => {
             const colorSpringHWithVal = Object.assign(
                 {},
                 propSpring,
-                { val: hslArr[0] }
+                { val: colorsArr[0] }
             );
 
             const colorSpringSWithVal = Object.assign(
                 {},
                 propSpring,
-                { val: hslArr[1] }
+                { val: colorsArr[1] }
             );
 
             const colorSpringLWithVal = Object.assign(
                 {},
                 propSpring,
-                { val: hslArr[2] }
+                { val: colorsArr[2] }
             );
 
-            internals.lastSpringVals[`${currentCssPropName}ColorSpringH`] = colorSpringHWithVal;
-            internals.lastSpringVals[`${currentCssPropName}ColorSpringS`] = colorSpringSWithVal;
-            internals.lastSpringVals[`${currentCssPropName}ColorSpringL`] = colorSpringLWithVal;
-
-            animCollector[`${currentCssPropName}ColorSpringH`] = colorSpringHWithVal;
-            animCollector[`${currentCssPropName}ColorSpringS`] = colorSpringSWithVal;
-            animCollector[`${currentCssPropName}ColorSpringL`] = colorSpringLWithVal;
+            animCollector[`${currentCssPropName}ColorSpring1`] = colorSpringHWithVal;
+            animCollector[`${currentCssPropName}ColorSpring2`] = colorSpringSWithVal;
+            animCollector[`${currentCssPropName}ColorSpring3`] = colorSpringLWithVal;
         }
         else {
 
-            internals.lastVals[`${currentCssPropName}ColorSpringH`] = hslArr[0];
-            internals.lastVals[`${currentCssPropName}ColorSpringS`] = hslArr[1];
-            internals.lastVals[`${currentCssPropName}ColorSpringL`] = hslArr[2];
-
-            animCollector[`${currentCssPropName}ColorSpringH`] = hslArr[0];
-            animCollector[`${currentCssPropName}ColorSpringS`] = hslArr[1];
-            animCollector[`${currentCssPropName}ColorSpringL`] = hslArr[2];
+            animCollector[`${currentCssPropName}ColorSpring1`] = colorsArr[0];
+            animCollector[`${currentCssPropName}ColorSpring2`] = colorsArr[1];
+            animCollector[`${currentCssPropName}ColorSpring3`] = colorsArr[2];
         }
-
-        // delete animCollector[currentCssPropName];
-        // This destroys all the styles -- animCollector[currentCssPropName] = 0;
 
         return animCollector;
     }, {});
@@ -190,9 +175,6 @@ internals.toCss = (style) => {
     const cssPropKeys = Object.keys(style);
 
     const parsedColorSprings = [];
-
-    Loggy.warn('style', style);
-    Loggy.warn('cssPropKeys', cssPropKeys);
 
     return cssPropKeys.reduce((animCollector, currentCssPropName) => {
 
@@ -217,16 +199,13 @@ internals.toCss = (style) => {
             return animCollector;
         }
 
-        // The currentCssPropName is backgroundColor, contains 'color', or fontColor
-
-        const hslArr = [
-            style[`${originalName}ColorSpringH`],
-            style[`${originalName}ColorSpringS`],
-            style[`${originalName}ColorSpringL`]
+        const colorsArr = [
+            style[`${originalName}ColorSpring1`],
+            style[`${originalName}ColorSpring2`],
+            style[`${originalName}ColorSpring3`]
         ];
 
-        const color = Color(hslArr).hsl();
-
+        const color = Color(colorsArr).rgb();
         animCollector[originalName] = color.string();
 
         return animCollector;
