@@ -1,12 +1,11 @@
 # strange-motion
+#### Configurable and controllable `react-motion` animations
 [![Greenkeeper badge](https://badges.greenkeeper.io/wswoodruff/strange-motion.svg)](https://greenkeeper.io/)
 
-#### Configurable and controllable `react-motion` animations
-
-#### What it does
+### What it does
 strange-motion manages react-motion elements internally and manages an `animConfig` for you to easily specify css prop animations used with `react-motion`. You're also able to request an `animController` object from strange-motion components (similar to how you get a `ref={}`) to make animations happen on command :rocket:
 
-#### Example
+### Example
 ```
 // A minimal React component that animates a ball to random x & y axes
 
@@ -23,7 +22,7 @@ const ballAnim = {
     enter: {
         left: {
             val: 200,
-            preset: 'wobbly', // This wobbly preset remains on future anims until overridden
+            preset: 'wobbly',
         },
         top: {
             val: 200,
@@ -56,16 +55,16 @@ module.exports = class MinimalDemo extends React.PureComponent {
 
             const bounds = this.wrapper.getBoundingClientRect();
 
-            this.ballAnimController.enter({
+            this.ballAnimController.play({
                 left: {
                     val: Math.random() * bounds.width
                 },
                 top: {
                     val: Math.random() * bounds.height,
-                    $delay: 800
+                    $delay: 150
                 }
             });
-        }, 1500);
+        }, 1100);
     };
 
     _setRef(refName) {
@@ -83,8 +82,8 @@ module.exports = class MinimalDemo extends React.PureComponent {
                 ref={this.setRef('wrapper')}
                 style={{
                     position: 'absolute',
-                    width: '600px',
-                    height: '400px'
+                    width: '100%',
+                    height: '100%'
                 }}
             >
                 <Motion
@@ -107,5 +106,4 @@ module.exports = class MinimalDemo extends React.PureComponent {
         );
     };
 };
-
 ```
