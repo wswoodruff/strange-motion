@@ -17,8 +17,9 @@ There are special keys that make animConfigs extra useful! You should know about
 - **`$delay`** A delay to offset the entire animation by
 
 This animConfig will animate something from 0x0 to 40x40 on mount, then animate back to 0x0 when leaving IF you use the Mount component. Motion components do not respond to the `leave` setting by default.
+
+Ex:
 ```js
-// Ex. animConfig
 const animConfig = {
     start: {
         width: 0,
@@ -34,6 +35,7 @@ const animConfig = {
     }
 }
 ```
+
 If you update the `animConfig`, strange-motion components will pick up on that and update it's internals. If you update the `enter` setting on the animConfig, the component will animate immediately to whatever the new `enter` setting is.
 
 ### Tuning Anims
@@ -70,6 +72,7 @@ const animConfig = {
 
 ### Named Anims
 Add extra props to your animConfigs for named anims you can use with the `animController`, which we'll talk about next.
+
 Ex:
 ```js
 const animConfig = {
@@ -94,6 +97,7 @@ const animConfig = {
 
 ### Anim Controller
 On all `strange-motion` components, an animController is generated with an API built for your animConfig. You get the animController like so:
+
 ```js
 const animConfig = { ... };
 const setRef = (ref) => { this.animController = ref };
@@ -109,3 +113,11 @@ const setRef = (ref) => { this.animController = ref };
 Once you've obtained the animController, you can use its API to control animations
 AnimControll API:
 - **`play`** Animate to the passed-in CSS props. This will update the animConfig's `enter` setting to the passed-in props.
+- **`start|enter|leave|custom`** `Function()`s available on the `animController` object to run respective anims. If you want to animate to the `leave` setting, call animController.leave();
+
+Using the **Named Anims** animConfig
+Ex:
+```js
+animController.xLarge();
+setTimeout(() => { animController.leave(); }, 1000);
+```
