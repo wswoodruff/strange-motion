@@ -17,9 +17,6 @@ module.exports = class StrangeMotion extends React.PureComponent {
             leave: T.object
         }),
         animPlugins: T.array,
-
-        // Left off implementing animPlugins for the motion blur plugin.
-
         children: T.any.isRequired,
         animWrapperComponent: T.any,
         animWrapperComponentRef: T.func,
