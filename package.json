@@ -1,6 +1,6 @@
 {
     "name": "strange-motion",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Configurable and controllable `react-motion` animations",
     "main": "index.js",
     "scripts": {
