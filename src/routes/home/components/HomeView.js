@@ -55,21 +55,22 @@ module.exports = class HomePage extends React.PureComponent {
                 </GitHubForkRibbon>
 
                 <SectionTitle type='headline' component='h1'>
-                    Featured Demos
+                    Demos
                 </SectionTitle>
 
                 {/* <DemosContainer>
                     <FewContentsSharedTransitionDemo />
                 </DemosContainer> */}
-
-                <SectionTitle type='headline' component='h1'>
+                {/*
+                    <SectionTitle type='headline' component='h1'>
                     Building Blocks
-                </SectionTitle>
+                    </SectionTitle>
+                */}
 
                 <DemosContainer>
                     <MotionDemo />
-                    {/* <MotionToggleDemo /> */}
-                    {/* <MultiMotion /> */}
+                    <MotionToggleDemo />
+                    <MultiMotion />
                 </DemosContainer>
 
                 {/* <SectionTitle type='headline' component='h1'>

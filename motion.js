@@ -38,7 +38,7 @@ module.exports = class Motion extends StrangeMotion {
         );
 
         const animControllerApi = {
-            enter: (animNameOrConfig) => {
+            play: (animNameOrConfig) => {
 
                 if (typeof animNameOrConfig === 'string') {
                     this.playProp = animNameOrConfig;
@@ -49,9 +49,11 @@ module.exports = class Motion extends StrangeMotion {
 
                     this.playProp = 'enter';
 
-                    this.assignAnimConfig({ newAnimConfig: {
-                        enter: animNameOrConfig
-                    }});
+                    this.assignAnimConfig({
+                        newAnimConfig: {
+                            enter: animNameOrConfig
+                        }
+                    });
                 }
             },
             mergeAnimConfig: (animConfig) => {
@@ -65,10 +67,6 @@ module.exports = class Motion extends StrangeMotion {
                 console.warn('replay not implemented yet, sorry!');
             }
         };
-
-        // Set some aliases for code readability's sake
-
-        animControllerApi.play = animControllerApi.enter;
 
         this.animController = Object.keys(mergedAnimConfig)
         .reduce((collector, animName) => {

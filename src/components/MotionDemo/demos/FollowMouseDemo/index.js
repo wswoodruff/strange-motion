@@ -6,11 +6,11 @@ const MaterialColors = require('material-ui/colors');
 const Throttle = require('lodash/throttle');
 
 const Material500s = Object.keys(MaterialColors)
-                    .filter((colorName) => colorName !== 'common')
-                    .map((colorName) => {
+    .filter((colorName) => colorName !== 'common')
+    .map((colorName) => {
 
-                        return MaterialColors[colorName][500];
-                    });
+        return MaterialColors[colorName][500];
+    });
 
 const internals = {};
 

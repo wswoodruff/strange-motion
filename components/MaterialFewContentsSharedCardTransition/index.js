@@ -94,17 +94,17 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
 
             case 'detail':
 
-                // console.warn(this.Placeholder.offsetTop);
-                // console.log(this.Placeholder.offsetParent);
-                // console.log(this.animControllers);
-                // console.log(Card);
-
                 const top = this.Placeholder.offsetTop;
                 const left = this.Placeholder.offsetLeft;
                 const width = this.Placeholder.offsetWidth;
                 const height = this.Placeholder.offsetHeight;
 
                 this.Placeholder.style.height = `${height}px`;
+
+                console.dir(this.Placeholder);
+                const container = this.Placeholder.offsetParent;
+                const containerWidth = container.offsetWidth;
+                const containerHeight = container.offsetHeight;
 
                 // this.Card.style.left = `${left}px`;
                 // this.Card.style.top = `${top}px`;
@@ -116,14 +116,18 @@ module.exports = class PageLayoutDemo extends React.PureComponent {
                 this.animControllers.Card.mergeAnimConfig({
                     start: {
                         left,
-                        top
+                        top,
+                        width,
+                        height
                     },
                     enter: {
                         left: 0,
                         top: {
-                            $delay: 150,
+                            // $delay: 150,
                             val: 60 // appbar height
-                        }
+                        },
+                        width: containerWidth,
+                        height: containerHeight
                     }
                 });
 
