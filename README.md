@@ -5,6 +5,8 @@
 ### What it does
 strange-motion manages react-motion elements internally and manages an `animConfig` for you to easily specify css prop animations used with `react-motion`. You're also able to request an `animController` object from strange-motion components (similar to how you get a `ref={}`) to make animations happen on command :rocket:
 
+> See also the [API Reference](https://github.com/wswoodruff/strange-motion/blob/master/API.md)
+
 ### Example
 ```js
 // A minimal React component that animates a ball to random x & y coordinates
