@@ -1,7 +1,7 @@
 {
     "name": "strange-motion",
     "version": "0.0.1",
-    "description": "Cool util wrapper around `react-motion`!",
+    "description": "Configurable and controllable `react-motion` animations",
     "main": "index.js",
     "scripts": {
         "test": "echo \"No test specified\""
