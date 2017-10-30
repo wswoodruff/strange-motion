@@ -1,6 +1,6 @@
 # strange-motion
 #### Configurable and controllable `react-motion` animations
-[![NSP Status](https://nodesecurity.io/orgs/wswoodruff/projects/a12ea501-4b8c-4868-bf4b-e8603004f971/badge)](https://nodesecurity.io/orgs/wswoodruff/projects/a12ea501-4b8c-4868-bf4b-e8603004f971)
+[![NSP Status](https://nodesecurity.io/orgs/wswoodruff/projects/a12ea501-4b8c-4868-bf4b-e8603004f971/badge)](https://nodesecurity.io/orgs/wswoodruff/projects/a12ea501-4b8c-4868-bf4b-e8603004f971) [![Known Vulnerabilities](https://snyk.io/test/github/wswoodruff/strange-motion/badge.svg)](https://snyk.io/test/github/wswoodruff/strange-motion)
 
 ### What it does
 strange-motion manages react-motion elements internally and manages an `animConfig` for you to easily specify css prop animations used with `react-motion`. You're also able to request an `animController` object from strange-motion components (similar to how you get a `ref={}`) to make animations happen on command :rocket:
