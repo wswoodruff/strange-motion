@@ -7,7 +7,7 @@ strange-motion manages react-motion elements internally and manages an `animConf
 
 ### Example
 ```js
-// A minimal React component that animates a ball to random x & y axes
+// A minimal React component that animates a ball to random x & y coordinates
 
 const React = require('react');
 const Motion = require('strange-motion/motion');
