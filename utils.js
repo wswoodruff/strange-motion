@@ -149,8 +149,7 @@ module.exports = {
                             })
                             .reduce((collector, diffKey) => {
 
-                                // collector.enter[diffKey] = 'getLastIdealStyle';
-                                collector.enter[diffKey] = 'getBeginEnterVal';
+                                collector.enter[diffKey] = 'getLastIdealStyle';
                                 return collector;
                             }, { enter: {} });
 

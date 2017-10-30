@@ -4,6 +4,8 @@ const { spring } = require('react-motion');
 const Utils = require('./utils');
 const _merge = require('lodash/merge');
 
+const Loggy = require('utils/loggy');
+
 module.exports = class StrangeMotion extends React.PureComponent {
 
     static propTypes = {
@@ -192,7 +194,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         let newStyle = stylePluginsApplied;
 
-        newStyle = _merge(
+        newStyle = Object.assign(
             {},
             childStyle || {},
             stylePluginsApplied
@@ -271,11 +273,8 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const self = this;
 
-        // Should call `applyPlugins` here and set animConfigPluginsApplied
-        // const animConfigPluginsApplied = animConfigWithDefaults
-
         const animConfigPluginsApplied = this._applyPlugins({
-            pluginFunc: 'assignNewAnimConfig',
+            pluginFunc: 'assignAnimConfig',
             applyTo: animConfigWithDefaults
         });
 
@@ -302,6 +301,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
         const { animPlugins } = this.props;
 
+        // Plugin validation
         const filteredAnimPlugins = [].concat(animPlugins).filter((plugin) => plugin ? true : false);
 
         let pluginsApplied = applyTo;
@@ -311,7 +311,17 @@ module.exports = class StrangeMotion extends React.PureComponent {
         filteredAnimPlugins.forEach((plugin) => {
 
             if (plugin[pluginFunc]) {
-                pluginsApplied = plugin[pluginFunc](applyTo);
+
+                if (pluginFunc === 'getStyles') {
+                    pluginsApplied = plugin[pluginFunc](applyTo, this.reactMotion);
+                }
+                else {
+                    pluginsApplied = plugin[pluginFunc](applyTo);
+                }
+            }
+
+            if (plugin['getReactMotion']) {
+                plugin['getReactMotion'](this.reactMotion);
             }
         });
 
@@ -368,15 +378,14 @@ module.exports = class StrangeMotion extends React.PureComponent {
 
                     const cssPropVal = currentAnimType[cssPropName];
 
-                    // console.log('cssPropName', cssPropName);
-                    // console.warn('BEFORE cssPropVal', cssPropVal);
-
                     if (cssPropVal === 'getLastIdealStyle') {
 
-                        // console.log('reactMotion', reactMotion);
-                        const delayProp = reactMotion.state.lastIdealStyle[cssPropName];
+                        const lastIdealStyle = reactMotion.state.lastIdealStyle[cssPropName];
 
-                        collector[cssPropName] = typeof delayProp.val === 'undefined' ? delayProp : delayProp.val;
+                        if (typeof lastIdealStyle !== 'undefined') {
+
+                            collector[cssPropName] = lastIdealStyle;
+                        }
                     }
                     else {
                         collector[cssPropName] = cssPropVal;
@@ -393,7 +402,7 @@ module.exports = class StrangeMotion extends React.PureComponent {
             //
 
             const animConfigPluginsApplied = this.applyPlugins({
-                pluginFunc: 'assignNewAnimConfig',
+                pluginFunc: 'assignAnimConfig',
                 applyTo: newAnimConfig
             });
 
@@ -554,11 +563,14 @@ module.exports = class StrangeMotion extends React.PureComponent {
         .map((interpolatedStyle) => {
 
             const newCssVals = this.applyPlugins({
-                pluginFunc: 'getStyles',
+                pluginFunc: 'getDefaultStyles',
                 applyTo: interpolatedStyle.style
             });
 
-            const newInterpolatedStyle = _merge(
+            // Do NOT deep merge this. applyPlugins is allowed to do
+            // transformations on the styles, and we want the `style`
+            // prop to be preserved in `{ style: newCssVals }`
+            const newInterpolatedStyle = Object.assign(
                 {},
                 interpolatedStyle,
                 { style: newCssVals }
