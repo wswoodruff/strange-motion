@@ -1,39 +1,80 @@
-const React = require('react');
-const T = require('prop-types');
-const Motion = require('./motion');
-const Utils = require('./utils');
+'use strict';
+
+var _typeof2 = require('babel-runtime/helpers/typeof');
+
+var _typeof3 = _interopRequireDefault(_typeof2);
+
+var _toConsumableArray2 = require('babel-runtime/helpers/toConsumableArray');
+
+var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+
+var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
+
+var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+
+var _extends3 = require('babel-runtime/helpers/extends');
+
+var _extends4 = _interopRequireDefault(_extends3);
+
+var _assign = require('babel-runtime/core-js/object/assign');
+
+var _assign2 = _interopRequireDefault(_assign);
+
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _class, _temp;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var React = require('react');
+var T = require('prop-types');
+var Motion = require('./motion');
+var Utils = require('./utils');
 
 // Component
 
-module.exports = class MultiMotion extends React.PureComponent {
+module.exports = (_temp = _class = function (_React$PureComponent) {
+    (0, _inherits3.default)(MultiMotion, _React$PureComponent);
 
-    static propTypes = {
-        animConfigs: T.object.isRequired,
-        children: T.any.isRequired,
-        getAnimControllers: T.func
-    }
+    function MultiMotion(props) {
+        (0, _classCallCheck3.default)(this, MultiMotion);
 
-    constructor(props) {
+        var _this = (0, _possibleConstructorReturn3.default)(this, (MultiMotion.__proto__ || (0, _getPrototypeOf2.default)(MultiMotion)).call(this, props));
 
-        super(props);
+        var children = Utils.getElementsFromChildren(props.children);
+        var configKeys = (0, _keys2.default)(props.animConfigs);
+        var childrenByKeys = _this._getModelByKeys(props.children);
 
-        const children = Utils.getElementsFromChildren(props.children);
-        const configKeys = Object.keys(props.animConfigs);
-        const childrenByKeys = this._getModelByKeys(props.children);
+        var _Object$keys$reduce = (0, _keys2.default)(props.animConfigs).reduce(function (collector, animKey) {
 
-        const {
-            delayConfigs,
-            immediateAnimConfigs,
-            immediateChildren
-        } = Object.keys(props.animConfigs)
-        .reduce((collector, animKey) => {
-
-            const anim = props.animConfigs[animKey];
-            const child = childrenByKeys[animKey];
+            var anim = props.animConfigs[animKey];
+            var child = childrenByKeys[animKey];
 
             if (!!anim.$delay) {
 
-                const $delay = anim.$delay;
+                var $delay = anim.$delay;
 
                 // delete the $delay for the future animConfig
                 // or we'd be in an infinite loop right?
@@ -43,10 +84,9 @@ module.exports = class MultiMotion extends React.PureComponent {
                 collector.delayConfigs.push({
                     delayAnimConfig: { key: animKey, val: anim },
                     delayChild: child,
-                    $delay
+                    $delay: $delay
                 });
-            }
-            else {
+            } else {
                 collector.immediateAnimConfigs[animKey] = anim;
                 collector.immediateChildren.push(child);
             }
@@ -56,10 +96,12 @@ module.exports = class MultiMotion extends React.PureComponent {
             delayConfigs: [],
             immediateAnimConfigs: {},
             immediateChildren: []
-        });
+        }),
+            delayConfigs = _Object$keys$reduce.delayConfigs,
+            immediateAnimConfigs = _Object$keys$reduce.immediateAnimConfigs,
+            immediateChildren = _Object$keys$reduce.immediateChildren;
 
-        const immediateAnimConfigsWithDefaults = Object.keys(immediateAnimConfigs)
-        .reduce((collector, animKey) => {
+        var immediateAnimConfigsWithDefaults = (0, _keys2.default)(immediateAnimConfigs).reduce(function (collector, animKey) {
 
             // 'Utils.assignDefaultsToAnimConfig' handles
             // $delay set for individual css props
@@ -69,18 +111,14 @@ module.exports = class MultiMotion extends React.PureComponent {
             return collector;
         }, {});
 
-        const self = this;
+        var self = _this;
 
-        this.animControllers = {};
+        _this.animControllers = {};
 
-        this.state = Object.assign(
-            {},
-            this.state,
-            {
-                model: immediateChildren,
-                animConfigs: immediateAnimConfigsWithDefaults
-            }
-        );
+        _this.state = (0, _assign2.default)({}, _this.state, {
+            model: immediateChildren,
+            animConfigs: immediateAnimConfigsWithDefaults
+        });
 
         /*
             delayConfig's schema
@@ -91,107 +129,115 @@ module.exports = class MultiMotion extends React.PureComponent {
             }]
         */
 
-        delayConfigs.forEach((delayConfig) => {
+        delayConfigs.forEach(function (delayConfig) {
+            var delayAnimConfig = delayConfig.delayAnimConfig,
+                delayChild = delayConfig.delayChild,
+                $delay = delayConfig.$delay;
 
-            const { delayAnimConfig, delayChild, $delay } = delayConfig;
 
-            setTimeout(() => {
+            setTimeout(function () {
 
-                const currentAnimConfigs = this.state.animConfigs;
-                const currentModel = this.state.model;
+                var currentAnimConfigs = _this.state.animConfigs;
+                var currentModel = _this.state.model;
                 delete delayAnimConfig.$delay;
 
                 // Can process nested $delays set here
-                const delayedAnimConfigWithDefaults = Utils.assignDefaultsToAnimConfig(delayAnimConfig);
+                var delayedAnimConfigWithDefaults = Utils.assignDefaultsToAnimConfig(delayAnimConfig);
 
-                const newAnimConfigs = {
-                    ...currentAnimConfigs,
-                    [delayedAnimConfigWithDefaults.key]: delayedAnimConfigWithDefaults.val
-                }
+                var newAnimConfigs = (0, _extends4.default)({}, currentAnimConfigs, (0, _defineProperty3.default)({}, delayedAnimConfigWithDefaults.key, delayedAnimConfigWithDefaults.val));
 
-                const newModel = [...currentModel, delayChild];
+                var newModel = [].concat((0, _toConsumableArray3.default)(currentModel), [delayChild]);
 
-                this.setState({
+                _this.setState({
                     model: newModel,
                     animConfigs: newAnimConfigs
-                })
+                });
             }, $delay);
         });
 
-        this.getModelByKeys = this._getModelByKeys.bind(this);
-        this.setAnimController = this._setAnimController.bind(this);
+        _this.getModelByKeys = _this._getModelByKeys.bind(_this);
+        _this.setAnimController = _this._setAnimController.bind(_this);
+        return _this;
     }
 
-    _getModelByKeys(model) {
+    (0, _createClass3.default)(MultiMotion, [{
+        key: '_getModelByKeys',
+        value: function _getModelByKeys(model) {
 
-        let newModel = model;
+            var newModel = model;
 
-        if (typeof model === 'object' &&
-            !Array.isArray(model)) {
+            if ((typeof model === 'undefined' ? 'undefined' : (0, _typeof3.default)(model)) === 'object' && !Array.isArray(model)) {
 
-            newModel = [].concat(model);
-        }
-
-        return newModel.reduce((collector, child) => {
-
-            collector[child.key] = child;
-            return collector;
-        }, {});
-    }
-
-    _setAnimController(animName) {
-
-        const { animConfigs } = this.state;
-        const { getAnimControllers } = this.props;
-
-        return (animController) => {
-
-            const { animConfigs } = this.state;
-
-            const newAnimControllers = Object.assign({},
-                { ...this.animControllers },
-                {
-                    [animName]: animController
-                }
-            );
-
-            this.animControllers = newAnimControllers;
-
-            if (typeof getAnimControllers === 'function') {
-                getAnimControllers(this.animControllers);
+                newModel = [].concat(model);
             }
+
+            return newModel.reduce(function (collector, child) {
+
+                collector[child.key] = child;
+                return collector;
+            }, {});
         }
-    }
+    }, {
+        key: '_setAnimController',
+        value: function _setAnimController(animName) {
+            var _this2 = this;
 
-    render() {
-
-        const { model, animConfigs } = this.state;
-
-        const modelByKeys = this.getModelByKeys(model);
-
-        const controlledAnimConfigs = Object.keys(animConfigs)
-        .reduce((collector, animName) => {
-
-            collector[animName] = animConfigs[animName];
+            var animConfigs = this.state.animConfigs;
+            var getAnimControllers = this.props.getAnimControllers;
 
 
-            return collector;
-        }, {});
+            return function (animController) {
+                var animConfigs = _this2.state.animConfigs;
 
-        return (
-            <div>
-                {Object.keys(controlledAnimConfigs).map((animName) => {
-                    return (
-                        <Motion
-                            animConfig={controlledAnimConfigs[animName]}
-                            getAnimController={this.setAnimController(animName)}
-                            key={animName}
-                        >
-                            {modelByKeys[animName]}
-                        </Motion>
+
+                var newAnimControllers = (0, _assign2.default)({}, (0, _extends4.default)({}, _this2.animControllers), (0, _defineProperty3.default)({}, animName, animController));
+
+                _this2.animControllers = newAnimControllers;
+
+                if (typeof getAnimControllers === 'function') {
+                    getAnimControllers(_this2.animControllers);
+                }
+            };
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var _this3 = this;
+
+            var _state = this.state,
+                model = _state.model,
+                animConfigs = _state.animConfigs;
+
+
+            var modelByKeys = this.getModelByKeys(model);
+
+            var controlledAnimConfigs = (0, _keys2.default)(animConfigs).reduce(function (collector, animName) {
+
+                collector[animName] = animConfigs[animName];
+
+                return collector;
+            }, {});
+
+            return React.createElement(
+                'div',
+                null,
+                (0, _keys2.default)(controlledAnimConfigs).map(function (animName) {
+                    return React.createElement(
+                        Motion,
+                        {
+                            animConfig: controlledAnimConfigs[animName],
+                            getAnimController: _this3.setAnimController(animName),
+                            key: animName
+                        },
+                        modelByKeys[animName]
                     );
-                })}
-            </div>
-        );
-    }
-};
+                })
+            );
+        }
+    }]);
+    return MultiMotion;
+}(React.PureComponent), _class.propTypes = {
+    animConfigs: T.object.isRequired,
+    children: T.any.isRequired,
+    getAnimControllers: T.func
+}, _temp);

@@ -1,29 +1,49 @@
+'use strict';
 
-const { presets } = require('react-motion');
-const _merge = require('lodash/merge');
-const React = require('react');
+var _objectWithoutProperties2 = require('babel-runtime/helpers/objectWithoutProperties');
 
-const defaultSpring = {
+var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
+
+var _typeof2 = require('babel-runtime/helpers/typeof');
+
+var _typeof3 = _interopRequireDefault(_typeof2);
+
+var _keys = require('babel-runtime/core-js/object/keys');
+
+var _keys2 = _interopRequireDefault(_keys);
+
+var _stringify = require('babel-runtime/core-js/json/stringify');
+
+var _stringify2 = _interopRequireDefault(_stringify);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var _require = require('react-motion'),
+    presets = _require.presets;
+
+var _merge = require('lodash/merge');
+var React = require('react');
+
+var defaultSpring = {
     stiffness: 170,
     damping: 26,
     precision: 0.01
-}
+};
 
 module.exports = {
 
-    defaultSpring,
+    defaultSpring: defaultSpring,
 
-    assignDefaultsToAnimConfig: (animConfig) => {
+    assignDefaultsToAnimConfig: function assignDefaultsToAnimConfig(animConfig) {
 
         if (animConfig.leave) {
 
-            const leaveAnimVals = _merge({}, animConfig.leave);
+            var leaveAnimVals = _merge({}, animConfig.leave);
 
             if (!animConfig.start) {
                 animConfig.start = leaveAnimVals;
             }
-        }
-        else if (animConfig.start) {
+        } else if (animConfig.start) {
             animConfig.leave = animConfig.start;
             if (!animConfig.enter) {
                 animConfig.enter = animConfig.start;
@@ -31,22 +51,19 @@ module.exports = {
         }
 
         if (!animConfig.beforeEnter) {
-            animConfig.beforeEnter = _merge(
-                {},
-                animConfig.start
-            );
+            animConfig.beforeEnter = _merge({}, animConfig.start);
         }
 
         return animConfig;
     },
 
-    getElementsFromChildren: (children) => {
+    getElementsFromChildren: function getElementsFromChildren(children) {
 
         if (!Array.isArray(children)) {
             children = [].concat(children);
         }
 
-        return children.reduce((collector, child) => {
+        return children.reduce(function (collector, child) {
 
             if (React.isValidElement(child)) {
                 collector.push(child);
@@ -56,52 +73,47 @@ module.exports = {
         }, []);
     },
 
-    assignAnimConfig: function({
-        beginAnimConfig,
-        newAnimConfig,
-        reactMotion
-    }) {
+    assignAnimConfig: function assignAnimConfig(_ref) {
+        var beginAnimConfig = _ref.beginAnimConfig,
+            newAnimConfig = _ref.newAnimConfig,
+            reactMotion = _ref.reactMotion;
+
 
         if (!beginAnimConfig) {
             beginAnimConfig = newAnimConfig;
         }
 
-        beginAnimConfig = JSON.parse(JSON.stringify(beginAnimConfig));
+        beginAnimConfig = JSON.parse((0, _stringify2.default)(beginAnimConfig));
 
-        let delays = {};
+        var delays = {};
 
-        const assignedAnimConfig = Object.keys(beginAnimConfig)
-        .reduce((collector, animStyleName) => {
+        var assignedAnimConfig = (0, _keys2.default)(beginAnimConfig).reduce(function (collector, animStyleName) {
 
-            const beginAnimStyle = beginAnimConfig[animStyleName];
-            const newAnimStyle = newAnimConfig[animStyleName] || beginAnimStyle;
+            var beginAnimStyle = beginAnimConfig[animStyleName];
+            var newAnimStyle = newAnimConfig[animStyleName] || beginAnimStyle;
 
-            if (animStyleName === 'start' ||
-               animStyleName === 'beforeEnter') {
+            if (animStyleName === 'start' || animStyleName === 'beforeEnter') {
 
-               // These can't handle springs set on them
+                // These can't handle springs set on them
 
-               collector[animStyleName] = newAnimConfig[animStyleName] || beginAnimConfig[animStyleName];
-            }
-            else {
+                collector[animStyleName] = newAnimConfig[animStyleName] || beginAnimConfig[animStyleName];
+            } else {
 
-                collector[animStyleName] = Object.keys(newAnimStyle)
-                .reduce((newCSSProps, cssPropName) => {
+                collector[animStyleName] = (0, _keys2.default)(newAnimStyle).reduce(function (newCSSProps, cssPropName) {
 
-                    let cssProp = newAnimStyle[cssPropName];
+                    var cssProp = newAnimStyle[cssPropName];
 
-                    const beginCssProp = typeof beginAnimConfig[animStyleName][cssPropName] !== 'undefined' ?
-                    beginAnimConfig[animStyleName][cssPropName] : {};
+                    var beginCssProp = typeof beginAnimConfig[animStyleName][cssPropName] !== 'undefined' ? beginAnimConfig[animStyleName][cssPropName] : {};
 
-                    if (typeof cssProp === 'object') {
+                    if ((typeof cssProp === 'undefined' ? 'undefined' : (0, _typeof3.default)(cssProp)) === 'object') {
 
-                        let additional = {};
+                        var additional = {};
 
                         // Special config settings
 
                         if (typeof cssProp.preset === 'string') {
 
-                            const reactPreset = presets[cssProp.preset];
+                            var reactPreset = presets[cssProp.preset];
 
                             if (reactPreset) {
                                 additional = presets[cssProp.preset];
@@ -132,42 +144,34 @@ module.exports = {
 
                             // TODO Use something similar for the repeat prop
 
-                            const { $delay, ...cssPropWithoutDelay } = cssProp;
+                            var $delay = cssProp.$delay,
+                                cssPropWithoutDelay = (0, _objectWithoutProperties3.default)(cssProp, ['$delay']);
 
                             // Set cssProp to the latest of reactMotion here
                             // cssProp = reactMotion.state.lastIdealStyle[cssPropName];
 
-                            const delayedAnimConfig = {};
+                            var delayedAnimConfig = {};
                             delayedAnimConfig[animStyleName] = {};
                             delayedAnimConfig[animStyleName][cssPropName] = cssPropWithoutDelay;
 
-                            const animKeyDiff = Object.keys(beginAnimConfig[animStyleName])
-                            .filter(function(item) {
+                            var animKeyDiff = (0, _keys2.default)(beginAnimConfig[animStyleName]).filter(function (item) {
 
-                                return Object.keys(delayedAnimConfig[animStyleName])
-                                .indexOf(item) === -1;
-                            })
-                            .reduce((collector, diffKey) => {
+                                return (0, _keys2.default)(delayedAnimConfig[animStyleName]).indexOf(item) === -1;
+                            }).reduce(function (collector, diffKey) {
 
                                 collector.enter[diffKey] = 'getLastIdealStyle';
                                 return collector;
                             }, { enter: {} });
 
-                            const delayObj = {};
-                            delayObj[$delay] = _merge({},
-                                animKeyDiff,
-                                delayedAnimConfig
-                            );
+                            var delayObj = {};
+                            delayObj[$delay] = _merge({}, animKeyDiff, delayedAnimConfig);
 
-                            delays = _merge({},
-                                delays,
-                                delayObj
-                            );
+                            delays = _merge({}, delays, delayObj);
                         }
 
                         if (cssProp.$delay) {
 
-                            let explicitStartCssProp = {};
+                            var explicitStartCssProp = {};
 
                             if (newAnimConfig.start) {
                                 explicitStartCssProp = {
@@ -176,29 +180,13 @@ module.exports = {
                             }
 
                             delete cssProp.$delay;
-                            newCSSProps[cssPropName] = _merge({},
-                                defaultSpring,
-                                additional,
-                                beginCssProp,
-                                explicitStartCssProp
-                            );
+                            newCSSProps[cssPropName] = _merge({}, defaultSpring, additional, beginCssProp, explicitStartCssProp);
+                        } else {
+                            newCSSProps[cssPropName] = _merge({}, defaultSpring, beginCssProp, additional, cssProp);
                         }
-                        else {
-                            newCSSProps[cssPropName] = _merge({},
-                                defaultSpring,
-                                beginCssProp,
-                                additional,
-                                cssProp
-                            );
-                        }
-                    }
-                    else {
+                    } else {
 
-                        newCSSProps[cssPropName] = _merge({},
-                            defaultSpring,
-                            beginCssProp,
-                            { val: cssProp }
-                        );
+                        newCSSProps[cssPropName] = _merge({}, defaultSpring, beginCssProp, { val: cssProp });
                     }
 
                     return newCSSProps;
@@ -208,38 +196,33 @@ module.exports = {
             return collector;
         }, {});
 
-        if (Object.keys(delays).length === 0) {
+        if ((0, _keys2.default)(delays).length === 0) {
             delays = undefined;
         }
 
         return {
-            assignedAnimConfig,
-            delays
-        }
+            assignedAnimConfig: assignedAnimConfig,
+            delays: delays
+        };
     },
 
-    flattenCssPropsToValIfNeeded: function(cssProps) {
+    flattenCssPropsToValIfNeeded: function flattenCssPropsToValIfNeeded(cssProps) {
 
-        return Object.keys(cssProps)
-        .reduce((collector, cssPropName) => {
+        return (0, _keys2.default)(cssProps).reduce(function (collector, cssPropName) {
 
-            const currentCssProp = cssProps[cssPropName];
+            var currentCssProp = cssProps[cssPropName];
 
-            if (typeof currentCssProp === 'object' &&
-                !Array.isArray(currentCssProp)) {
+            if ((typeof currentCssProp === 'undefined' ? 'undefined' : (0, _typeof3.default)(currentCssProp)) === 'object' && !Array.isArray(currentCssProp)) {
 
-                const currentCssPropKeys = Object.keys(currentCssProp);
+                var currentCssPropKeys = (0, _keys2.default)(currentCssProp);
 
-                if (currentCssPropKeys.length === 1 &&
-                    currentCssPropKeys[0] === 'val') {
+                if (currentCssPropKeys.length === 1 && currentCssPropKeys[0] === 'val') {
 
                     collector[cssPropName] = currentCssProp.val;
-                }
-                else {
+                } else {
                     collector[cssPropName] = currentCssProp;
                 }
-            }
-            else {
+            } else {
                 collector[cssPropName] = currentCssProp;
             }
 
@@ -247,28 +230,32 @@ module.exports = {
         }, {});
     },
 
-    debounce: function(func, wait, immediate) {
+    debounce: function debounce(func, wait, immediate) {
+        var _this = this;
 
-        let timeout;
-        return (...args) => {
+        var timeout = void 0;
+        return function () {
+            for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+                args[_key] = arguments[_key];
+            }
 
-            const self = this;
-            const later = () => {
+            var self = _this;
+            var later = function later() {
 
                 timeout = null;
                 if (!immediate) {
-                    func.apply(self, ...args);
+                    func.apply.apply(func, [self].concat(args));
                 }
             };
-            const callNow = immediate && !timeout;
+            var callNow = immediate && !timeout;
 
             clearTimeout(timeout);
 
             timeout = setTimeout(later, wait);
 
             if (callNow) {
-                func.apply(self, ...args);
+                func.apply.apply(func, [self].concat(args));
             }
-        }
+        };
     }
 };
