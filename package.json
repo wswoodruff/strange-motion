@@ -4,7 +4,7 @@
     "description": "Cool util wrapper around `react-motion`!",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"No test specified\" && exit 1"
+        "test": "echo \"No test specified\""
     },
     "repository": {
         "type": "git",
