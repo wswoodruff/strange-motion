@@ -43,6 +43,6 @@
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
-        "babel-eslint": "^8.0.0"
+        "babel-eslint": "^8.1.2"
     }
 }
